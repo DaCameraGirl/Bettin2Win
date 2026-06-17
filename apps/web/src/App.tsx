@@ -4,6 +4,7 @@ import { formatOdds } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
 import { useOddsSocket } from "./useOddsSocket";
 import { useBaseballScores, type GameScore } from "./useScores";
+import { SportField } from "./SportField";
 
 export function App() {
   const { connected, eventsBySport, movements, health } = useOddsSocket();
@@ -143,21 +144,13 @@ function EventCard({
   format: OddsFormat;
   score?: GameScore;
 }) {
-  const showScore = score && score.state !== "scheduled";
   return (
     <article className="event">
       <div className="event-head">
         <h4>{event.name}</h4>
-        <div className="event-tags">
-          {showScore && (
-            <span className={`score-badge ${score.state}`}>
-              {score.state === "live" ? "● LIVE" : "FINAL"} {score.current}
-              {score.detail ? ` · ${score.detail}` : ""}
-            </span>
-          )}
-          <span className={`pill ${event.status}`}>{event.status}</span>
-        </div>
+        <span className={`pill ${event.status}`}>{event.status}</span>
       </div>
+      <SportField event={event} score={score} />
       <div className="runners">
         {event.runners.map((runner) => (
           <div key={runner.id} className="runner">

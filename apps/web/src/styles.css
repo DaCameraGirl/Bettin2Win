@@ -196,23 +196,240 @@ body {
   gap: 8px;
 }
 
-.score-badge {
+/* ---- themed sport field ---- */
+.field {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  margin-bottom: 12px;
+  min-height: 104px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.field-turf {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* turf surfaces per sport */
+.field--baseball {
+  background: radial-gradient(130% 150% at 50% 130%, #1f6b3a, #134c29 50%, #0d3a20);
+}
+.field--football {
+  background: linear-gradient(90deg, #124324, #1a6234 50%, #124324);
+}
+.field--football .field-turf {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 38px,
+    rgba(255, 255, 255, 0.09) 38px 40px
+  );
+}
+
+/* baseball diamond */
+.diamond {
+  position: absolute;
+  left: 50%;
+  top: 56%;
+  width: 60px;
+  height: 60px;
+  transform: translate(-50%, -50%) rotate(45deg);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 6px;
+  background: linear-gradient(
+    135deg,
+    rgba(193, 138, 74, 0.4),
+    rgba(193, 138, 74, 0.12)
+  );
+}
+.base {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #f5f5f5;
+  border-radius: 2px;
+}
+.base--home {
+  bottom: -5px;
+  right: -5px;
+}
+.base--first {
+  top: -5px;
+  right: -5px;
+}
+.base--second {
+  top: -5px;
+  left: -5px;
+}
+.base--third {
+  bottom: -5px;
+  left: -5px;
+}
+.mound {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: rgba(193, 138, 74, 0.85);
+}
+
+/* football end zones */
+.gridiron {
+  position: absolute;
+  inset: 0;
+}
+.endzone {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14%;
+}
+.endzone--left {
+  left: 0;
+  background: linear-gradient(90deg, rgba(74, 222, 128, 0.22), transparent);
+  border-right: 2px solid rgba(255, 255, 255, 0.28);
+}
+.endzone--right {
+  right: 0;
+  background: linear-gradient(270deg, rgba(34, 211, 238, 0.22), transparent);
+  border-left: 2px solid rgba(255, 255, 255, 0.28);
+}
+
+/* away / home columns */
+.field-side {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.field-side--away {
+  align-items: flex-start;
+  text-align: left;
+}
+.field-side--home {
+  align-items: flex-end;
+  text-align: right;
+}
+.field-role {
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.field-host {
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.field-team {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  line-height: 1.15;
+}
+.field-score {
+  font-size: 30px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+.field-center {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+}
+.field-status {
   font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.3px;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-variant-numeric: tabular-nums;
-  border: 1px solid var(--line);
-  color: var(--muted);
+  letter-spacing: 0.4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(7, 18, 11, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
-.score-badge.live {
-  color: var(--accent);
-  border-color: var(--accent-dim);
-  background: rgba(74, 222, 128, 0.08);
+.field-status.live {
+  background: rgba(220, 38, 38, 0.7);
+  border-color: rgba(255, 130, 130, 0.6);
 }
-.score-badge.finished {
-  color: var(--muted);
+.field-status.finished {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+/* ---- race-track strip (nascar / horse / greyhound) ---- */
+.field--track {
+  grid-template-columns: 1fr auto;
+  min-height: 84px;
+}
+.field--nascar {
+  background: linear-gradient(180deg, #232831, #14181e);
+}
+.field--horse-racing,
+.field--greyhound {
+  background: linear-gradient(180deg, #3a2a1a, #221810);
+}
+.oval {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 170px;
+  height: 64px;
+  transform: translate(-50%, -50%);
+  border: 10px solid rgba(255, 255, 255, 0.1);
+  border-radius: 60px;
+}
+.lanes {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    180deg,
+    transparent 0 14px,
+    rgba(255, 255, 255, 0.07) 14px 15px
+  );
+}
+.track-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.track-venue {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+}
+.track-info {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+}
+.field--track .field-status {
+  z-index: 1;
 }
 
 /* ---- glossary ---- */
