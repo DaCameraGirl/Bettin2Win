@@ -9,6 +9,7 @@
 export type SportKey =
   | "football"
   | "baseball"
+  | "soccer"
   | "nascar"
   | "horse-racing"
   | "greyhound";
@@ -48,6 +49,25 @@ export interface Runner {
 
 export type EventStatus = "upcoming" | "live" | "finished";
 
+/**
+ * A model's predicted outcome for a match. Present on prediction-sourced
+ * sports (e.g. soccer via football-prediction-api); absent for plain odds feeds.
+ */
+export interface MatchPrediction {
+  /** Runner the model favors — a team name or "Draw". */
+  pick: string;
+  /** 1X2-style code where applicable: "1" home, "X" draw, "2" away. */
+  pickCode?: string;
+  /** Human label, e.g. "Home win", "Draw", "Away win". */
+  label: string;
+  /** Decimal odds for the predicted outcome, when the plan exposes them. */
+  odds?: number;
+  /** How the pick fared once the match is decided. */
+  status: "won" | "lost" | "pending";
+  /** Final/current score from the provider, e.g. "0 - 3". */
+  result?: string;
+}
+
 export interface SportEvent {
   id: string;
   sport: SportKey;
@@ -57,6 +77,8 @@ export interface SportEvent {
   venue?: string;
   status: EventStatus;
   runners: Runner[];
+  /** Model pick, for prediction-sourced sports. */
+  prediction?: MatchPrediction;
   /** Provider key the data came from. */
   source: string;
 }

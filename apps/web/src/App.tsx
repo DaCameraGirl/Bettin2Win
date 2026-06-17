@@ -151,18 +151,43 @@ function EventCard({
         <span className={`pill ${event.status}`}>{event.status}</span>
       </div>
       <SportField event={event} score={score} />
+      {event.prediction && (
+        <div className={`model-pick ${event.prediction.status}`}>
+          <span className="mp-star">★</span>
+          <span className="mp-text">
+            Model pick: <strong>{event.prediction.pick}</strong>
+            {event.prediction.pick !== event.prediction.label && (
+              <span className="mp-label"> · {event.prediction.label}</span>
+            )}
+          </span>
+          {event.prediction.odds && (
+            <span className="mp-odds">
+              {formatOdds(event.prediction.odds, format)}
+            </span>
+          )}
+          {event.prediction.status !== "pending" && (
+            <span className={`mp-result ${event.prediction.status}`}>
+              {event.prediction.status === "won" ? "✓ won" : "✗ lost"}
+            </span>
+          )}
+        </div>
+      )}
       <div className="runners">
-        {event.runners.map((runner) => (
-          <div key={runner.id} className="runner">
-            <span className="runner-name">
-              {runner.number ? `${runner.number}. ` : ""}
-              {runner.name}
-            </span>
-            <span className="runner-price">
-              {runner.bestPrice ? formatOdds(runner.bestPrice, format) : "-"}
-            </span>
-          </div>
-        ))}
+        {event.runners.map((runner) => {
+          const picked = event.prediction?.pick === runner.name;
+          return (
+            <div key={runner.id} className={`runner ${picked ? "picked" : ""}`}>
+              <span className="runner-name">
+                {picked && <span className="runner-star">★</span>}
+                {runner.number ? `${runner.number}. ` : ""}
+                {runner.name}
+              </span>
+              <span className="runner-price">
+                {runner.bestPrice ? formatOdds(runner.bestPrice, format) : "-"}
+              </span>
+            </div>
+          );
+        })}
       </div>
     </article>
   );

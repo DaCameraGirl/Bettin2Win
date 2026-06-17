@@ -2,7 +2,7 @@ import type { SportEvent, SportKey } from "@bettin2win/types";
 import type { GameScore } from "./useScores";
 
 /** Sports that are a genuine two-team contest (away @ home + a score). */
-const TEAM_SPORTS: SportKey[] = ["football", "baseball"];
+const TEAM_SPORTS: SportKey[] = ["football", "baseball", "soccer"];
 
 /** Split "Away @ Home" into the two sides. Returns null for non-matchup names. */
 function parseMatchup(name: string): { away: string; home: string } | null {
@@ -59,20 +59,41 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
   const matchup = parseMatchup(event.name);
   const away = score?.away ?? matchup?.away ?? "Away";
   const home = score?.home ?? matchup?.home ?? "Home";
-  const live = score && score.state !== "scheduled";
-  const tally = live ? parseScore(score?.current) : null;
 
+  // Derive the score + status line from whichever source the sport has:
+  // baseball uses the live-score hook; soccer uses its own result/status.
+  let tally: { away: string; home: string } | null = null;
+  let stateClass = "scheduled";
+  let statusLine: string;
   const kickLabel = event.sport === "baseball" ? "First pitch" : "Kickoff";
-  const statusLine = live
-    ? `${score?.state === "live" ? "● LIVE" : "FINAL"}${
-        score?.detail ? ` · ${score.detail}` : ""
-      }`
-    : `${kickLabel} ${formatStart(event.startTime)}`;
+
+  if (score && score.state !== "scheduled") {
+    stateClass = score.state;
+    tally = parseScore(score.current);
+    statusLine = `${score.state === "live" ? "● LIVE" : "FINAL"}${
+      score.detail ? ` · ${score.detail}` : ""
+    }`;
+  } else if (event.sport === "soccer" && event.status !== "upcoming") {
+    stateClass = event.status === "live" ? "live" : "finished";
+    tally = parseScore(event.prediction?.result);
+    statusLine = event.status === "live" ? "● LIVE" : "FULL TIME";
+  } else {
+    statusLine = `${kickLabel} ${formatStart(event.startTime)}`;
+  }
+
+  const turf =
+    event.sport === "baseball" ? (
+      <Diamond />
+    ) : event.sport === "soccer" ? (
+      <Pitch />
+    ) : (
+      <Gridiron />
+    );
 
   return (
     <div className={`field field--${event.sport}`}>
       <div className="field-turf" aria-hidden>
-        {event.sport === "baseball" ? <Diamond /> : <Gridiron />}
+        {turf}
       </div>
 
       <div className="field-side field-side--away">
@@ -82,9 +103,8 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
       </div>
 
       <div className="field-center">
-        <span className={`field-status ${live ? score?.state : "scheduled"}`}>
-          {statusLine}
-        </span>
+        <span className={`field-status ${stateClass}`}>{statusLine}</span>
+        {event.venue && <span className="field-comp">{event.venue}</span>}
       </div>
 
       <div className="field-side field-side--home">
@@ -144,6 +164,17 @@ function Gridiron() {
     <div className="gridiron">
       <span className="endzone endzone--left" />
       <span className="endzone endzone--right" />
+    </div>
+  );
+}
+
+function Pitch() {
+  return (
+    <div className="pitch">
+      <span className="pitch-line" />
+      <span className="pitch-circle" />
+      <span className="pitch-box pitch-box--left" />
+      <span className="pitch-box pitch-box--right" />
     </div>
   );
 }
