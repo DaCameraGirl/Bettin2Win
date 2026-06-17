@@ -43,6 +43,7 @@ export const env = {
   racingApiUsername: process.env.RACING_API_USERNAME ?? "",
   racingApiPassword: process.env.RACING_API_PASSWORD ?? "",
   betsApiKey: process.env.BETSAPI_KEY ?? "",
+  highlightlyKey: process.env.HIGHLIGHTLY_API_KEY ?? "",
   port: Number(process.env.ODDS_ENGINE_PORT ?? 4000),
 };
 

@@ -4,6 +4,8 @@ import express from "express";
 import { ALL_SPORTS, env } from "./config.js";
 import { Poller } from "./poller.js";
 import { Broadcaster } from "./broadcaster.js";
+import { highlightly } from "./highlightly/client.js";
+import { isEnrichSport } from "./highlightly/types.js";
 
 const app = express();
 
@@ -21,6 +23,22 @@ app.get("/api/snapshot/:sport", (req, res) => {
     return;
   }
   res.json(poller.snapshot(sport));
+});
+
+// Highlightly enrichment: real team standings/records (no odds on Basic plan).
+// e.g. GET /api/enrich/nfl/standings?season=2024
+app.get("/api/enrich/:sport/standings", async (req, res) => {
+  const sport = req.params.sport;
+  if (!isEnrichSport(sport)) {
+    res.status(404).json({ error: "unsupported sport", supported: ["nfl", "mlb", "nba"] });
+    return;
+  }
+  const season = Number(req.query.season ?? new Date().getFullYear() - 1);
+  try {
+    res.json(await highlightly.getStandings(sport, season));
+  } catch (err) {
+    res.status(502).json({ error: err instanceof Error ? err.message : "enrichment failed" });
+  }
 });
 
 const server = createServer(app);
