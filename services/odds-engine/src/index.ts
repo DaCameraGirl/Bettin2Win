@@ -9,6 +9,15 @@ import { isEnrichSport } from "./highlightly/types.js";
 
 const app = express();
 
+// Allow the web app (different port/origin) to call the REST enrichment
+// endpoints. WebSocket isn't subject to CORS, which is why odds streamed fine
+// but the /api/enrich/* fetches were being blocked by the browser.
+app.use((_req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "GET");
+  next();
+});
+
 // Health endpoint used by CI (odds-health.yml) and uptime checks.
 let poller: Poller;
 app.get("/health", (_req, res) => {

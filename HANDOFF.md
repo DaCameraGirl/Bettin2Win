@@ -49,6 +49,17 @@ Claude Code line.
 PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/MLB/NBA),
 #10 (NHL), #12 (movement feed filtered by sport), + live baseball scores & glossary.
 
+## Angela's requested enhancements (do these next)
+- **Richer event boxes**: she wants the real **live score, inning, and more game info INSIDE
+  each card** (not just a small badge). The data exists (`/api/enrich/baseball/scores` →
+  current score + `detail` like "Bottom 2nd"). Expand the card: show score line per team,
+  inning, hits/errors, maybe records from standings. CORS fix (PR after #14) makes the fetch work.
+- **Odds are confusing to her**: American odds (-10000, +1500) read as gibberish to a beginner.
+  Consider defaulting the D/A/F toggle to **Decimal** (or Fractional), and/or add an inline
+  "what does -150 mean?" helper/tooltip near prices. The glossary explains it but it's easy to miss.
+- Note: baseball shows only 2 prices/game because it's a 2-way market (the two teams) — that's
+  correct, not a bug. Horse racing shows many runners.
+
 ## Good next steps
 1. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
 2. **Deploy** — web on Vercel/Netlify; engine is a stateful WS server → Render/Railway/Fly + secrets.
