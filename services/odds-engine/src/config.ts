@@ -55,7 +55,8 @@ export const env = {
   // Shared RapidAPI key for the prediction providers (football-prediction-api,
   // and future basketball/other prediction tabs on the same RapidAPI account).
   rapidApiKey: process.env.RAPIDAPI_KEY ?? "",
-  port: Number(process.env.ODDS_ENGINE_PORT ?? 4000),
+  // Hosts like Render inject PORT; fall back to our local default otherwise.
+  port: Number(process.env.PORT ?? process.env.ODDS_ENGINE_PORT ?? 4000),
 };
 
 export const ALL_SPORTS: SportKey[] = Object.keys(SPORTS) as SportKey[];

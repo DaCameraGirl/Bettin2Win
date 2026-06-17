@@ -1,0 +1,32 @@
+# Render Blueprint for the Bettin2Win odds-engine (the live data server).
+# Deploy: render.com -> New -> Blueprint -> pick this repo. Render reads this file.
+# Set the API keys in the Render dashboard (they're marked sync:false so they
+# are NEVER stored in git). The web app (GitHub Pages) points at this service.
+services:
+  - type: web
+    name: bettin2win-engine
+    runtime: node
+    plan: free
+    region: oregon
+    # Build the shared types first, then the engine.
+    buildCommand: npm install -g pnpm@9.12.0 && pnpm install --frozen-lockfile && pnpm --filter @bettin2win/types build && pnpm --filter @bettin2win/odds-engine build
+    startCommand: node services/odds-engine/dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      # --- API keys: set these in the Render dashboard, not here ---
+      - key: ODDS_API_KEY
+        sync: false
+      - key: THERUNDOWN_API_KEY
+        sync: false
+      - key: RACING_API_USERNAME
+        sync: false
+      - key: RACING_API_PASSWORD
+        sync: false
+      - key: BETSAPI_KEY
+        sync: false
+      - key: HIGHLIGHTLY_API_KEY
+        sync: false
+      - key: RAPIDAPI_KEY
+        sync: false
