@@ -79,6 +79,25 @@ test("normalizes NBA groups/standings shape with direct integers", () => {
   assert.equal(rows[0]?.group, "Western Conference");
 });
 
+// NHL uses the same groups/standings shape as NBA (hockey)
+const NHL_BODY = {
+  groups: [
+    {
+      name: "Western Conference",
+      standings: [
+        { team: { id: 599888, logo: "j.png", name: "Winnipeg Jets" }, wins: 43, loses: 22 },
+      ],
+    },
+  ],
+};
+
+test("normalizes NHL hockey standings", () => {
+  const rows = normalizeStandings(NHL_BODY);
+  assert.equal(rows[0]?.name, "Winnipeg Jets");
+  assert.equal(rows[0]?.wins, 43);
+  assert.equal(rows[0]?.losses, 22);
+});
+
 test("tolerates garbage input", () => {
   assert.deepEqual(normalizeStandings(null), []);
   assert.deepEqual(normalizeStandings({ data: "nope" }), []);
