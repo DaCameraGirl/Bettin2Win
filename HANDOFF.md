@@ -18,13 +18,15 @@ Runs with **zero API keys** on demo data; each sport flips live when its key is 
 |---|---|---|
 | Baseball | The Odds API | ✅ live odds **with prices** + live scores/innings (Highlightly) |
 | Football (NFL) | The Odds API | ✅ live odds (NFL offseason in June = few events) |
+| Soccer | football-prediction-api (RapidAPI) | ✅ live **model picks** (1X2 + double-chance) + odds + result |
 | Horse racing | The Racing API | ✅ 35 real racecards; free tier = **no prices** |
 | NASCAR | — | ❌ TheRundown has no motorsport; needs a different vendor |
 | Greyhound | BetsAPI | ❌ no key obtained yet |
 | Standings enrich | Highlightly (RapidAPI) | ✅ NFL/MLB/NBA/NHL real records at `/api/enrich/:sport/standings` |
 
 ### Keys (in `.env`, git-ignored)
-ODDS_API_KEY, THERUNDOWN_API_KEY, RACING_API_USERNAME/PASSWORD, HIGHLIGHTLY_API_KEY.
+ODDS_API_KEY, THERUNDOWN_API_KEY, RACING_API_USERNAME/PASSWORD, HIGHLIGHTLY_API_KEY,
+RAPIDAPI_KEY (prediction APIs — **same value** as HIGHLIGHTLY_API_KEY; one RapidAPI account).
 Highlightly is via **RapidAPI** (`x-rapidapi-key` + host `sport-highlights-api.p.rapidapi.com`),
 Basic plan = **no odds**, enrichment only. RapidAPI key is subscribed ONLY to Highlightly
 (sportsbook-api2 / betsapi2 return 403 — would need new subscriptions).
@@ -39,6 +41,15 @@ npx -y pnpm@9.12.0 --filter @bettin2win/web dev   # web on :5173
 ```
 Open http://localhost:5173. (Both were running in the background during the build session.)
 
+**One-click launcher:** `powershell -ExecutionPolicy Bypass -File scripts\install-desktop-icon.ps1`
+creates a **Bettin2Win** desktop icon (B2W badge). Double-click it to build (first run),
+start engine + web, and open the dashboard. See `scripts/start.ps1`.
+
+**Deploy for real:** see `DEPLOY.md` — engine on Render (`render.yaml`), web on GitHub
+Pages (`.github/workflows/pages.yml`, dormant until the `VITE_WS_URL` repo Variable is set).
+Note: GitHub Pages is still on the legacy "deploy from branch" source (renders the README) —
+switch Source to **GitHub Actions** to publish the real app.
+
 ## Workflow rules (Angela's preference — IMPORTANT)
 Never commit straight to `main`. Always: issue → feature branch → PR (real description) →
 CI green → squash-merge → delete branch → sync local. Claude does ALL git mechanics; Angela
@@ -48,6 +59,7 @@ Claude Code line.
 ## Done so far (all merged)
 PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/MLB/NBA),
 #10 (NHL), #12 (movement feed filtered by sport), #16 (CORS), #18 (themed sport-field cards),
+#21 (Soccer tab + model picks), #22 (desktop launcher), #23 (Render + Pages deploy config),
 + live baseball scores & glossary.
 
 ## Angela's requested enhancements
@@ -63,6 +75,20 @@ PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/M
   the glossary. (This is the obvious next task.)
 - Note: baseball shows only 2 prices/game because it's a 2-way market (the two teams) — that's
   correct, not a bug. Horse racing shows many runners.
+
+## Prediction APIs (Angela's RapidAPI subscriptions — for "all sports predictions")
+Same RapidAPI key (`RAPIDAPI_KEY`) covers all subscribed APIs. Each RapidAPI listing
+needs its own Subscribe click. The Soccer tab uses **football-prediction-api** as the
+template; adding a prediction sport = one new adapter (copy `football-prediction.adapter.ts`)
++ a `SportKey` + a tab + a field theme.
+- **Betigolo** (`betigolo-predictions`) — ✅ subscribed; **multi-sport** from one
+  `/{sport}/{date}` endpoint (football, tennis, icehockey, basketball, baseball). **Best path
+  to "predictions for every sport"** — one adapter shape covers many tabs.
+- **BetMiner**, **Today Football Prediction** — ✅ subscribed; more soccer/edge data (overlap).
+- **basketball-predictions1** — ⚠️ pasted but **NOT subscribed** (returns "not subscribed").
+  Subscribe first, then add a 🏀 tab.
+- football-prediction-api free plan: predictions only ~12h ahead; adapter sweeps
+  UEFA/CONMEBOL/CONCACAF/AFC for the day. Result is home-away upstream → flipped to away-home.
 
 ## Good next steps
 1. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
