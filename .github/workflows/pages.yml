@@ -1,0 +1,62 @@
+name: Deploy web to GitHub Pages
+
+# Publishes apps/web to GitHub Pages. Stays dormant (jobs skip) until the
+# VITE_WS_URL repo Variable is set, so it never fails before the engine is
+# hosted. Set these repo Variables once the engine is live on Render:
+#   VITE_WS_URL  = wss://<your-engine>.onrender.com/ws
+#   VITE_API_URL = https://<your-engine>.onrender.com
+#   VITE_BASE    = /Bettin2Win/   (omit / set "/" if using a custom domain)
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/web/**"
+      - "packages/types/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: ${{ vars.VITE_WS_URL != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @bettin2win/types build
+      - name: Build web app
+        env:
+          VITE_BASE: ${{ vars.VITE_BASE || '/Bettin2Win/' }}
+          VITE_WS_URL: ${{ vars.VITE_WS_URL }}
+          VITE_API_URL: ${{ vars.VITE_API_URL }}
+        run: pnpm --filter @bettin2win/web build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ vars.VITE_WS_URL != '' }}
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
