@@ -1,0 +1,29 @@
+# Secrets - never commit
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+.next/
+.turbo/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+
+# Test / Playwright
+playwright-report/
+test-results/
