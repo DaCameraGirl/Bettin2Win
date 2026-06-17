@@ -3,6 +3,7 @@ import type { OddsFormat, SportEvent, SportKey } from "@bettin2win/types";
 import { formatOdds } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
 import { useOddsSocket } from "./useOddsSocket";
+import { useBaseballScores, type GameScore } from "./useScores";
 
 export function App() {
   const { connected, eventsBySport, movements, health } = useOddsSocket();
@@ -18,6 +19,7 @@ export function App() {
     () => movements.filter((m) => m.sport === sport),
     [movements, sport],
   );
+  const scores = useBaseballScores(sport === "baseball");
 
   return (
     <div className="app">
@@ -66,7 +68,12 @@ export function App() {
             <p className="empty">Waiting for the first snapshot...</p>
           ) : (
             events.map((event) => (
-              <EventCard key={event.id} event={event} format={format} />
+              <EventCard
+                key={event.id}
+                event={event}
+                format={format}
+                score={scores.get(event.name)}
+              />
             ))
           )}
         </section>
@@ -90,16 +97,66 @@ export function App() {
           )}
         </aside>
       </main>
+
+      <Glossary />
     </div>
   );
 }
 
-function EventCard({ event, format }: { event: SportEvent; format: OddsFormat }) {
+const GLOSSARY: { term: string; plain: string }[] = [
+  { term: "Odds", plain: "How likely something is + what it pays. Lower number = more likely to happen." },
+  { term: "Shortening ↓", plain: "The odds got SMALLER. The market now thinks it's MORE likely to win." },
+  { term: "Drifting ↑", plain: "The odds got BIGGER. The market thinks it's LESS likely to win." },
+  { term: "Best price", plain: "The most generous odds for you across all the bookmakers we check." },
+  { term: "Decimal (D)", plain: "e.g. 2.50 — bet $1, get $2.50 back total if it wins (European style)." },
+  { term: "American (A)", plain: "e.g. +150 / -200 — plus = underdog payout, minus = how much to risk to win $100." },
+  { term: "Fractional (F)", plain: "e.g. 3/2 — win $3 for every $2 staked (UK / horse-racing style)." },
+  { term: "@ (the at sign)", plain: '"Away team @ Home team" — the second team is hosting.' },
+  { term: "● LIVE / FINAL", plain: "Real game status — live score and inning, or the final result." },
+  { term: "Upcoming", plain: "The game/race hasn't started yet." },
+];
+
+function Glossary() {
+  return (
+    <details className="glossary">
+      <summary>📖 What do these words mean? (plain-English glossary)</summary>
+      <table>
+        <tbody>
+          {GLOSSARY.map((g) => (
+            <tr key={g.term}>
+              <th>{g.term}</th>
+              <td>{g.plain}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </details>
+  );
+}
+
+function EventCard({
+  event,
+  format,
+  score,
+}: {
+  event: SportEvent;
+  format: OddsFormat;
+  score?: GameScore;
+}) {
+  const showScore = score && score.state !== "scheduled";
   return (
     <article className="event">
       <div className="event-head">
         <h4>{event.name}</h4>
-        <span className={`pill ${event.status}`}>{event.status}</span>
+        <div className="event-tags">
+          {showScore && (
+            <span className={`score-badge ${score.state}`}>
+              {score.state === "live" ? "● LIVE" : "FINAL"} {score.current}
+              {score.detail ? ` · ${score.detail}` : ""}
+            </span>
+          )}
+          <span className={`pill ${event.status}`}>{event.status}</span>
+        </div>
       </div>
       <div className="runners">
         {event.runners.map((runner) => (

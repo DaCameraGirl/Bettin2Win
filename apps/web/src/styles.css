@@ -190,6 +190,71 @@ body {
   font-size: 15px;
 }
 
+.event-tags {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.score-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+.score-badge.live {
+  color: var(--accent);
+  border-color: var(--accent-dim);
+  background: rgba(74, 222, 128, 0.08);
+}
+.score-badge.finished {
+  color: var(--muted);
+}
+
+/* ---- glossary ---- */
+.glossary {
+  margin-top: 22px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 6px 16px;
+}
+.glossary summary {
+  cursor: pointer;
+  padding: 10px 0;
+  font-size: 14px;
+  color: var(--text);
+  user-select: none;
+}
+.glossary summary:hover {
+  color: var(--accent);
+}
+.glossary table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 8px 0 14px;
+}
+.glossary th {
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+  padding: 8px 16px 8px 0;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  border-top: 1px solid var(--line);
+}
+.glossary td {
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: 13px;
+  border-top: 1px solid var(--line);
+}
+
 .pill {
   font-size: 10px;
   text-transform: uppercase;

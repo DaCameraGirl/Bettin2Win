@@ -41,6 +41,17 @@ app.get("/api/enrich/:sport/standings", async (req, res) => {
   }
 });
 
+// Live baseball game states (score + inning) from Highlightly, matched to odds
+// events by "Away @ Home" name. e.g. GET /api/enrich/baseball/scores
+app.get("/api/enrich/baseball/scores", async (req, res) => {
+  const date = String(req.query.date ?? new Date().toISOString().slice(0, 10));
+  try {
+    res.json(await highlightly.getBaseballScores(date));
+  } catch (err) {
+    res.status(502).json({ error: err instanceof Error ? err.message : "scores failed" });
+  }
+});
+
 const server = createServer(app);
 const broadcaster = new Broadcaster(server);
 
