@@ -1,5 +1,6 @@
 import { env } from "../config.js";
 import { normalizeStandings } from "./normalize.js";
+import { normalizeBaseballScores, type GameScore } from "./scores.js";
 import {
   HIGHLIGHTLY_HOST,
   STANDINGS,
@@ -41,6 +42,19 @@ export class HighlightlyClient {
       throw new HighlightlyError(`provider ${res.status}`);
     }
     return normalizeStandings(await res.json());
+  }
+
+  /** Live/scheduled/final baseball game states for a given date (YYYY-MM-DD). */
+  async getBaseballScores(date: string): Promise<GameScore[]> {
+    if (!this.hasCredentials()) {
+      throw new HighlightlyError("no HIGHLIGHTLY_API_KEY");
+    }
+    const url = `https://${HIGHLIGHTLY_HOST}/baseball/matches?date=${date}&limit=50`;
+    const res = await fetch(url, { headers: this.headers() });
+    if (!res.ok) {
+      throw new HighlightlyError(`provider ${res.status}`);
+    }
+    return normalizeBaseballScores(await res.json());
   }
 }
 
