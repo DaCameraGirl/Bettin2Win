@@ -65,6 +65,7 @@ export type MovementDirection = "shortening" | "drifting";
 
 export interface OddsMovement {
   eventId: string;
+  sport: SportKey;
   runnerId: string;
   runnerName: string;
   bookmaker: string;

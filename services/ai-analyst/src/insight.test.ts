@@ -5,6 +5,7 @@ import { InsightGenerator } from "./index.js";
 
 const movement: OddsMovement = {
   eventId: "e1",
+  sport: "horse-racing",
   runnerId: "r1",
   runnerName: "Silver Comet",
   bookmaker: "best",

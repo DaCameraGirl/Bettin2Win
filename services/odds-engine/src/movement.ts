@@ -26,6 +26,7 @@ export function detectMovements(
 
     movements.push({
       eventId: current.id,
+      sport: current.sport,
       runnerId: runner.id,
       runnerName: runner.name,
       bookmaker: "best",

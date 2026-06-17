@@ -14,6 +14,10 @@ export function App() {
     () => health.find((h) => h.sport === sport),
     [health, sport],
   );
+  const sportMovements = useMemo(
+    () => movements.filter((m) => m.sport === sport),
+    [movements, sport],
+  );
 
   return (
     <div className="app">
@@ -69,11 +73,11 @@ export function App() {
 
         <aside className="feed">
           <h3>Market movement</h3>
-          {movements.length === 0 ? (
+          {sportMovements.length === 0 ? (
             <p className="empty small">No moves yet. Prices update every few seconds.</p>
           ) : (
             <ul>
-              {movements.map((m, i) => (
+              {sportMovements.map((m, i) => (
                 <li key={`${m.runnerId}-${i}`} className={m.direction}>
                   <strong>{m.runnerName}</strong>
                   <span>
