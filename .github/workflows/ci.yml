@@ -33,3 +33,21 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+  python:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/racing-analytics
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: pip install -r requirements-dev.txt
+
+      - name: Test
+        run: pytest -q
