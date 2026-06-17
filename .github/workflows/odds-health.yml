@@ -1,0 +1,25 @@
+name: Odds Health
+
+# Pings the running odds-engine /health endpoint on a schedule.
+# Set the ODDS_ENGINE_HEALTH_URL repository variable to your deployed URL.
+# Until the service is deployed this is a no-op (skips cleanly).
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping health endpoint
+        run: |
+          URL="${{ vars.ODDS_ENGINE_HEALTH_URL }}"
+          if [ -z "$URL" ]; then
+            echo "ODDS_ENGINE_HEALTH_URL not set - skipping health check."
+            exit 0
+          fi
+          echo "Checking $URL/health"
+          curl -fsS "$URL/health" | tee /tmp/health.json
+          echo "Health check passed."
