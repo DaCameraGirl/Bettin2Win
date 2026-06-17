@@ -79,7 +79,7 @@ function reduce(state: OddsState, msg: WebSocketMessage): OddsState {
       return { ...state, eventsBySport: { ...state.eventsBySport, [sport]: next } };
     }
     case "movement":
-      return { ...state, movements: [msg.movement, ...state.movements].slice(0, 30) };
+      return { ...state, movements: [msg.movement, ...state.movements].slice(0, 80) };
     case "health":
       return { ...state, health: msg.providers };
     case "insight":

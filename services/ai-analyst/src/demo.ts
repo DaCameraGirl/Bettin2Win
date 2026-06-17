@@ -4,6 +4,7 @@ import { PERSONAS } from "./personas.js";
 
 const sample: OddsMovement = {
   eventId: "demo-1",
+  sport: "horse-racing",
   runnerId: "demo-1-r0",
   runnerName: "Silver Comet",
   bookmaker: "best",
