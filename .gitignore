@@ -34,3 +34,6 @@ test-results/
 venv/
 __pycache__/
 *.pyc
+
+# generated desktop icon
+scripts/bettin2win.ico
