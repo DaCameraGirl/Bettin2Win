@@ -1,5 +1,5 @@
 /** Sports we currently support standings enrichment for. */
-export type EnrichSport = "nfl" | "mlb" | "nba";
+export type EnrichSport = "nfl" | "mlb" | "nba" | "nhl";
 
 export interface TeamStanding {
   teamId: number;
@@ -37,8 +37,12 @@ export const STANDINGS: Record<EnrichSport, StandingsSpec> = {
     sportPath: "basketball",
     query: (season) => ({ leagueId: "10996", season: String(season) }),
   },
+  nhl: {
+    sportPath: "hockey",
+    query: (season) => ({ leagueId: "49291", season: String(season) }),
+  },
 };
 
 export function isEnrichSport(value: string): value is EnrichSport {
-  return value === "nfl" || value === "mlb" || value === "nba";
+  return value === "nfl" || value === "mlb" || value === "nba" || value === "nhl";
 }

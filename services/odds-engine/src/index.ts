@@ -30,7 +30,7 @@ app.get("/api/snapshot/:sport", (req, res) => {
 app.get("/api/enrich/:sport/standings", async (req, res) => {
   const sport = req.params.sport;
   if (!isEnrichSport(sport)) {
-    res.status(404).json({ error: "unsupported sport", supported: ["nfl", "mlb", "nba"] });
+    res.status(404).json({ error: "unsupported sport", supported: ["nfl", "mlb", "nba", "nhl"] });
     return;
   }
   const season = Number(req.query.season ?? new Date().getFullYear() - 1);
