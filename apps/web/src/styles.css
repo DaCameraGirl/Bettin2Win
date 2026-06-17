@@ -432,6 +432,135 @@ body {
   z-index: 1;
 }
 
+/* ---- soccer pitch ---- */
+.field--soccer {
+  background: linear-gradient(90deg, #145032, #1b6b3f 50%, #145032);
+}
+.field--soccer .field-turf {
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 46px,
+    rgba(255, 255, 255, 0.06) 46px 48px
+  );
+}
+.pitch {
+  position: absolute;
+  inset: 0;
+}
+.pitch-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateX(-1px);
+}
+.pitch-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 56px;
+  height: 56px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.pitch-box {
+  position: absolute;
+  top: 50%;
+  width: 30px;
+  height: 64px;
+  border: 2px solid rgba(255, 255, 255, 0.28);
+  transform: translateY(-50%);
+}
+.pitch-box--left {
+  left: 0;
+  border-left: none;
+}
+.pitch-box--right {
+  right: 0;
+  border-right: none;
+}
+
+/* competition / sub-label under the center status */
+.field-comp {
+  margin-top: 5px;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  max-width: 150px;
+}
+
+/* ---- model prediction banner ---- */
+.model-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid var(--accent-dim);
+  font-size: 13px;
+}
+.model-pick.won {
+  background: rgba(74, 222, 128, 0.12);
+  border-color: var(--accent-dim);
+}
+.model-pick.lost {
+  background: rgba(248, 113, 113, 0.08);
+  border-color: #5a2a2a;
+}
+.mp-star {
+  color: var(--warn);
+  font-size: 14px;
+}
+.mp-text {
+  color: var(--text);
+}
+.mp-text strong {
+  color: var(--accent);
+}
+.mp-label {
+  color: var(--muted);
+  font-size: 12px;
+}
+.mp-odds {
+  margin-left: auto;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text);
+}
+.mp-result {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+.mp-result.won {
+  color: var(--accent);
+  border: 1px solid var(--accent-dim);
+}
+.mp-result.lost {
+  color: var(--down);
+  border: 1px solid #5a2a2a;
+}
+
+/* picked runner highlight */
+.runner.picked {
+  border-color: var(--accent-dim);
+  box-shadow: inset 0 0 0 1px var(--accent-dim);
+  background: rgba(74, 222, 128, 0.07);
+}
+.runner-star {
+  color: var(--warn);
+  margin-right: 4px;
+}
+
 /* ---- glossary ---- */
 .glossary {
   margin-top: 22px;

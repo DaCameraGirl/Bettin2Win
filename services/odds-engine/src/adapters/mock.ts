@@ -12,6 +12,10 @@ const NAME_POOLS: Record<SportKey, { events: string[]; runners: string[][] }> = 
     events: ["Sox @ Yankees", "Cubs @ Dodgers", "Mets @ Braves"],
     runners: [["Home", "Away"]],
   },
+  soccer: {
+    events: ["Rangers @ Celtic", "Roma @ Lazio", "Boca @ River Plate"],
+    runners: [["Home", "Draw", "Away"]],
+  },
   nascar: {
     events: ["Daytona 400", "Talladega Night Race"],
     runners: [["#5 A. Rivera", "#11 J. Cole", "#24 M. Stone", "#48 T. Park"]],

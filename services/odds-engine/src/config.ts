@@ -17,6 +17,14 @@ export const SPORTS: Record<SportKey, SportConfig> = {
     provider: "the-odds-api",
     pollIntervalMs: 15_000,
   },
+  soccer: {
+    key: "soccer",
+    label: "Soccer",
+    provider: "football-prediction-api",
+    // Predictions barely move and the free RapidAPI tier is rate-limited, so
+    // poll gently — a slow sweep across federations, not a tight loop.
+    pollIntervalMs: 90_000,
+  },
   nascar: {
     key: "nascar",
     label: "NASCAR",
@@ -44,6 +52,9 @@ export const env = {
   racingApiPassword: process.env.RACING_API_PASSWORD ?? "",
   betsApiKey: process.env.BETSAPI_KEY ?? "",
   highlightlyKey: process.env.HIGHLIGHTLY_API_KEY ?? "",
+  // Shared RapidAPI key for the prediction providers (football-prediction-api,
+  // and future basketball/other prediction tabs on the same RapidAPI account).
+  rapidApiKey: process.env.RAPIDAPI_KEY ?? "",
   port: Number(process.env.ODDS_ENGINE_PORT ?? 4000),
 };
 
