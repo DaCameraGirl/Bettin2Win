@@ -7,7 +7,7 @@ Real-time multi-sport odds dashboard. Polyglot monorepo (pnpm + Turborepo).
 Runs with **zero API keys** on demo data; each sport flips live when its key is in `.env`.
 
 ## Architecture
-- `apps/web` — React + Vite dashboard (sport tabs, odds board, movement feed, live-score badges, glossary).
+- `apps/web` — React + Vite dashboard (sport tabs, odds board, movement feed, themed sport-field cards, glossary).
 - `services/odds-engine` — TypeScript. Adapters → normalized `SportEvent`, poller, movement detection, WebSocket broadcast, REST enrichment endpoints.
 - `services/ai-analyst` — TypeScript. Templated insight layer, 4 personas. Swappable for an LLM.
 - `services/racing-analytics` — Python / FastAPI. Horse-racing domain modeling + analytics.
@@ -47,16 +47,20 @@ Claude Code line.
 
 ## Done so far (all merged)
 PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/MLB/NBA),
-#10 (NHL), #12 (movement feed filtered by sport), + live baseball scores & glossary.
+#10 (NHL), #12 (movement feed filtered by sport), #16 (CORS), #18 (themed sport-field cards),
++ live baseball scores & glossary.
 
-## Angela's requested enhancements (do these next)
-- **Richer event boxes**: she wants the real **live score, inning, and more game info INSIDE
-  each card** (not just a small badge). The data exists (`/api/enrich/baseball/scores` →
-  current score + `detail` like "Bottom 2nd"). Expand the card: show score line per team,
-  inning, hits/errors, maybe records from standings. CORS fix (PR after #14) makes the fetch work.
-- **Odds are confusing to her**: American odds (-10000, +1500) read as gibberish to a beginner.
-  Consider defaulting the D/A/F toggle to **Decimal** (or Fractional), and/or add an inline
-  "what does -150 mean?" helper/tooltip near prices. The glossary explains it but it's easy to miss.
+## Angela's requested enhancements
+- ✅ **Richer event boxes** (PR #18): each card now has a themed **field**. Baseball/football =
+  two-sided scoreboard-on-a-field (AWAY left, HOME "hosting" right, big live score in the middle,
+  inning/kickoff + start time below; CSS diamond / yard-lined gridiron). NASCAR/horse/greyhound =
+  shared track strip (venue, runner count, start time, status) since a race has no home/away.
+  Component: `apps/web/src/SportField.tsx`. Possible follow-ups: pull team **records** from the
+  standings endpoint into the field; hits/errors if a provider exposes them.
+- **Odds still read as gibberish to a beginner** — PARTLY handled: the D/A/F toggle already
+  **defaults to Decimal** (`App.tsx` `useState<OddsFormat>("decimal")`). Still TODO: an inline
+  "what does -150 mean?" helper/tooltip right next to the prices, so she doesn't have to scroll to
+  the glossary. (This is the obvious next task.)
 - Note: baseball shows only 2 prices/game because it's a 2-way market (the two teams) — that's
   correct, not a bug. Horse racing shows many runners.
 
