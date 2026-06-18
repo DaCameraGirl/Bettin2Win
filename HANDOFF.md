@@ -81,19 +81,28 @@ Same RapidAPI key (`RAPIDAPI_KEY`) covers all subscribed APIs. Each RapidAPI lis
 needs its own Subscribe click. The Soccer tab uses **football-prediction-api** as the
 template; adding a prediction sport = one new adapter (copy `football-prediction.adapter.ts`)
 + a `SportKey` + a tab + a field theme.
-- **Betigolo** (`betigolo-predictions`) — ✅ subscribed; **multi-sport** from one
-  `/{sport}/{date}` endpoint (football, tennis, icehockey, basketball, baseball). **Best path
-  to "predictions for every sport"** — one adapter shape covers many tabs.
-- **BetMiner**, **Today Football Prediction** — ✅ subscribed; more soccer/edge data (overlap).
-- **basketball-predictions1** — ⚠️ pasted but **NOT subscribed** (returns "not subscribed").
-  Subscribe first, then add a 🏀 tab.
-- football-prediction-api free plan: predictions only ~12h ahead; adapter sweeps
-  UEFA/CONMEBOL/CONCACAF/AFC for the day. Result is home-away upstream → flipped to away-home.
+- ⚠️ **Betigolo** (`betigolo-predictions`) — subscribed but the **free/BASIC plan DISABLES every
+  sport endpoint** ("disabled for your subscription") + tight rate limit. Multi-sport (tennis/
+  hockey/basketball/baseball) is the goal but **needs a PAID Betigolo plan** before it's buildable.
+- ✅ **BetMiner** (`betminer.p.rapidapi.com`) — free tier works and is **rich**: `GET
+  /bm/v3/edge-analysis/{date}` returns ~82 soccer matches/day in one call, with **team logos, win
+  probabilities (%), predicted correct score, BTTS/over-under, and form (WDWLL)**. Soccer only.
+- **Today Football Prediction** — ✅ subscribed; more soccer data (overlap).
+- **basketball-predictions1** — ⚠️ NOT subscribed.
+- **All free subscriptions are soccer-only.** football-prediction-api free plan: ~12h ahead,
+  sweeps UEFA/CONMEBOL/CONCACAF/AFC; result home-away upstream → flipped to away-home.
+
+### ⏭️ NEXT TASK (in progress — issue #25): upgrade Soccer to BetMiner
+Branch not started (the empty `feature/soccer-betminer` was cleaned up). **Issue #25 has the full
+BetMiner field shape + the build plan** (new `betminer.adapter.ts` → bind `soccer`; extend types
+with probability/correctScore/form/logos; UI shows logos + "NN% likely" + form). The **win-%** also
+satisfies the beginner-friendly-odds ask. Then: after Angela upgrades Betigolo → tennis/hockey/
+basketball tabs.
 
 ## Good next steps
 1. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
 2. **Deploy** — web on Vercel/Netlify; engine is a stateful WS server → Render/Railway/Fly + secrets.
-3. **One prediction source** into `ai-analyst` (e.g. Betigolo) — needs a RapidAPI subscription.
+3. **Multi-sport predictions** (tennis/hockey/basketball) — blocked on a PAID Betigolo plan.
 4. Greyhound (needs BetsAPI key); NASCAR (needs a motorsport vendor).
 
 ## Gotchas
