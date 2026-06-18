@@ -11,6 +11,7 @@ import { HighlightlyMatchesAdapter } from "./highlightly-matches.adapter.js";
 import { SportsbookAdvantagesAdapter } from "./sportsbook-advantages.adapter.js";
 import { Tank01MlbAdapter } from "./tank01-mlb.adapter.js";
 import { MlbStatsAdapter } from "./mlb-stats.adapter.js";
+import { EspnGolfAdapter } from "./espn-golf.adapter.js";
 
 /** Registry mapping each sport to the adapter that owns it. */
 export const adapters: Record<SportKey, SportAdapter> = {
@@ -43,6 +44,7 @@ export const adapters: Record<SportKey, SportAdapter> = {
     new HighlightlyMatchesAdapter("hockey"),
   ),
   soccer: new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),
+  golf: new EspnGolfAdapter(),
   nascar: new TheRundownAdapter(),
   "horse-racing": new FallbackAdapter(
     new HorseRacingRapidApiAdapter(),

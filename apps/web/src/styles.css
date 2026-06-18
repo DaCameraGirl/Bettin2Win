@@ -742,7 +742,8 @@ body {
   .football-ball,
   .soccer-ball,
   .basketball-ball,
-  .puck-marker {
+  .puck-marker,
+  .golf-ball {
     animation: none;
   }
 }
@@ -800,6 +801,120 @@ body {
 .soccer-ball {
   left: 49%;
   top: 58%;
+}
+
+/* golf leaderboard card */
+.field--golf {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-height: 178px;
+  background: linear-gradient(135deg, #103822, #1d5b35 50%, #0f2d22);
+}
+.golf-course {
+  position: absolute;
+  inset: 0;
+}
+.golf-fairway {
+  position: absolute;
+  right: 8%;
+  top: -18%;
+  width: 48%;
+  height: 150%;
+  transform: rotate(19deg);
+  border-radius: 50%;
+  background: rgba(74, 222, 128, 0.12);
+}
+.golf-green {
+  position: absolute;
+  right: 13%;
+  top: 22%;
+  width: 102px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(134, 239, 172, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+.golf-cup {
+  position: absolute;
+  right: 18%;
+  top: 44%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #0b0f17;
+}
+.golf-ball {
+  position: absolute;
+  right: 33%;
+  top: 62%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(255, 255, 255, 0.7);
+  animation: golf-roll 4.2s ease-in-out infinite alternate;
+}
+@keyframes golf-roll {
+  from {
+    transform: translate(-18px, 10px);
+  }
+  to {
+    transform: translate(44px, -28px);
+  }
+}
+.golf-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+.golf-leaderboard {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 6px;
+}
+.golf-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  min-height: 30px;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.golf-pos {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+}
+.golf-name {
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.golf-score {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
 }
 
 /* competition / sub-label under the center status */

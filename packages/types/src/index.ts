@@ -12,6 +12,7 @@ export type SportKey =
   | "basketball"
   | "hockey"
   | "soccer"
+  | "golf"
   | "nascar"
   | "horse-racing"
   | "greyhound";

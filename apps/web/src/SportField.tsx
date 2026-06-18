@@ -49,10 +49,64 @@ export function SportField({
   event: SportEvent;
   score?: GameScore;
 }) {
+  if (event.sport === "golf") {
+    return <GolfField event={event} />;
+  }
   if (TEAM_SPORTS.includes(event.sport)) {
     return <TeamField event={event} score={score} />;
   }
   return <TrackField event={event} />;
+}
+
+function GolfField({ event }: { event: SportEvent }) {
+  const leaders = event.runners
+    .slice()
+    .sort((a, b) => (a.position ?? 999) - (b.position ?? 999))
+    .slice(0, 8);
+  return (
+    <div className="field field--golf">
+      <div className="field-turf" aria-hidden>
+        <GolfCourse />
+      </div>
+      <div className="golf-head">
+        <div className="track-meta">
+          <span className="track-venue">{event.name}</span>
+          <span className="track-info">
+            {event.venue ?? "PGA TOUR"}
+            {event.clock ? ` · ${event.clock}` : ""}
+          </span>
+        </div>
+        <span className={`field-status ${event.status}`}>
+          {event.status === "live"
+            ? "● LIVE"
+            : event.status === "finished"
+              ? "FINAL"
+              : "Tee times"}
+        </span>
+      </div>
+      <div className="golf-leaderboard">
+        {leaders.map((runner) => {
+          const parsed = parseGolfName(runner.name);
+          return (
+            <div className="golf-row" key={runner.id}>
+              <span className="golf-pos">{runner.position ?? runner.number ?? "-"}</span>
+              <span className="golf-name">{parsed.name}</span>
+              <span className="golf-score">{parsed.score ?? "E"}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function parseGolfName(value: string): { name: string; score?: string } {
+  const match = /^(?<name>.+?)\s+\((?<score>[^)]+)\)$/.exec(value);
+  const name = match?.groups?.name;
+  const scoreText = match?.groups?.score;
+  if (!name || !scoreText) return { name: value };
+  const [score] = scoreText.split(" / ");
+  return score ? { name, score } : { name };
 }
 
 function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
@@ -363,6 +417,17 @@ function Pitch() {
       <span className="pitch-box pitch-box--left" />
       <span className="pitch-box pitch-box--right" />
       <span className="ball-marker soccer-ball">⚽</span>
+    </div>
+  );
+}
+
+function GolfCourse() {
+  return (
+    <div className="golf-course">
+      <span className="golf-fairway" />
+      <span className="golf-green" />
+      <span className="golf-cup" />
+      <span className="golf-ball" />
     </div>
   );
 }

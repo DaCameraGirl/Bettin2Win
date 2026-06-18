@@ -24,6 +24,10 @@ const NAME_POOLS: Record<SportKey, { events: string[]; runners: string[][] }> = 
     events: ["Rangers @ Celtic", "Roma @ Lazio", "Boca @ River Plate"],
     runners: [["Home", "Draw", "Away"]],
   },
+  golf: {
+    events: ["U.S. Open", "Travelers Championship"],
+    runners: [["R. McIlroy (-3)", "S. Stevens (-2)", "B. James (-2)", "B. Harman (-1)"]],
+  },
   nascar: {
     events: ["Daytona 400", "Talladega Night Race"],
     runners: [["#5 A. Rivera", "#11 J. Cole", "#24 M. Stone", "#48 T. Park"]],
@@ -65,6 +69,7 @@ export function generateMockEvents(sport: SportKey): SportEvent[] {
           number: ["football", "baseball", "basketball", "hockey", "soccer"].includes(sport)
             ? undefined
             : rIdx + 1,
+          position: sport === "golf" ? rIdx + 1 : undefined,
           odds: BOOKS.map((book) => ({
             bookmaker: book,
             runnerId: `mock-${sport}-${index}-r${rIdx}`,
