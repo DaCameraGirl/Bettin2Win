@@ -47,8 +47,10 @@ start engine + web, and open the dashboard. See `scripts/start.ps1`.
 
 **Deploy for real:** see `DEPLOY.md` — engine on Render (`render.yaml`), web on GitHub
 Pages (`.github/workflows/pages.yml`, dormant until the `VITE_WS_URL` repo Variable is set).
-Note: GitHub Pages is still on the legacy "deploy from branch" source (renders the README) —
-switch Source to **GitHub Actions** to publish the real app.
+GitHub Pages is **already configured**: Source = **GitHub Actions**, HTTPS enforced, URL
+reserved at https://dacameragirl.github.io/Bettin2Win/. Remaining blocker is the engine host:
+once it's live on Render, set the `VITE_WS_URL` / `VITE_API_URL` / `VITE_BASE` repo Variables
+(via `gh variable set`) and the Pages workflow builds + publishes the real app automatically.
 
 ## Workflow rules (Angela's preference — IMPORTANT)
 Never commit straight to `main`. Always: issue → feature branch → PR (real description) →
