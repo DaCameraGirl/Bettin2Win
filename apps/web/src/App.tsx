@@ -81,6 +81,10 @@ export function App() {
 
         <aside className="feed">
           <h3>Market movement</h3>
+          <p className="feed-legend">
+            <span className="shortening">↓ shortening = more likely</span>
+            <span className="drifting">↑ drifting = less likely</span>
+          </p>
           {sportMovements.length === 0 ? (
             <p className="empty small">No moves yet. Prices update every few seconds.</p>
           ) : (
@@ -91,7 +95,7 @@ export function App() {
                   <span>
                     {m.from.toFixed(2)} → {m.to.toFixed(2)}
                   </span>
-                  <em>{m.direction}</em>
+                  <em className={m.direction}>{movementHint(m.direction)}</em>
                 </li>
               ))}
             </ul>
@@ -102,6 +106,13 @@ export function App() {
       <Glossary />
     </div>
   );
+}
+
+/** Plain-English meaning shown next to each market move. */
+function movementHint(direction: "shortening" | "drifting"): string {
+  return direction === "shortening"
+    ? "shortening ↓ — odds got smaller, now MORE likely to win"
+    : "drifting ↑ — odds got bigger, now LESS likely to win";
 }
 
 const GLOSSARY: { term: string; plain: string }[] = [

@@ -118,7 +118,12 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
       </div>
 
       <div className="field-side field-side--away">
-        <span className="field-role">AWAY</span>
+        <span
+          className="field-role"
+          title="Away = the visiting team. They travel to play at the home team's stadium."
+        >
+          AWAY<span className="field-host">visiting</span>
+        </span>
         <TeamName name={away} logo={event.awayLogo} />
         <FormGuide value={event.form?.away} />
         {tally && <span className="field-score">{tally.away}</span>}
@@ -130,7 +135,10 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
       </div>
 
       <div className="field-side field-side--home">
-        <span className="field-role">
+        <span
+          className="field-role"
+          title="Home = the team hosting the game at their own stadium."
+        >
           HOME<span className="field-host">hosting</span>
         </span>
         <TeamName name={home} logo={event.homeLogo} align="right" />
