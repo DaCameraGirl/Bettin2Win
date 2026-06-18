@@ -86,7 +86,7 @@ If a key has ever been pasted into chat or screenshots, rotate it.
 
 - Angela - product direction, provider setup, testing
 - Claude - prior implementation work and GitHub workflow
-- Codex - provider fallback fixes, dashboard UI, and repo maintenance
+- Dex (Codex) - provider fallback fixes, dashboard UI, and repo maintenance
 
 ## Legal
 
