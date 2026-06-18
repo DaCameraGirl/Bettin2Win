@@ -12,7 +12,10 @@ Beginner-friendly, real-time multi-sport odds dashboard with plain-English
 betting context for football, baseball, basketball, hockey, soccer, NASCAR,
 horse racing, and greyhounds.
 
-Live dashboard: https://dacameragirl.github.io/Bettin2Win/
+[Open Live Demo](https://dacameragirl.github.io/Bettin2Win/)
+
+The public demo may show sample/fallback data when provider keys are not
+configured.
 
 ![Animated Bettin2Win dashboard preview](docs/assets/bettin2win-hero.svg)
 
@@ -122,6 +125,18 @@ uvicorn app.main:app --reload --port 4100
 - [ ] NASCAR normalization in progress
 - [ ] Greyhound provider normalization in progress; enabled when a valid key is present
 - [ ] AI analyst explanation layer being expanded beyond templated explanations
+
+## Portfolio notes
+
+Bettin2Win demonstrates:
+
+- Monorepo architecture with pnpm and Turborepo
+- React + Vite frontend development
+- Provider adapter design for external APIs
+- Odds normalization across multiple sports
+- Real-time update patterns through an odds engine service
+- Plain-English explanation layer for market movement
+- Safe informational-use framing for betting-related data
 
 ## Provider status
 
