@@ -45,12 +45,28 @@ Open http://localhost:5173. (Both were running in the background during the buil
 creates a **Bettin2Win** desktop icon (B2W badge). Double-click it to build (first run),
 start engine + web, and open the dashboard. See `scripts/start.ps1`.
 
-**Deploy for real:** see `DEPLOY.md` — engine on Render (`render.yaml`), web on GitHub
-Pages (`.github/workflows/pages.yml`, dormant until the `VITE_WS_URL` repo Variable is set).
-GitHub Pages is **already configured**: Source = **GitHub Actions**, HTTPS enforced, URL
-reserved at https://dacameragirl.github.io/Bettin2Win/. Remaining blocker is the engine host:
-once it's live on Render, set the `VITE_WS_URL` / `VITE_API_URL` / `VITE_BASE` repo Variables
-(via `gh variable set`) and the Pages workflow builds + publishes the real app automatically.
+**🚀 DEPLOYED & LIVE (2026-06-18):**
+- **Website:** https://dacameragirl.github.io/Bettin2Win/ (GitHub Pages, HTTPS, auto-rebuilds on push to `main`).
+- **Engine:** https://bettin2win.onrender.com (Render **free** plan; `/health` + `wss://…/ws`).
+  Free instance **sleeps after ~15 min idle** → first visit after a quiet spell takes ~30–50s to wake.
+  Hitting the engine root (`/`) shows "Cannot GET /" — that's expected; it only serves `/health`,
+  `/api/*`, and `/ws`.
+
+How it's wired: the engine was created on Render as a **Web Service** (NOT via the Blueprint UI —
+that path was hard to find; built manually with `render.yaml`'s build/start commands). Build cmd:
+`npm install -g pnpm@9.12.0 && pnpm install --frozen-lockfile && pnpm --filter @bettin2win/types build && pnpm --filter @bettin2win/odds-engine build`;
+start: `node services/odds-engine/dist/index.js`; health path `/health`; the 6 API keys live in
+Render's Environment (BETSAPI_KEY intentionally absent). The web app reads three **repo Variables**
+(set via `gh variable set` — use `MSYS_NO_PATHCONV=1` on Git-Bash for `VITE_BASE` or the leading
+slash gets path-mangled): `VITE_WS_URL=wss://bettin2win.onrender.com/ws`,
+`VITE_API_URL=https://bettin2win.onrender.com`, `VITE_BASE=/Bettin2Win/`. The Pages workflow
+(`.github/workflows/pages.yml`) builds + publishes automatically once those exist.
+
+Render verified live: real **MLB** (tank01 backup) + **basketball** (sportsbook-api backup) + **horse**
+racecards. ⚠️ The Odds API key returns **401** on Render (baseball/basketball still live via backups) —
+re-paste/verify `ODDS_API_KEY` in Render env. Soccer/football/hockey hit RapidAPI **429** on the
+fresh-deploy burst (self-heals; football/hockey are offseason). NASCAR key OK, normalize still TODO.
+Original local DEPLOY.md (Render Blueprint + Pages) is still valid as background.
 
 ## Workflow rules (Angela's preference — IMPORTANT)
 Never commit straight to `main`. Always: issue → feature branch → PR (real description) →
@@ -96,7 +112,15 @@ one new adapter + a `SportKey` + a tab + a field theme.
 - **All free subscriptions are soccer-only.** football-prediction-api free plan: ~12h ahead,
   sweeps UEFA/CONMEBOL/CONCACAF/AFC; result home-away upstream → flipped to away-home.
 
-### ✅ Latest completed task: Soccer upgraded to BetMiner
+### ✅ Latest completed task: DEPLOYED LIVE (engine on Render + web on GitHub Pages)
+Issue #30. The app is now public — site https://dacameragirl.github.io/Bettin2Win/ streaming from
+engine https://bettin2win.onrender.com (Render free). Railway was tried first (project
+`spectacular-charisma`) but abandoned — its trial credit was nearly exhausted and it doesn't sleep
+on idle, so the 24/7 poller would bill monthly. Render free sleeps when idle = $0 and conserves the
+free-tier API quotas. See the "DEPLOYED & LIVE" block above for full wiring. Delete the leftover
+Railway service to stop any charge.
+
+### Previous: Soccer upgraded to BetMiner
 PR #27 closed issue #25. Soccer now fetches `GET /bm/v3/edge-analysis/{date}` via
 `betminer.adapter.ts`, normalizes logos/probability/correctScore/form/clock/tags, and renders
 logos, form, `NN% likely`, predicted score, BTTS/over-under tags, highlighted pick, and live
@@ -104,10 +128,13 @@ score/minute in the card UI. Local live check returned 61 BetMiner matches on 20
 `railway.json` was also trimmed so Railpack does not reinstall pnpm after its own install step.
 
 ## Good next steps
-1. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
-2. **Deploy** — web on Vercel/Netlify; engine is a stateful WS server → Render/Railway/Fly + secrets.
-3. **Multi-sport predictions** (tennis/hockey/basketball) — blocked on a PAID Betigolo plan.
-4. Greyhound (needs BetsAPI key); NASCAR (needs a motorsport vendor).
+1. **Verify `ODDS_API_KEY` on Render** — it returns 401 there (baseball/basketball stay live via
+   backups, but The Odds API itself is down). Re-paste the key in Render → Environment.
+2. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
+3. **Custom domain** (optional) — DEPLOY.md Part C; set `VITE_BASE=/` and re-run Pages.
+4. **Bump GitHub Actions** off Node 20 (deprecation warnings on checkout/setup-node/pnpm-action/deploy-pages).
+5. **Multi-sport predictions** (tennis/hockey/basketball) — blocked on a PAID Betigolo plan.
+6. Greyhound (needs BetsAPI key); NASCAR (needs a motorsport vendor).
 
 ## Gotchas
 - Windows: editing `.env` with `echo >>` broke encoding once (UTF-16) and once mashed a key
