@@ -58,7 +58,7 @@ engine, starts the web app, and opens the dashboard.
 | Hockey | The Odds API -> Sportsbook API -> Highlightly matches | `ODDS_API_KEY`, `RAPIDAPI_KEY`, `HIGHLIGHTLY_API_KEY` | Real odds/opportunities when providers have active hockey data |
 | Soccer | BetMiner -> football-prediction-api | `RAPIDAPI_KEY` / `HIGHLIGHTLY_API_KEY` | Predictions, probability, correct score, form, and logos when quota allows |
 | NASCAR | TheRundown | `THERUNDOWN_API_KEY` | Auth wired; race normalization still needs finishing |
-| Horse racing | The Racing API | `RACING_API_USERNAME` + `RACING_API_PASSWORD` | Racecards live; prices depend on plan/feed availability |
+| Horse racing | Horse Racing (RapidAPI) -> The Racing API | `RAPIDAPI_KEY`, `RACING_API_USERNAME` + `RACING_API_PASSWORD` | Real finishing positions and odds from the RapidAPI feed (cached and budgeted for the free ~50/day tier); The Racing API supplies racecards as a fallback |
 | Greyhound | BetsAPI | `BETSAPI_KEY` | Auth wired when key is present |
 
 ## Keys
