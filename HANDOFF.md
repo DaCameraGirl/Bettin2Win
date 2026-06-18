@@ -1,143 +1,129 @@
 # Bettin2Win — Handoff / Status
 
-_Last updated: 2026-06-18. Living doc — update as the project moves._
+_Last updated: 2026-06-18 (end of a big session). Living doc — READ THIS FIRST in a new session._
 
 ## What this is
-Real-time multi-sport odds dashboard. Polyglot monorepo (pnpm + Turborepo).
-Runs with **zero API keys** on demo data; each sport flips live when its key is in `.env`.
+Real-time multi-sport odds **dashboard** (NOT a sportsbook — it shows odds & finds the best
+price; you place bets at the real book). Polyglot monorepo (pnpm + Turborepo). Runs with **zero
+API keys** on demo data; each sport flips live when its key/feed is present. Deliberately
+**beginner-friendly** — that's the whole point of the product (see "Audience" below).
+
+## 🚀 LIVE RIGHT NOW
+- **Website (what users open):** https://dacameragirl.github.io/Bettin2Win/ — GitHub Pages, HTTPS,
+  auto-rebuilds on every push to `main`.
+- **Engine (data server):** https://bettin2win.onrender.com — Render **free** plan. Sleeps after
+  ~15 min idle → first visit takes ~30–50s to wake. Engine root shows "Cannot GET /" **by design**
+  (it only serves `/health`, `/api/*`, `/ws`).
+- **Desktop icon:** `C:\Users\enter\OneDrive\Desktop\Bettin2Win.url` opens the live site in the
+  browser (one click). The old local-launcher `.lnk` was removed. (`scripts/start.ps1` still exists
+  for running locally if ever needed.)
+
+## Audience / product direction (important for tone & priorities)
+Angela is **not a sports person** ("I hate sports lol") and is building this for the **men in her
+life — her 5 sons, 2 exes, an old roommate who loves hockey**. So the audience is **beginners**.
+Keep everything plain-English and friendly. We've leaned hard into this: in-app beginner guide,
+plain-English odds, visible "visiting/hosting", explained drifting/shortening, animated tracks.
+**Hockey matters a lot** (her friend watches daily) — see priority #1.
 
 ## Architecture
-- `apps/web` — React + Vite dashboard (sport tabs, odds board, movement feed, themed sport-field cards, glossary).
-- `services/odds-engine` — TypeScript. Adapters → normalized `SportEvent`, poller, movement detection, WebSocket broadcast, REST enrichment endpoints.
+- `apps/web` — React + Vite dashboard. Sport tabs, odds board, market-movement feed, themed
+  **SportField** cards (animated, numbered race lanes + moving balls/pucks), beginner guide, glossary.
+- `services/odds-engine` — TypeScript. Adapters → normalized `SportEvent`, poller, movement
+  detection, WebSocket broadcast, REST enrichment endpoints. Binds Render's `PORT`.
 - `services/ai-analyst` — TypeScript. Templated insight layer, 4 personas. Swappable for an LLM.
-- `services/racing-analytics` — Python / FastAPI. Horse-racing domain modeling + analytics.
-- `packages/types` — shared domain model.
+- `services/racing-analytics` — Python / FastAPI. Horse-racing analytics tier.
+- `packages/types` — shared domain model (`SportEvent`, `Runner` (now incl. `position?`), etc.).
 
-## Provider status (verified live with Angela's keys)
-| Sport | Provider | State |
+## Provider status (current reality — 2026-06-18)
+| Sport | State | Notes |
 |---|---|---|
-| Baseball | The Odds API | ✅ live odds **with prices** + live scores/innings (Highlightly) |
-| Football (NFL) | The Odds API | ✅ live odds (NFL offseason in June = few events) |
-| Soccer | BetMiner (RapidAPI) | ✅ live **model picks** with logos, win %, form, predicted score, BTTS/total tags, odds + result |
-| Horse racing | The Racing API | ✅ 35 real racecards; free tier = **no prices** |
-| NASCAR | — | ❌ TheRundown has no motorsport; needs a different vendor |
-| Greyhound | BetsAPI | ❌ no key obtained yet |
-| Standings enrich | Highlightly (RapidAPI) | ✅ NFL/MLB/NBA/NHL real records at `/api/enrich/:sport/standings` |
+| ⚾ Baseball | ✅ LIVE | real MLB odds via **tank01-mlb** backup (The Odds API 401 on Render) + live scores/innings |
+| 🏀 Basketball | ✅ LIVE | real lines via **sportsbook-api** backup |
+| 🐎 Horse racing | ✅ LIVE | **real finishing positions + real SP odds** via new RapidAPI adapter (see below); The Racing API free racecards = fallback |
+| ⚽ Soccer | ✅ LIVE (when not 429) | **BetMiner** model picks (logos, win %, form, predicted score); rate-limited sometimes |
+| 🏒 Hockey | ❌ DEMO **(should be LIVE — PRIORITY #1)** | The Odds API **covers NHL**; demo only because `ODDS_API_KEY` 401s on Render + RapidAPI backups 429. **Fix the Render key.** |
+| 🏈 Football | ❌ DEMO | NFL offseason in June (few/no real events) + same 401/429; verify in season |
+| 🏁 NASCAR | ❌ DEMO | needs a **motorsport** odds source — The Odds API catalog has none, TheRundown has none |
+| 🐕 Greyhound | ❌ DEMO | needs a source — BetsAPI (paid) or a RapidAPI greyhound API |
 
-### Keys (in `.env`, git-ignored)
-ODDS_API_KEY, THERUNDOWN_API_KEY, RACING_API_USERNAME/PASSWORD, HIGHLIGHTLY_API_KEY,
-RAPIDAPI_KEY (prediction APIs — **same value** as HIGHLIGHTLY_API_KEY; one RapidAPI account).
-Highlightly is via **RapidAPI** (`x-rapidapi-key` + host `sport-highlights-api.p.rapidapi.com`),
-Basic plan = **no odds**, enrichment only. RapidAPI key is subscribed ONLY to Highlightly
-(sportsbook-api2 / betsapi2 return 403 — would need new subscriptions).
-⚠️ The TheRundown + Highlightly keys were pasted in chat — should be rotated.
+Demo data uses real-ish names (e.g. "Rangers @ Bruins", "Lakers FC @ Celtics SC", drivers
+"A. Rivera") so it LOOKS real — the **"DEMO DATA" vs "LIVE FEED" badge** on each sport is the
+honest indicator.
+
+## Keys & secrets
+In repo-root `.env` (git-ignored): `ODDS_API_KEY`, `THERUNDOWN_API_KEY`,
+`RACING_API_USERNAME`/`RACING_API_PASSWORD`, `HIGHLIGHTLY_API_KEY`, `RAPIDAPI_KEY`.
+Same 6 set in **Render → Environment** (no `BETSAPI_KEY`).
+- ⚠️ **`ODDS_API_KEY` is VALID locally** (tested → HTTP 200) but **401 on Render** → the value
+  pasted into Render is wrong/truncated. **Re-paste it in Render → Environment.** This likely
+  brings **hockey** (and in-season football) LIVE and strengthens baseball.
+- ⚠️ **`RAPIDAPI_KEY` was pasted in chat** (twice) — **rotate it** on RapidAPI (Apps → app →
+  Security → regenerate), then update `.env` + Render. One RapidAPI account; key is shared by
+  Highlightly, BetMiner, tank01, sportsbook-api, football-prediction, and the new Horse Racing API.
+- The Odds API catalog for her key has **no NASCAR / motorsport / greyhound / horse** sports.
+
+## NEW: Horse Racing real results (the win of this session)
+RapidAPI **"Horse Racing"** (`horse-racing.p.rapidapi.com`, UK & Ireland), subscribed on her
+existing `RAPIDAPI_KEY`. Endpoints: `GET /racecards` (list), `GET /results` (list), `GET
+/race/{id_race}` (detail with `horses[]` carrying `number`, `position` = real finishing place,
+`sp` = real decimal odds, jockey/trainer/form). **Free tier = only ~50 requests/day** (per
+`X-RateLimit-Requests-Limit: 50`). Adapter: `services/odds-engine/src/adapters/horse-racing-rapidapi.adapter.ts`
+— frugal by design: 30-min list TTL, ≤4 detail calls/cycle (finished races first), finished/
+cancelled races cached **forever**, hard **40/day budget governor**, falls back to The Racing API
+when out of budget. Wired as primary for horse-racing; poll interval relaxed to 120s. Front-end
+`Runner.position` drives the race lanes to order by **real finishing order** when a race is decided.
+**To add NASCAR/greyhound, copy this pattern: find a RapidAPI source, Subscribe, probe with the
+key, write an adapter, mind the rate limit.**
 
 ## Run it locally
 ```
-corepack enable   # or use: npx -y pnpm@9.12.0 <cmd>   (corepack can't write to Program Files here)
-npx -y pnpm@9.12.0 install
-node services/odds-engine/dist/index.js     # engine on :4000 (loads repo-root .env)
-npx -y pnpm@9.12.0 --filter @bettin2win/web dev   # web on :5173
+npx -y pnpm@9.12.0 install            # pnpm not global; corepack can't write to Program Files
+node services/odds-engine/dist/index.js               # engine :4000 (loads repo .env)
+npx -y pnpm@9.12.0 --filter @bettin2win/web dev       # web :5173
 ```
-Open http://localhost:5173. (Both were running in the background during the build session.)
+Build all: `npx -y pnpm@9.12.0 --filter @bettin2win/types build && ... --filter @bettin2win/odds-engine build && ... --filter @bettin2win/web build`.
 
-**One-click launcher:** `powershell -ExecutionPolicy Bypass -File scripts\install-desktop-icon.ps1`
-creates a **Bettin2Win** desktop icon (B2W badge). Double-click it to build (first run),
-start engine + web, and open the dashboard. See `scripts/start.ps1`.
-
-**🚀 DEPLOYED & LIVE (2026-06-18):**
-- **Website:** https://dacameragirl.github.io/Bettin2Win/ (GitHub Pages, HTTPS, auto-rebuilds on push to `main`).
-- **Engine:** https://bettin2win.onrender.com (Render **free** plan; `/health` + `wss://…/ws`).
-  Free instance **sleeps after ~15 min idle** → first visit after a quiet spell takes ~30–50s to wake.
-  Hitting the engine root (`/`) shows "Cannot GET /" — that's expected; it only serves `/health`,
-  `/api/*`, and `/ws`.
-
-How it's wired: the engine was created on Render as a **Web Service** (NOT via the Blueprint UI —
-that path was hard to find; built manually with `render.yaml`'s build/start commands). Build cmd:
-`npm install -g pnpm@9.12.0 && pnpm install --frozen-lockfile && pnpm --filter @bettin2win/types build && pnpm --filter @bettin2win/odds-engine build`;
-start: `node services/odds-engine/dist/index.js`; health path `/health`; the 6 API keys live in
-Render's Environment (BETSAPI_KEY intentionally absent). The web app reads three **repo Variables**
-(set via `gh variable set` — use `MSYS_NO_PATHCONV=1` on Git-Bash for `VITE_BASE` or the leading
-slash gets path-mangled): `VITE_WS_URL=wss://bettin2win.onrender.com/ws`,
-`VITE_API_URL=https://bettin2win.onrender.com`, `VITE_BASE=/Bettin2Win/`. The Pages workflow
-(`.github/workflows/pages.yml`) builds + publishes automatically once those exist.
-
-Render verified live: real **MLB** (tank01 backup) + **basketball** (sportsbook-api backup) + **horse**
-racecards. ⚠️ The Odds API key returns **401** on Render (baseball/basketball still live via backups) —
-re-paste/verify `ODDS_API_KEY` in Render env. Soccer/football/hockey hit RapidAPI **429** on the
-fresh-deploy burst (self-heals; football/hockey are offseason). NASCAR key OK, normalize still TODO.
-Original local DEPLOY.md (Render Blueprint + Pages) is still valid as background.
+## Deploy / CI
+- Web → GitHub Pages via `.github/workflows/pages.yml` (auto on push to `main` touching apps/web).
+  Pages already configured: Source = GitHub Actions, HTTPS enforced.
+- Engine → Render, **auto-deploys on push to `main`**. Built manually as a Web Service from
+  `render.yaml`'s build/start commands (Blueprint UI was hard to find). Health path `/health`.
+- 3 repo Variables drive the web build (set via `gh variable set`; use `MSYS_NO_PATHCONV=1` for
+  `VITE_BASE` on Git-Bash or the leading slash gets mangled):
+  `VITE_WS_URL=wss://bettin2win.onrender.com/ws`, `VITE_API_URL=https://bettin2win.onrender.com`,
+  `VITE_BASE=/Bettin2Win/`.
 
 ## Workflow rules (Angela's preference — IMPORTANT)
-Never commit straight to `main`. Always: issue → feature branch → PR (real description) →
-CI green → squash-merge → delete branch → sync local. Claude does ALL git mechanics; Angela
-approves direction only. End commits with the Co-Authored-By line; end PR bodies with the
-Claude Code line.
+Never commit to `main`. Always: issue → feature branch → PR (real description) → CI green →
+squash-merge → delete branch → sync local. **Claude does ALL git mechanics; Angela approves
+direction only.** End commits with `Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>`;
+end PR bodies with the Claude Code line.
 
-## Done so far (all merged)
-PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/MLB/NBA),
-#10 (NHL), #12 (movement feed filtered by sport), #16 (CORS), #18 (themed sport-field cards),
-#21 (Soccer tab + model picks), #22 (desktop launcher), #23 (Render + Pages deploy config),
-#27 (Soccer upgraded to BetMiner logos/win %/form/predicted score + Railway Railpack fix),
-+ live baseball scores & glossary.
+## Shipped this session (2026-06-18)
+- Deployed live end-to-end (Render engine + Pages web). Issues #30.
+- **PR #31** fix stale deploy docs. **PR #34** beginner readability (visible hosting/visiting,
+  plain-English drifting/shortening, #33). **PR #36** animated numbered race lanes + moving
+  balls/pucks (full-motion; `prefers-reduced-motion` disables it; #35). **PR #38** horse racing
+  real positions + odds (#37). **PR #40** in-app beginner guide (#39).
+- Desktop icon swapped to open the live site.
 
-## Angela's requested enhancements
-- ✅ **Richer event boxes** (PR #18): each card now has a themed **field**. Baseball/football =
-  two-sided scoreboard-on-a-field (AWAY left, HOME "hosting" right, big live score in the middle,
-  inning/kickoff + start time below; CSS diamond / yard-lined gridiron). NASCAR/horse/greyhound =
-  shared track strip (venue, runner count, start time, status) since a race has no home/away.
-  Component: `apps/web/src/SportField.tsx`. Possible follow-ups: pull team **records** from the
-  standings endpoint into the field; hits/errors if a provider exposes them.
-- **Odds still read as gibberish to a beginner** — PARTLY handled: the D/A/F toggle already
-  **defaults to Decimal** (`App.tsx` `useState<OddsFormat>("decimal")`), and Soccer now shows
-  BetMiner's plain-English win probability (`NN% likely`) beside the model pick. Still TODO:
-  an inline "what does -150 mean?" helper/tooltip right next to generic prices, so she doesn't
-  have to scroll to the glossary.
-- Note: baseball shows only 2 prices/game because it's a 2-way market (the two teams) — that's
-  correct, not a bug. Horse racing shows many runners.
-
-## Prediction APIs (Angela's RapidAPI subscriptions — for "all sports predictions")
-Same RapidAPI key (`RAPIDAPI_KEY`) covers all subscribed APIs. Each RapidAPI listing
-needs its own Subscribe click. The Soccer tab now uses **BetMiner**; `football-prediction-api`
-stays in the repo as an alternate/fallback soccer source. Adding a prediction sport =
-one new adapter + a `SportKey` + a tab + a field theme.
-- ⚠️ **Betigolo** (`betigolo-predictions`) — subscribed but the **free/BASIC plan DISABLES every
-  sport endpoint** ("disabled for your subscription") + tight rate limit. Multi-sport (tennis/
-  hockey/basketball/baseball) is the goal but **needs a PAID Betigolo plan** before it's buildable.
-- ✅ **BetMiner** (`betminer.p.rapidapi.com`) — free tier works and is **rich**: `GET
-  /bm/v3/edge-analysis/{date}` returns ~82 soccer matches/day in one call, with **team logos, win
-  probabilities (%), predicted correct score, BTTS/over-under, and form (WDWLL)**. Soccer only.
-- **Today Football Prediction** — ✅ subscribed; more soccer data (overlap).
-- **basketball-predictions1** — ⚠️ NOT subscribed.
-- **All free subscriptions are soccer-only.** football-prediction-api free plan: ~12h ahead,
-  sweeps UEFA/CONMEBOL/CONCACAF/AFC; result home-away upstream → flipped to away-home.
-
-### ✅ Latest completed task: DEPLOYED LIVE (engine on Render + web on GitHub Pages)
-Issue #30. The app is now public — site https://dacameragirl.github.io/Bettin2Win/ streaming from
-engine https://bettin2win.onrender.com (Render free). Railway was tried first (project
-`spectacular-charisma`) but abandoned — its trial credit was nearly exhausted and it doesn't sleep
-on idle, so the 24/7 poller would bill monthly. Render free sleeps when idle = $0 and conserves the
-free-tier API quotas. See the "DEPLOYED & LIVE" block above for full wiring. Delete the leftover
-Railway service to stop any charge.
-
-### Previous: Soccer upgraded to BetMiner
-PR #27 closed issue #25. Soccer now fetches `GET /bm/v3/edge-analysis/{date}` via
-`betminer.adapter.ts`, normalizes logos/probability/correctScore/form/clock/tags, and renders
-logos, form, `NN% likely`, predicted score, BTTS/over-under tags, highlighted pick, and live
-score/minute in the card UI. Local live check returned 61 BetMiner matches on 2026-06-18.
-`railway.json` was also trimmed so Railpack does not reinstall pnpm after its own install step.
-
-## Good next steps
-1. **Verify `ODDS_API_KEY` on Render** — it returns 401 there (baseball/basketball stay live via
-   backups, but The Odds API itself is down). Re-paste the key in Render → Environment.
-2. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
-3. **Custom domain** (optional) — DEPLOY.md Part C; set `VITE_BASE=/` and re-run Pages.
-4. **Bump GitHub Actions** off Node 20 (deprecation warnings on checkout/setup-node/pnpm-action/deploy-pages).
-5. **Multi-sport predictions** (tennis/hockey/basketball) — blocked on a PAID Betigolo plan.
-6. Greyhound (needs BetsAPI key); NASCAR (needs a motorsport vendor).
+## NEXT STEPS (priority order)
+1. **Make hockey LIVE** — re-paste `ODDS_API_KEY` in Render → Environment (key is valid; The Odds
+   API covers NHL). Angela's #1 motivation. Verify hockey + football flip to LIVE.
+2. **Add NASCAR + greyhound real data** — find RapidAPI sources, Subscribe, probe with the key,
+   write adapters following the horse-racing pattern. (Greyhound is genuinely scarce — may need paid.)
+3. **"Where + when" on every card (task "B")** — venue/city + date/time; kill the vague basketball
+   market label ("WNBA - Middle 2.5 - Point Spread").
+4. **Rotate `RAPIDAPI_KEY`** (pasted in chat) + update `.env` and Render.
+5. Surface standings in the UI (`/api/enrich/:sport/standings` exists). Bump GitHub Actions off
+   deprecated Node 20. One prediction source into ai-analyst.
 
 ## Gotchas
-- Windows: editing `.env` with `echo >>` broke encoding once (UTF-16) and once mashed a key
-  onto another line. Edit `.env` carefully (Notepad or a precise script), keep it ASCII/CRLF.
-- pnpm not installed globally → use `npx -y pnpm@9.12.0`.
-- Highlightly returns 3+ different JSON shapes for standings (NFL/MLB/NBA-NHL); the normalizer is tolerant.
+- Windows `.env`: edit carefully (ASCII/CRLF); `echo >>` has corrupted encoding before.
+- pnpm via `npx -y pnpm@9.12.0` (not global).
+- Git-Bash: `gh variable set VITE_BASE` needs `MSYS_NO_PATHCONV=1`; Node reads `/tmp` as `C:\tmp`
+  (MSYS curl writes elsewhere) — write temp files in the repo dir when piping curl→node.
+- Render free instance sleeps; first request after idle is slow.
+- Highlightly/BetMiner/sportsbook-api are RapidAPI free tiers → frequent `429`; the new Horse
+  Racing API is only 50 req/day (budget-governed).
+- History: the Perplexity "scaffold .tar.gz" never existed; repo was an empty shell until built.
