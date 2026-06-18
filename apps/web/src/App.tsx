@@ -194,14 +194,38 @@ function EventCard({
           const picked = event.prediction?.pick === runner.name;
           return (
             <div key={runner.id} className={`runner ${picked ? "picked" : ""}`}>
-              <span className="runner-name">
-                {picked && <span className="runner-star">★</span>}
-                {runner.number ? `${runner.number}. ` : ""}
-                {runner.name}
-              </span>
-              <span className="runner-price">
-                {runner.bestPrice ? formatOdds(runner.bestPrice, format) : "-"}
-              </span>
+              <div className="runner-top">
+                <span className="runner-name">
+                  {picked && <span className="runner-star">★</span>}
+                  {runner.number ? `${runner.number}. ` : ""}
+                  {runner.name}
+                </span>
+                {runner.bestPrice ? (
+                  <span className="runner-best">
+                    <span className="runner-best-label">Best</span>
+                    <strong>{formatOdds(runner.bestPrice, format)}</strong>
+                    {runner.bestBookmaker && <em>{runner.bestBookmaker}</em>}
+                  </span>
+                ) : (
+                  <span className="runner-price missing">Odds unavailable</span>
+                )}
+              </div>
+              {runner.odds.length > 0 && (
+                <div className="book-list">
+                  {runner.odds
+                    .slice()
+                    .sort((a, b) => b.price - a.price)
+                    .map((line) => (
+                      <span
+                        key={`${line.bookmaker}-${line.runnerId}-${line.price}`}
+                        className={line.bookmaker === runner.bestBookmaker ? "book-chip best" : "book-chip"}
+                      >
+                        <span>{line.bookmaker}</span>
+                        <strong>{formatOdds(line.price, format)}</strong>
+                      </span>
+                    ))}
+                </div>
+              )}
             </div>
           );
         })}

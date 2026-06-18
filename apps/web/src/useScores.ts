@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { WS_URL } from "./sports";
 
 export interface GameScore {
   away: string;
@@ -9,7 +10,7 @@ export interface GameScore {
   detail: string;
 }
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const API_BASE = import.meta.env.VITE_API_URL ?? wsToHttpBase(WS_URL);
 
 /**
  * Polls the odds-engine for live baseball game states (score + inning) and
@@ -47,4 +48,17 @@ export function useBaseballScores(enabled: boolean): Map<string, GameScore> {
   }, [enabled]);
 
   return scores;
+}
+
+function wsToHttpBase(wsUrl: string): string {
+  try {
+    const url = new URL(wsUrl);
+    url.protocol = url.protocol === "wss:" ? "https:" : "http:";
+    url.pathname = "";
+    url.search = "";
+    url.hash = "";
+    return url.toString().replace(/\/$/, "");
+  } catch {
+    return "http://localhost:4000";
+  }
 }

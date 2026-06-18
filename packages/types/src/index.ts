@@ -9,6 +9,8 @@
 export type SportKey =
   | "football"
   | "baseball"
+  | "basketball"
+  | "hockey"
   | "soccer"
   | "nascar"
   | "horse-racing"
@@ -43,8 +45,10 @@ export interface Runner {
   /** Trap number (greyhound), car number (NASCAR), or saddle cloth (horse). */
   number?: number;
   odds: OddsLine[];
-  /** Best (shortest) decimal price across all books, precomputed. */
+  /** Best bettor-facing decimal price across all books, precomputed. */
   bestPrice?: number;
+  /** Sportsbook offering the best displayed price. */
+  bestBookmaker?: string;
 }
 
 export type EventStatus = "upcoming" | "live" | "finished";
@@ -89,6 +93,8 @@ export interface SportEvent {
   status: EventStatus;
   /** Sport-specific live detail such as a soccer minute. */
   clock?: string;
+  /** Current/final score in the app's away-home display order, e.g. "4 - 9". */
+  score?: string;
   runners: Runner[];
   /** Model pick, for prediction-sourced sports. */
   prediction?: MatchPrediction;

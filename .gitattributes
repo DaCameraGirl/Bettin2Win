@@ -1,0 +1,4 @@
+# Keep generated bundles and lockfiles from skewing GitHub's language summary.
+apps/web/dist/** linguist-generated=true
+**/dist/** linguist-generated=true
+pnpm-lock.yaml linguist-generated=true

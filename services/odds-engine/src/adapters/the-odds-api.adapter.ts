@@ -7,6 +7,8 @@ import { generateMockEvents } from "./mock.js";
 const SPORT_KEY_MAP: Partial<Record<SportKey, string>> = {
   football: "americanfootball_nfl",
   baseball: "baseball_mlb",
+  basketball: "basketball_nba",
+  hockey: "icehockey_nhl",
 };
 
 interface RawOutcome {

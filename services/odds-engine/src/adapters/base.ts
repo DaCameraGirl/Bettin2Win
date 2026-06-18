@@ -21,15 +21,64 @@ export interface SportAdapter {
   fetchEvents(): Promise<AdapterResult>;
 }
 
+/** Try a real backup provider before allowing a primary adapter's mock fallback. */
+export class FallbackAdapter implements SportAdapter {
+  readonly sport: SportKey;
+  readonly provider: string;
+
+  constructor(
+    private readonly primary: SportAdapter,
+    private readonly backup: SportAdapter,
+  ) {
+    this.sport = primary.sport;
+    this.provider = `${primary.provider}+${backup.provider}`;
+  }
+
+  hasCredentials(): boolean {
+    return this.primary.hasCredentials() || this.backup.hasCredentials();
+  }
+
+  async fetchEvents(): Promise<AdapterResult> {
+    const primary = await this.primary.fetchEvents();
+    if (primary.mode === "live" && primary.events.length > 0) return primary;
+
+    const backup = await this.backup.fetchEvents();
+    if (backup.mode === "live") {
+      return {
+        mode: "live",
+        events: backup.events,
+        message: `${this.primary.provider} unavailable (${primary.message ?? "no live events"}); backup ${this.backup.provider}${backup.message ? ` - ${backup.message}` : ""}`,
+      };
+    }
+
+    if (primary.mode === "live") {
+      return {
+        mode: "live",
+        events: primary.events,
+        message: `${this.primary.provider} returned no events; backup ${this.backup.provider}: ${backup.message ?? "unavailable"}`,
+      };
+    }
+
+    return {
+      mode: primary.mode,
+      events: primary.events,
+      message: `${primary.message ?? this.primary.provider}; backup ${this.backup.provider}: ${backup.message ?? "unavailable"}`,
+    };
+  }
+}
+
 /** Helper so adapters compute best price + implied probability consistently. */
 export function decorateRunners(event: SportEvent): SportEvent {
   for (const runner of event.runners) {
-    let best = Infinity;
+    let best = -Infinity;
     for (const line of runner.odds) {
       line.impliedProbability = line.price > 0 ? 1 / line.price : 0;
-      if (line.price > 0 && line.price < best) best = line.price;
+      if (line.price > 0 && line.price > best) {
+        best = line.price;
+        runner.bestBookmaker = line.bookmaker;
+      }
     }
-    runner.bestPrice = Number.isFinite(best) ? best : undefined;
+    runner.bestPrice = Number.isFinite(best) && best > 0 ? best : undefined;
   }
   return event;
 }

@@ -2,7 +2,7 @@ import type { SportEvent, SportKey } from "@bettin2win/types";
 import type { GameScore } from "./useScores";
 
 /** Sports that are a genuine two-team contest (away @ home + a score). */
-const TEAM_SPORTS: SportKey[] = ["football", "baseball", "soccer"];
+const TEAM_SPORTS: SportKey[] = ["football", "baseball", "basketball", "hockey", "soccer"];
 
 /** Split "Away @ Home" into the two sides. Returns null for non-matchup names. */
 function parseMatchup(name: string): { away: string; home: string } | null {
@@ -65,7 +65,14 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
   let tally: { away: string; home: string } | null = null;
   let stateClass = "scheduled";
   let statusLine: string;
-  const kickLabel = event.sport === "baseball" ? "First pitch" : "Kickoff";
+  const kickLabel =
+    event.sport === "baseball"
+      ? "First pitch"
+      : event.sport === "basketball"
+        ? "Tipoff"
+        : event.sport === "hockey"
+          ? "Puck drop"
+          : "Kickoff";
 
   if (score && score.state !== "scheduled") {
     stateClass = score.state;
@@ -73,6 +80,13 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
     statusLine = `${score.state === "live" ? "● LIVE" : "FINAL"}${
       score.detail ? ` · ${score.detail}` : ""
     }`;
+  } else if (event.score && event.status !== "upcoming") {
+    stateClass = event.status === "live" ? "live" : "finished";
+    tally = parseScore(event.score);
+    statusLine =
+      event.status === "live"
+        ? `● LIVE${event.clock ? ` · ${event.clock}` : ""}`
+        : event.clock || "FINAL";
   } else if (event.sport === "soccer" && event.status !== "upcoming") {
     stateClass = event.status === "live" ? "live" : "finished";
     tally = parseScore(event.prediction?.result);
@@ -87,6 +101,10 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
   const turf =
     event.sport === "baseball" ? (
       <Diamond />
+    ) : event.sport === "basketball" ? (
+      <Court />
+    ) : event.sport === "hockey" ? (
+      <Rink />
     ) : event.sport === "soccer" ? (
       <Pitch />
     ) : (
@@ -172,6 +190,7 @@ function TrackField({ event }: { event: SportEvent }) {
     <div className={`field field--track field--${event.sport}`}>
       <div className="field-turf" aria-hidden>
         {isOval ? <Oval /> : <Lanes />}
+        <TrackMarkers sport={event.sport} />
       </div>
       <div className="track-meta">
         <span className="track-venue">{event.venue ?? event.name}</span>
@@ -209,8 +228,34 @@ function Diamond() {
 function Gridiron() {
   return (
     <div className="gridiron">
+      <span className="ball-marker football-ball">🏈</span>
       <span className="endzone endzone--left" />
       <span className="endzone endzone--right" />
+    </div>
+  );
+}
+
+function Court() {
+  return (
+    <div className="court">
+      <span className="court-line" />
+      <span className="court-circle" />
+      <span className="court-arc court-arc--left" />
+      <span className="court-arc court-arc--right" />
+      <span className="ball-marker basketball-ball">🏀</span>
+    </div>
+  );
+}
+
+function Rink() {
+  return (
+    <div className="rink">
+      <span className="rink-line rink-line--center" />
+      <span className="rink-line rink-line--left" />
+      <span className="rink-line rink-line--right" />
+      <span className="rink-circle rink-circle--left" />
+      <span className="rink-circle rink-circle--right" />
+      <span className="puck-marker" />
     </div>
   );
 }
@@ -222,6 +267,7 @@ function Pitch() {
       <span className="pitch-circle" />
       <span className="pitch-box pitch-box--left" />
       <span className="pitch-box pitch-box--right" />
+      <span className="ball-marker soccer-ball">⚽</span>
     </div>
   );
 }
@@ -232,4 +278,17 @@ function Oval() {
 
 function Lanes() {
   return <div className="lanes" />;
+}
+
+function TrackMarkers({ sport }: { sport: SportKey }) {
+  const marker =
+    sport === "nascar" ? "🏎️" : sport === "horse-racing" ? "🏇" : sport === "greyhound" ? "🐕" : "";
+  if (!marker) return null;
+  return (
+    <div className={`track-markers track-markers--${sport}`}>
+      <span>{marker}</span>
+      <span>{marker}</span>
+      <span>{marker}</span>
+    </div>
+  );
 }

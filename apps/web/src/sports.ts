@@ -9,6 +9,8 @@ export interface SportTab {
 export const SPORT_TABS: SportTab[] = [
   { key: "football", label: "Football", icon: "🏈" },
   { key: "baseball", label: "Baseball", icon: "⚾" },
+  { key: "basketball", label: "Basketball", icon: "🏀" },
+  { key: "hockey", label: "Hockey", icon: "🏒" },
   { key: "soccer", label: "Soccer", icon: "⚽" },
   { key: "nascar", label: "NASCAR", icon: "🏁" },
   { key: "horse-racing", label: "Horse Racing", icon: "🐎" },

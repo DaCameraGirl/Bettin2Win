@@ -12,6 +12,14 @@ const NAME_POOLS: Record<SportKey, { events: string[]; runners: string[][] }> = 
     events: ["Sox @ Yankees", "Cubs @ Dodgers", "Mets @ Braves"],
     runners: [["Home", "Away"]],
   },
+  basketball: {
+    events: ["Mavericks @ Celtics", "Lakers @ Warriors", "Knicks @ Heat"],
+    runners: [["Away", "Home"]],
+  },
+  hockey: {
+    events: ["Rangers @ Bruins", "Blackhawks @ Red Wings", "Kings @ Golden Knights"],
+    runners: [["Away", "Home"]],
+  },
   soccer: {
     events: ["Rangers @ Celtic", "Roma @ Lazio", "Boca @ River Plate"],
     runners: [["Home", "Draw", "Away"]],
@@ -54,7 +62,9 @@ export function generateMockEvents(sport: SportKey): SportEvent[] {
         return {
           id: `mock-${sport}-${index}-r${rIdx}`,
           name,
-          number: sport === "football" || sport === "baseball" ? undefined : rIdx + 1,
+          number: ["football", "baseball", "basketball", "hockey", "soccer"].includes(sport)
+            ? undefined
+            : rIdx + 1,
           odds: BOOKS.map((book) => ({
             bookmaker: book,
             runnerId: `mock-${sport}-${index}-r${rIdx}`,
