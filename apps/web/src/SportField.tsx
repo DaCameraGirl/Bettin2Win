@@ -210,6 +210,11 @@ function runningOrder(runners: SportEvent["runners"]): SportEvent["runners"] {
     .filter((r) => r.name && !/non[- ]?runner/i.test(r.name))
     .slice()
     .sort((a, b) => {
+      // Real finishing position wins when a race is decided; otherwise fall
+      // back to the betting favourite, then the program number.
+      const posA = a.position ?? Number.POSITIVE_INFINITY;
+      const posB = b.position ?? Number.POSITIVE_INFINITY;
+      if (posA !== posB) return posA - posB;
       const pa = a.bestPrice ?? Number.POSITIVE_INFINITY;
       const pb = b.bestPrice ?? Number.POSITIVE_INFINITY;
       if (pa !== pb) return pa - pb;
@@ -222,6 +227,7 @@ function TrackField({ event }: { event: SportEvent }) {
   const order = runningOrder(event.runners);
   const runnerCount = order.length;
   const ranked = order.some((r) => r.bestPrice != null);
+  const resulted = order.some((r) => r.position != null);
   return (
     <div className={`field field--track field--${event.sport}`}>
       <div className="field-turf" aria-hidden>
@@ -249,6 +255,7 @@ function TrackField({ event }: { event: SportEvent }) {
         runners={order}
         live={event.status === "live"}
         ranked={ranked}
+        resulted={resulted}
       />
     </div>
   );
@@ -259,21 +266,23 @@ function RaceLanes({
   runners,
   live,
   ranked,
+  resulted,
 }: {
   sport: SportKey;
   runners: SportEvent["runners"];
   live: boolean;
   ranked: boolean;
+  resulted: boolean;
 }) {
   const emoji = RACE_EMOJI[sport] ?? "•";
   const MAX = 6;
   const shown = runners.slice(0, MAX);
   if (shown.length === 0) return null;
   return (
-    <div className={`race-lanes ${live ? "live" : ""}`} aria-hidden>
+    <div className={`race-lanes ${live ? "live" : ""} ${resulted ? "resulted" : ""}`} aria-hidden>
       {shown.map((runner, i) => (
         <div className="race-lane" key={runner.id}>
-          <span className="race-pos">{i + 1}</span>
+          <span className="race-pos">{runner.position ?? i + 1}</span>
           <span
             className="race-runner"
             style={{
@@ -287,9 +296,11 @@ function RaceLanes({
         </div>
       ))}
       <span className="race-caption">
-        {ranked
-          ? `running order — favourite (${emoji} 1) leads`
-          : `${shown.length} on track${runners.length > MAX ? ` of ${runners.length}` : ""} · by number`}
+        {resulted
+          ? `🏁 real finishing order — ${emoji} 1 won`
+          : ranked
+            ? `running order — favourite (${emoji} 1) leads`
+            : `${shown.length} on track${runners.length > MAX ? ` of ${runners.length}` : ""} · by number`}
       </span>
     </div>
   );

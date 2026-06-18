@@ -3,6 +3,7 @@ import { FallbackAdapter, type SportAdapter } from "./base.js";
 import { TheOddsApiAdapter } from "./the-odds-api.adapter.js";
 import { TheRundownAdapter } from "./therundown.adapter.js";
 import { RacingApiAdapter } from "./racing-api.adapter.js";
+import { HorseRacingRapidApiAdapter } from "./horse-racing-rapidapi.adapter.js";
 import { BetsApiAdapter } from "./betsapi.adapter.js";
 import { BetMinerAdapter } from "./betminer.adapter.js";
 import { FootballPredictionAdapter } from "./football-prediction.adapter.js";
@@ -39,7 +40,10 @@ export const adapters: Record<SportKey, SportAdapter> = {
   ),
   soccer: new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),
   nascar: new TheRundownAdapter(),
-  "horse-racing": new RacingApiAdapter(),
+  "horse-racing": new FallbackAdapter(
+    new HorseRacingRapidApiAdapter(),
+    new RacingApiAdapter(),
+  ),
   greyhound: new BetsApiAdapter(),
 };
 

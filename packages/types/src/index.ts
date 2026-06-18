@@ -49,6 +49,9 @@ export interface Runner {
   bestPrice?: number;
   /** Sportsbook offering the best displayed price. */
   bestBookmaker?: string;
+  /** Real finishing position (1 = winner) once a race is decided, when the
+   *  provider exposes results. Absent for pre-race / unfinished events. */
+  position?: number;
 }
 
 export type EventStatus = "upcoming" | "live" | "finished";

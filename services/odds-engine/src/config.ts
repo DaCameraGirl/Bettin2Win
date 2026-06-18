@@ -46,8 +46,10 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   "horse-racing": {
     key: "horse-racing",
     label: "Horse Racing",
-    provider: "racing-api",
-    pollIntervalMs: 5_000,
+    provider: "horse-racing-rapidapi+racing-api",
+    // RapidAPI horse feed is capped at ~50 req/day; the adapter caches hard and
+    // governs its own budget, so the poller can tick gently.
+    pollIntervalMs: 120_000,
   },
   greyhound: {
     key: "greyhound",
