@@ -346,6 +346,52 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   line-height: 1.15;
 }
+.field-team-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.field-team-wrap.right {
+  flex-direction: row-reverse;
+}
+.field-logo {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+.form-guide {
+  display: inline-flex;
+  gap: 3px;
+  min-height: 16px;
+}
+.form-guide.right {
+  justify-content: flex-end;
+}
+.form-letter {
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #07120b;
+}
+.form-letter.win {
+  background: #4ade80;
+}
+.form-letter.draw {
+  background: #fbbf24;
+}
+.form-letter.loss {
+  background: #f87171;
+}
 .field-score {
   font-size: 30px;
   font-weight: 800;
@@ -358,6 +404,8 @@ body {
   position: relative;
   z-index: 1;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
 }
 .field-status {
@@ -498,6 +546,7 @@ body {
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-wrap: wrap;
   margin-bottom: 12px;
   padding: 8px 12px;
   border-radius: 10px;
@@ -517,15 +566,43 @@ body {
   color: var(--warn);
   font-size: 14px;
 }
+.mp-main {
+  display: flex;
+  flex: 1 1 220px;
+  min-width: 0;
+  flex-direction: column;
+  gap: 5px;
+}
 .mp-text {
   color: var(--text);
 }
 .mp-text strong {
   color: var(--accent);
 }
+.mp-prob {
+  color: var(--accent);
+  font-weight: 800;
+}
 .mp-label {
   color: var(--muted);
   font-size: 12px;
+}
+.mp-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.mp-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 22px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
 }
 .mp-odds {
   margin-left: auto;

@@ -154,12 +154,29 @@ function EventCard({
       {event.prediction && (
         <div className={`model-pick ${event.prediction.status}`}>
           <span className="mp-star">★</span>
-          <span className="mp-text">
-            Model pick: <strong>{event.prediction.pick}</strong>
-            {event.prediction.pick !== event.prediction.label && (
-              <span className="mp-label"> · {event.prediction.label}</span>
+          <div className="mp-main">
+            <span className="mp-text">
+              Model pick: <strong>{event.prediction.pick}</strong>
+              {event.prediction.probability !== undefined && (
+                <span className="mp-prob"> {event.prediction.probability}% likely</span>
+              )}
+              {event.prediction.pick !== event.prediction.label && (
+                <span className="mp-label"> · {event.prediction.label}</span>
+              )}
+            </span>
+            {(event.prediction.correctScore || (event.prediction.extras?.length ?? 0) > 0) && (
+              <span className="mp-tags">
+                {event.prediction.correctScore && (
+                  <span className="mp-chip">Score {event.prediction.correctScore}</span>
+                )}
+                {event.prediction.extras?.map((extra) => (
+                  <span key={extra} className="mp-chip">
+                    {extra}
+                  </span>
+                ))}
+              </span>
             )}
-          </span>
+          </div>
           {event.prediction.odds && (
             <span className="mp-odds">
               {formatOdds(event.prediction.odds, format)}

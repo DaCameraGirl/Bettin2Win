@@ -60,12 +60,23 @@ export interface MatchPrediction {
   pickCode?: string;
   /** Human label, e.g. "Home win", "Draw", "Away win". */
   label: string;
+  /** Model confidence in percent, e.g. 73 means 73% likely. */
+  probability?: number;
   /** Decimal odds for the predicted outcome, when the plan exposes them. */
   odds?: number;
   /** How the pick fared once the match is decided. */
   status: "won" | "lost" | "pending";
   /** Final/current score from the provider, e.g. "0 - 3". */
   result?: string;
+  /** Predicted score, normalized to the app's away-home display order. */
+  correctScore?: string;
+  /** Short supporting tags such as BTTS Yes or Over 2.5. */
+  extras?: string[];
+}
+
+export interface TeamFormGuide {
+  home?: string;
+  away?: string;
 }
 
 export interface SportEvent {
@@ -76,9 +87,16 @@ export interface SportEvent {
   startTime: string; // ISO 8601
   venue?: string;
   status: EventStatus;
+  /** Sport-specific live detail such as a soccer minute. */
+  clock?: string;
   runners: Runner[];
   /** Model pick, for prediction-sourced sports. */
   prediction?: MatchPrediction;
+  /** Team logos for matchup cards, when the provider exposes them. */
+  homeLogo?: string;
+  awayLogo?: string;
+  /** Compact recent form guide, e.g. WDWLL. */
+  form?: TeamFormGuide;
   /** Provider key the data came from. */
   source: string;
 }
