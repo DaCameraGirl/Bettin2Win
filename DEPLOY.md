@@ -38,7 +38,9 @@ Your engine's WebSocket address is that URL with `wss://` and `/ws`:
 
 ## Part B — Publish the web app to GitHub Pages (~5 min)
 
-1. In GitHub: **repo → Settings → Pages → Build and deployment → Source = GitHub Actions**.
+1. _(Already done — Pages is configured with Source = **GitHub Actions** and HTTPS enforced.
+   Listed for completeness; skip to step 2.)_ In GitHub: **repo → Settings → Pages → Build
+   and deployment → Source = GitHub Actions**.
 2. In GitHub: **repo → Settings → Secrets and variables → Actions → Variables tab →
    New repository variable**, and add these three (they're public URLs, not secrets):
 
