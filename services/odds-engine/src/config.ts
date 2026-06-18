@@ -20,10 +20,10 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   soccer: {
     key: "soccer",
     label: "Soccer",
-    provider: "football-prediction-api",
-    // Predictions barely move and the free RapidAPI tier is rate-limited, so
-    // poll gently — a slow sweep across federations, not a tight loop.
-    pollIntervalMs: 90_000,
+    provider: "betminer",
+    // BetMiner returns the whole daily board in one request, so poll gently
+    // while still refreshing live score/minute changes.
+    pollIntervalMs: 180_000,
   },
   nascar: {
     key: "nascar",

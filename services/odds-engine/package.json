@@ -10,7 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo \"(no linter configured)\" && exit 0",
-    "test": "node --import tsx --test src/movement.test.ts src/highlightly/normalize.test.ts src/highlightly/scores.test.ts"
+    "test": "node --import tsx --test src/movement.test.ts src/highlightly/normalize.test.ts src/highlightly/scores.test.ts src/adapters/betminer.adapter.test.ts"
   },
   "dependencies": {
     "@bettin2win/types": "workspace:*",

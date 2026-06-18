@@ -76,7 +76,10 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
   } else if (event.sport === "soccer" && event.status !== "upcoming") {
     stateClass = event.status === "live" ? "live" : "finished";
     tally = parseScore(event.prediction?.result);
-    statusLine = event.status === "live" ? "● LIVE" : "FULL TIME";
+    statusLine =
+      event.status === "live"
+        ? `● LIVE${event.clock ? ` · ${event.clock}` : ""}`
+        : "FULL TIME";
   } else {
     statusLine = `${kickLabel} ${formatStart(event.startTime)}`;
   }
@@ -98,7 +101,8 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
 
       <div className="field-side field-side--away">
         <span className="field-role">AWAY</span>
-        <span className="field-team">{away}</span>
+        <TeamName name={away} logo={event.awayLogo} />
+        <FormGuide value={event.form?.away} />
         {tally && <span className="field-score">{tally.away}</span>}
       </div>
 
@@ -111,11 +115,54 @@ function TeamField({ event, score }: { event: SportEvent; score?: GameScore }) {
         <span className="field-role">
           HOME<span className="field-host">hosting</span>
         </span>
-        <span className="field-team">{home}</span>
+        <TeamName name={home} logo={event.homeLogo} align="right" />
+        <FormGuide value={event.form?.home} align="right" />
         {tally && <span className="field-score">{tally.home}</span>}
       </div>
     </div>
   );
+}
+
+function TeamName({
+  name,
+  logo,
+  align = "left",
+}: {
+  name: string;
+  logo?: string;
+  align?: "left" | "right";
+}) {
+  return (
+    <span className={`field-team-wrap ${align === "right" ? "right" : ""}`}>
+      {logo && <img className="field-logo" src={logo} alt="" loading="lazy" />}
+      <span className="field-team">{name}</span>
+    </span>
+  );
+}
+
+function FormGuide({
+  value,
+  align = "left",
+}: {
+  value?: string;
+  align?: "left" | "right";
+}) {
+  if (!value) return null;
+  return (
+    <span className={`form-guide ${align === "right" ? "right" : ""}`} aria-label={`Form ${value}`}>
+      {value.split("").map((letter, index) => (
+        <span key={`${letter}-${index}`} className={`form-letter ${formClass(letter)}`}>
+          {letter}
+        </span>
+      ))}
+    </span>
+  );
+}
+
+function formClass(letter: string): string {
+  if (letter === "W") return "win";
+  if (letter === "L") return "loss";
+  return "draw";
 }
 
 function TrackField({ event }: { event: SportEvent }) {
