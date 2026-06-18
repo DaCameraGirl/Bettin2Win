@@ -37,6 +37,12 @@ export const SPORTS: Record<SportKey, SportConfig> = {
     // while still refreshing live score/minute changes.
     pollIntervalMs: 180_000,
   },
+  golf: {
+    key: "golf",
+    label: "Golf",
+    provider: "espn-golf",
+    pollIntervalMs: 60_000,
+  },
   nascar: {
     key: "nascar",
     label: "NASCAR",

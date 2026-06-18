@@ -287,47 +287,49 @@ function EventCard({
           )}
         </div>
       )}
-      <div className="runners">
-        {event.runners.map((runner) => {
-          const picked = event.prediction?.pick === runner.name;
-          return (
-            <div key={runner.id} className={`runner ${picked ? "picked" : ""}`}>
-              <div className="runner-top">
-                <span className="runner-name">
-                  {picked && <span className="runner-star">★</span>}
-                  {runner.number ? `${runner.number}. ` : ""}
-                  {runner.name}
-                </span>
-                {runner.bestPrice ? (
-                  <span className="runner-best">
-                    <span className="runner-best-label">Best</span>
-                    <strong>{formatOdds(runner.bestPrice, format)}</strong>
-                    {runner.bestBookmaker && <em>{runner.bestBookmaker}</em>}
+      {event.sport !== "golf" && (
+        <div className="runners">
+          {event.runners.map((runner) => {
+            const picked = event.prediction?.pick === runner.name;
+            return (
+              <div key={runner.id} className={`runner ${picked ? "picked" : ""}`}>
+                <div className="runner-top">
+                  <span className="runner-name">
+                    {picked && <span className="runner-star">★</span>}
+                    {runner.number ? `${runner.number}. ` : ""}
+                    {runner.name}
                   </span>
-                ) : (
-                  <span className="runner-price missing">Odds unavailable</span>
+                  {runner.bestPrice ? (
+                    <span className="runner-best">
+                      <span className="runner-best-label">Best</span>
+                      <strong>{formatOdds(runner.bestPrice, format)}</strong>
+                      {runner.bestBookmaker && <em>{runner.bestBookmaker}</em>}
+                    </span>
+                  ) : (
+                    <span className="runner-price missing">Odds unavailable</span>
+                  )}
+                </div>
+                {runner.odds.length > 0 && (
+                  <div className="book-list">
+                    {runner.odds
+                      .slice()
+                      .sort((a, b) => b.price - a.price)
+                      .map((line) => (
+                        <span
+                          key={`${line.bookmaker}-${line.runnerId}-${line.price}`}
+                          className={line.bookmaker === runner.bestBookmaker ? "book-chip best" : "book-chip"}
+                        >
+                          <span>{line.bookmaker}</span>
+                          <strong>{formatOdds(line.price, format)}</strong>
+                        </span>
+                      ))}
+                  </div>
                 )}
               </div>
-              {runner.odds.length > 0 && (
-                <div className="book-list">
-                  {runner.odds
-                    .slice()
-                    .sort((a, b) => b.price - a.price)
-                    .map((line) => (
-                      <span
-                        key={`${line.bookmaker}-${line.runnerId}-${line.price}`}
-                        className={line.bookmaker === runner.bestBookmaker ? "book-chip best" : "book-chip"}
-                      >
-                        <span>{line.bookmaker}</span>
-                        <strong>{formatOdds(line.price, format)}</strong>
-                      </span>
-                    ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </article>
   );
 }

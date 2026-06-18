@@ -12,6 +12,7 @@ export const SPORT_TABS: SportTab[] = [
   { key: "basketball", label: "Basketball", icon: "🏀" },
   { key: "hockey", label: "Hockey", icon: "🏒" },
   { key: "soccer", label: "Soccer", icon: "⚽" },
+  { key: "golf", label: "Golf", icon: "⛳" },
   { key: "nascar", label: "NASCAR", icon: "🏁" },
   { key: "horse-racing", label: "Horse Racing", icon: "🐎" },
   { key: "greyhound", label: "Greyhound", icon: "🐕" },
