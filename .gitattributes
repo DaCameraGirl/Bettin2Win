@@ -2,3 +2,4 @@
 apps/web/dist/** linguist-generated=true
 **/dist/** linguist-generated=true
 pnpm-lock.yaml linguist-generated=true
+docs/assets/*.svg linguist-generated=true
