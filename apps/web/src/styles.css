@@ -447,10 +447,12 @@ body {
   font-size: 9px;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  background: rgba(255, 255, 255, 0.18);
+  font-weight: 700;
+  background: rgba(0, 0, 0, 0.58);
   color: #fff;
   padding: 1px 5px;
   border-radius: 4px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.6);
 }
 .field-team {
   font-size: 14px;
@@ -960,9 +962,28 @@ body {
   grid-column: 1 / -1;
   font-style: normal;
   font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0.2px;
   color: var(--muted);
+}
+.feed li em.shortening {
+  color: var(--up);
+}
+.feed li em.drifting {
+  color: var(--down);
+}
+.feed-legend {
+  margin: -6px 0 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+.feed-legend .shortening {
+  color: var(--up);
+}
+.feed-legend .drifting {
+  color: var(--down);
 }
 
 /* ---- misc ---- */
