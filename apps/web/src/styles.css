@@ -225,6 +225,19 @@ body {
 .field--football {
   background: linear-gradient(90deg, #124324, #1a6234 50%, #124324);
 }
+.field--basketball {
+  background: linear-gradient(90deg, #8f5427, #b86f32 50%, #8f5427);
+}
+.field--hockey {
+  background: linear-gradient(90deg, #d8edf7, #f7fbff 50%, #d8edf7);
+}
+.field--hockey .field-role,
+.field--hockey .field-team,
+.field--hockey .field-score,
+.field--hockey .field-comp {
+  color: #102033;
+  text-shadow: none;
+}
 .field--football .field-turf {
   background: repeating-linear-gradient(
     90deg,
@@ -288,6 +301,16 @@ body {
   position: absolute;
   inset: 0;
 }
+.ball-marker {
+  position: absolute;
+  z-index: 1;
+  font-size: 18px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.4));
+}
+.football-ball {
+  left: 49%;
+  top: 62%;
+}
 .endzone {
   position: absolute;
   top: 0;
@@ -303,6 +326,96 @@ body {
   right: 0;
   background: linear-gradient(270deg, rgba(34, 211, 238, 0.22), transparent);
   border-left: 2px solid rgba(255, 255, 255, 0.28);
+}
+
+/* basketball court */
+.court,
+.rink {
+  position: absolute;
+  inset: 0;
+}
+.court-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(255, 255, 255, 0.28);
+}
+.court-circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 58px;
+  height: 58px;
+  border: 2px solid rgba(255, 255, 255, 0.32);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+.court-arc {
+  position: absolute;
+  top: 50%;
+  width: 52px;
+  height: 78px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.court-arc--left {
+  left: -25px;
+}
+.court-arc--right {
+  right: -25px;
+}
+.basketball-ball {
+  left: 49%;
+  top: 58%;
+}
+
+/* hockey rink */
+.rink-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+}
+.rink-line--center {
+  left: 50%;
+  background: rgba(220, 38, 38, 0.45);
+}
+.rink-line--left {
+  left: 31%;
+  background: rgba(37, 99, 235, 0.4);
+}
+.rink-line--right {
+  right: 31%;
+  background: rgba(37, 99, 235, 0.4);
+}
+.rink-circle {
+  position: absolute;
+  top: 50%;
+  width: 42px;
+  height: 42px;
+  border: 2px solid rgba(220, 38, 38, 0.35);
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+.rink-circle--left {
+  left: 12%;
+}
+.rink-circle--right {
+  right: 12%;
+}
+.puck-marker {
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  width: 13px;
+  height: 7px;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #111827;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.4);
 }
 
 /* away / home columns */
@@ -458,6 +571,28 @@ body {
     rgba(255, 255, 255, 0.07) 14px 15px
   );
 }
+.track-markers {
+  position: absolute;
+  inset: 0;
+}
+.track-markers span {
+  position: absolute;
+  z-index: 1;
+  font-size: 20px;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.45));
+}
+.track-markers span:nth-child(1) {
+  left: 26%;
+  top: 22%;
+}
+.track-markers span:nth-child(2) {
+  left: 48%;
+  top: 48%;
+}
+.track-markers span:nth-child(3) {
+  left: 70%;
+  top: 68%;
+}
 .track-meta {
   position: relative;
   z-index: 1;
@@ -529,6 +664,10 @@ body {
 .pitch-box--right {
   right: 0;
   border-right: none;
+}
+.soccer-ball {
+  left: 49%;
+  top: 58%;
 }
 
 /* competition / sub-label under the center status */
@@ -694,27 +833,84 @@ body {
 
 .runners {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 8px;
 }
 
 .runner {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
   background: var(--panel-2);
   border: 1px solid var(--line);
   border-radius: 9px;
   padding: 10px 12px;
 }
+.runner-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
 .runner-name {
   font-size: 13px;
   color: var(--muted);
+  line-height: 1.25;
 }
 .runner-price {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
   color: var(--text);
+}
+.runner-price.missing {
+  color: var(--warn);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  text-align: right;
+}
+.runner-best {
+  display: grid;
+  justify-items: end;
+  gap: 1px;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+.runner-best-label,
+.runner-best em {
+  font-size: 10px;
+  color: var(--muted);
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.runner-best strong {
+  font-size: 16px;
+  color: var(--accent);
+}
+.book-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.book-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 22px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+.book-chip.best {
+  border-color: var(--accent-dim);
+  color: var(--text);
+}
+.book-chip strong {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ---- movement feed ---- */

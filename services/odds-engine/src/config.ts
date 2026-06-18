@@ -8,19 +8,31 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   football: {
     key: "football",
     label: "Football",
-    provider: "the-odds-api",
+    provider: "the-odds-api+sportsbook-api+highlightly-matches",
     pollIntervalMs: 15_000,
   },
   baseball: {
     key: "baseball",
     label: "Baseball",
-    provider: "the-odds-api",
+    provider: "the-odds-api+tank01-mlb+highlightly-matches",
+    pollIntervalMs: 15_000,
+  },
+  basketball: {
+    key: "basketball",
+    label: "Basketball",
+    provider: "the-odds-api+sportsbook-api+highlightly-matches",
+    pollIntervalMs: 15_000,
+  },
+  hockey: {
+    key: "hockey",
+    label: "Hockey",
+    provider: "the-odds-api+sportsbook-api+highlightly-matches",
     pollIntervalMs: 15_000,
   },
   soccer: {
     key: "soccer",
     label: "Soccer",
-    provider: "betminer",
+    provider: "betminer+football-prediction-api",
     // BetMiner returns the whole daily board in one request, so poll gently
     // while still refreshing live score/minute changes.
     pollIntervalMs: 180_000,
@@ -52,8 +64,8 @@ export const env = {
   racingApiPassword: process.env.RACING_API_PASSWORD ?? "",
   betsApiKey: process.env.BETSAPI_KEY ?? "",
   highlightlyKey: process.env.HIGHLIGHTLY_API_KEY ?? "",
-  // Shared RapidAPI key for the prediction providers (football-prediction-api,
-  // and future basketball/other prediction tabs on the same RapidAPI account).
+  // Shared RapidAPI key for prediction + fallback providers such as
+  // football-prediction-api and Tank01 MLB.
   rapidApiKey: process.env.RAPIDAPI_KEY ?? "",
   // Hosts like Render inject PORT; fall back to our local default otherwise.
   port: Number(process.env.PORT ?? process.env.ODDS_ENGINE_PORT ?? 4000),
