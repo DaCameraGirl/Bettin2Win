@@ -10,7 +10,7 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo \"(no linter configured)\" && exit 0",
-    "test": "node --import tsx --test src/movement.test.ts src/highlightly/normalize.test.ts src/highlightly/scores.test.ts src/adapters/betminer.adapter.test.ts src/adapters/highlightly-matches.adapter.test.ts src/adapters/tank01-mlb.adapter.test.ts src/adapters/sportsbook-advantages.adapter.test.ts"
+    "test": "node --import tsx --test src/movement.test.ts src/poller.test.ts src/highlightly/normalize.test.ts src/highlightly/scores.test.ts src/adapters/betminer.adapter.test.ts src/adapters/highlightly-matches.adapter.test.ts src/adapters/mlb-stats.adapter.test.ts src/adapters/tank01-mlb.adapter.test.ts src/adapters/sportsbook-advantages.adapter.test.ts"
   },
   "dependencies": {
     "@bettin2win/types": "workspace:*",
