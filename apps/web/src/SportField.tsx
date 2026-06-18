@@ -191,29 +191,105 @@ function formClass(letter: string): string {
   return "draw";
 }
 
+/** Emoji that races down each track sport's lanes. */
+const RACE_EMOJI: Partial<Record<SportKey, string>> = {
+  nascar: "🏎️",
+  "horse-racing": "🏇",
+  greyhound: "🐕",
+};
+
+/**
+ * Real (non-scratched) runners in best-guess running order: favourite first
+ * (lowest decimal price), falling back to program number when a feed carries
+ * no prices (e.g. the horse-racing free tier). True live in-race positions
+ * aren't in the current feeds, so this is a proxy that upgrades automatically
+ * the day a positions feed is wired.
+ */
+function runningOrder(runners: SportEvent["runners"]): SportEvent["runners"] {
+  return runners
+    .filter((r) => r.name && !/non[- ]?runner/i.test(r.name))
+    .slice()
+    .sort((a, b) => {
+      const pa = a.bestPrice ?? Number.POSITIVE_INFINITY;
+      const pb = b.bestPrice ?? Number.POSITIVE_INFINITY;
+      if (pa !== pb) return pa - pb;
+      return (a.number ?? 999) - (b.number ?? 999);
+    });
+}
+
 function TrackField({ event }: { event: SportEvent }) {
-  const runnerCount = event.runners.length;
   const isOval = event.sport === "nascar";
+  const order = runningOrder(event.runners);
+  const runnerCount = order.length;
+  const ranked = order.some((r) => r.bestPrice != null);
   return (
     <div className={`field field--track field--${event.sport}`}>
       <div className="field-turf" aria-hidden>
         {isOval ? <Oval /> : <Lanes />}
-        <TrackMarkers sport={event.sport} />
       </div>
-      <div className="track-meta">
-        <span className="track-venue">{event.venue ?? event.name}</span>
-        <span className="track-info">
-          {runnerCount} runner{runnerCount === 1 ? "" : "s"}
-          {" · "}
-          {formatStart(event.startTime)}
+      <div className="track-head">
+        <div className="track-meta">
+          <span className="track-venue">{event.venue ?? event.name}</span>
+          <span className="track-info">
+            {runnerCount} runner{runnerCount === 1 ? "" : "s"}
+            {" · "}
+            {formatStart(event.startTime)}
+          </span>
+        </div>
+        <span className={`field-status ${event.status}`}>
+          {event.status === "live"
+            ? "● LIVE"
+            : event.status === "finished"
+              ? "FINISHED"
+              : "Off soon"}
         </span>
       </div>
-      <span className={`field-status ${event.status}`}>
-        {event.status === "live"
-          ? "● LIVE"
-          : event.status === "finished"
-            ? "FINISHED"
-            : "Off soon"}
+      <RaceLanes
+        sport={event.sport}
+        runners={order}
+        live={event.status === "live"}
+        ranked={ranked}
+      />
+    </div>
+  );
+}
+
+function RaceLanes({
+  sport,
+  runners,
+  live,
+  ranked,
+}: {
+  sport: SportKey;
+  runners: SportEvent["runners"];
+  live: boolean;
+  ranked: boolean;
+}) {
+  const emoji = RACE_EMOJI[sport] ?? "•";
+  const MAX = 6;
+  const shown = runners.slice(0, MAX);
+  if (shown.length === 0) return null;
+  return (
+    <div className={`race-lanes ${live ? "live" : ""}`} aria-hidden>
+      {shown.map((runner, i) => (
+        <div className="race-lane" key={runner.id}>
+          <span className="race-pos">{i + 1}</span>
+          <span
+            className="race-runner"
+            style={{
+              animationDuration: `${(live ? 2.6 : 4.2) + i * 0.35}s`,
+              animationDelay: `${i * -0.5}s`,
+            }}
+          >
+            <span className="race-emoji">{emoji}</span>
+            <span className="race-num">{runner.number ?? i + 1}</span>
+          </span>
+        </div>
+      ))}
+      <span className="race-caption">
+        {ranked
+          ? `running order — favourite (${emoji} 1) leads`
+          : `${shown.length} on track${runners.length > MAX ? ` of ${runners.length}` : ""} · by number`}
       </span>
     </div>
   );
@@ -288,15 +364,3 @@ function Lanes() {
   return <div className="lanes" />;
 }
 
-function TrackMarkers({ sport }: { sport: SportKey }) {
-  const marker =
-    sport === "nascar" ? "🏎️" : sport === "horse-racing" ? "🏇" : sport === "greyhound" ? "🐕" : "";
-  if (!marker) return null;
-  return (
-    <div className={`track-markers track-markers--${sport}`}>
-      <span>{marker}</span>
-      <span>{marker}</span>
-      <span>{marker}</span>
-    </div>
-  );
-}

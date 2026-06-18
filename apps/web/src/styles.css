@@ -544,8 +544,19 @@ body {
 
 /* ---- race-track strip (nascar / horse / greyhound) ---- */
 .field--track {
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
   min-height: 84px;
+}
+.track-head {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 .field--nascar {
   background: linear-gradient(180deg, #232831, #14181e);
@@ -615,6 +626,125 @@ body {
 }
 .field--track .field-status {
   z-index: 1;
+}
+
+/* ---- animated, numbered race lanes (NASCAR / horse / greyhound) ---- */
+.race-lanes {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.race-lane {
+  position: relative;
+  height: 16px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+.race-pos {
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 11px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.92);
+}
+.race-runner {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  white-space: nowrap;
+  animation-name: race-run;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  will-change: left;
+}
+@keyframes race-run {
+  from {
+    left: 16px;
+  }
+  to {
+    left: calc(100% - 36px);
+  }
+}
+.race-emoji {
+  font-size: 13px;
+  line-height: 1;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.5));
+}
+.race-num {
+  font-size: 9px;
+  font-weight: 800;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  border-radius: 3px;
+  padding: 0 3px;
+  line-height: 1.35;
+}
+.race-caption {
+  margin-top: 1px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ---- animated balls / pucks on team fields ---- */
+@keyframes ball-driftx {
+  from {
+    transform: translateX(-12px);
+  }
+  to {
+    transform: translateX(16px);
+  }
+}
+@keyframes ball-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes puck-slide {
+  from {
+    left: 30%;
+  }
+  to {
+    left: 66%;
+  }
+}
+.football-ball {
+  animation: ball-driftx 5s ease-in-out infinite alternate;
+}
+.soccer-ball {
+  animation: ball-driftx 6s ease-in-out infinite alternate;
+}
+.basketball-ball {
+  animation: ball-bounce 1.5s ease-in-out infinite;
+}
+.puck-marker {
+  animation: puck-slide 3.4s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .race-runner,
+  .football-ball,
+  .soccer-ball,
+  .basketball-ball,
+  .puck-marker {
+    animation: none;
+  }
 }
 
 /* ---- soccer pitch ---- */
