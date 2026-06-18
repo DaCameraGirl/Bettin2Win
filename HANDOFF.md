@@ -1,6 +1,6 @@
 # Bettin2Win — Handoff / Status
 
-_Last updated: 2026-06-17. Living doc — update as the project moves._
+_Last updated: 2026-06-18. Living doc — update as the project moves._
 
 ## What this is
 Real-time multi-sport odds dashboard. Polyglot monorepo (pnpm + Turborepo).
@@ -18,7 +18,7 @@ Runs with **zero API keys** on demo data; each sport flips live when its key is 
 |---|---|---|
 | Baseball | The Odds API | ✅ live odds **with prices** + live scores/innings (Highlightly) |
 | Football (NFL) | The Odds API | ✅ live odds (NFL offseason in June = few events) |
-| Soccer | football-prediction-api (RapidAPI) | ✅ live **model picks** (1X2 + double-chance) + odds + result |
+| Soccer | BetMiner (RapidAPI) | ✅ live **model picks** with logos, win %, form, predicted score, BTTS/total tags, odds + result |
 | Horse racing | The Racing API | ✅ 35 real racecards; free tier = **no prices** |
 | NASCAR | — | ❌ TheRundown has no motorsport; needs a different vendor |
 | Greyhound | BetsAPI | ❌ no key obtained yet |
@@ -60,6 +60,7 @@ Claude Code line.
 PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/MLB/NBA),
 #10 (NHL), #12 (movement feed filtered by sport), #16 (CORS), #18 (themed sport-field cards),
 #21 (Soccer tab + model picks), #22 (desktop launcher), #23 (Render + Pages deploy config),
+#27 (Soccer upgraded to BetMiner logos/win %/form/predicted score + Railway Railpack fix),
 + live baseball scores & glossary.
 
 ## Angela's requested enhancements
@@ -70,17 +71,18 @@ PRs #2 (scaffold), #4 (racing normalizer), #6 (Python tier), #8 (standings NFL/M
   Component: `apps/web/src/SportField.tsx`. Possible follow-ups: pull team **records** from the
   standings endpoint into the field; hits/errors if a provider exposes them.
 - **Odds still read as gibberish to a beginner** — PARTLY handled: the D/A/F toggle already
-  **defaults to Decimal** (`App.tsx` `useState<OddsFormat>("decimal")`). Still TODO: an inline
-  "what does -150 mean?" helper/tooltip right next to the prices, so she doesn't have to scroll to
-  the glossary. (This is the obvious next task.)
+  **defaults to Decimal** (`App.tsx` `useState<OddsFormat>("decimal")`), and Soccer now shows
+  BetMiner's plain-English win probability (`NN% likely`) beside the model pick. Still TODO:
+  an inline "what does -150 mean?" helper/tooltip right next to generic prices, so she doesn't
+  have to scroll to the glossary.
 - Note: baseball shows only 2 prices/game because it's a 2-way market (the two teams) — that's
   correct, not a bug. Horse racing shows many runners.
 
 ## Prediction APIs (Angela's RapidAPI subscriptions — for "all sports predictions")
 Same RapidAPI key (`RAPIDAPI_KEY`) covers all subscribed APIs. Each RapidAPI listing
-needs its own Subscribe click. The Soccer tab uses **football-prediction-api** as the
-template; adding a prediction sport = one new adapter (copy `football-prediction.adapter.ts`)
-+ a `SportKey` + a tab + a field theme.
+needs its own Subscribe click. The Soccer tab now uses **BetMiner**; `football-prediction-api`
+stays in the repo as an alternate/fallback soccer source. Adding a prediction sport =
+one new adapter + a `SportKey` + a tab + a field theme.
 - ⚠️ **Betigolo** (`betigolo-predictions`) — subscribed but the **free/BASIC plan DISABLES every
   sport endpoint** ("disabled for your subscription") + tight rate limit. Multi-sport (tennis/
   hockey/basketball/baseball) is the goal but **needs a PAID Betigolo plan** before it's buildable.
@@ -92,12 +94,12 @@ template; adding a prediction sport = one new adapter (copy `football-prediction
 - **All free subscriptions are soccer-only.** football-prediction-api free plan: ~12h ahead,
   sweeps UEFA/CONMEBOL/CONCACAF/AFC; result home-away upstream → flipped to away-home.
 
-### ⏭️ NEXT TASK (in progress — issue #25): upgrade Soccer to BetMiner
-Branch not started (the empty `feature/soccer-betminer` was cleaned up). **Issue #25 has the full
-BetMiner field shape + the build plan** (new `betminer.adapter.ts` → bind `soccer`; extend types
-with probability/correctScore/form/logos; UI shows logos + "NN% likely" + form). The **win-%** also
-satisfies the beginner-friendly-odds ask. Then: after Angela upgrades Betigolo → tennis/hockey/
-basketball tabs.
+### ✅ Latest completed task: Soccer upgraded to BetMiner
+PR #27 closed issue #25. Soccer now fetches `GET /bm/v3/edge-analysis/{date}` via
+`betminer.adapter.ts`, normalizes logos/probability/correctScore/form/clock/tags, and renders
+logos, form, `NN% likely`, predicted score, BTTS/over-under tags, highlighted pick, and live
+score/minute in the card UI. Local live check returned 61 BetMiner matches on 2026-06-18.
+`railway.json` was also trimmed so Railpack does not reinstall pnpm after its own install step.
 
 ## Good next steps
 1. **Surface standings in the UI** — `/api/enrich/:sport/standings` exists but no UI panel yet.
