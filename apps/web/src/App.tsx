@@ -53,6 +53,8 @@ export function App() {
         ))}
       </nav>
 
+      <BeginnerGuide />
+
       <main className="layout">
         <section className="board">
           <div className="board-head">
@@ -127,6 +129,91 @@ const GLOSSARY: { term: string; plain: string }[] = [
   { term: "● LIVE / FINAL", plain: "Real game status — live score and inning, or the final result." },
   { term: "Upcoming", plain: "The game/race hasn't started yet." },
 ];
+
+/** A warm, plain-English intro for someone who has never placed a bet. */
+function BeginnerGuide() {
+  return (
+    <details className="guide">
+      <summary>🎀 New to betting? Start here — the 2-minute beginner guide</summary>
+      <div className="guide-body">
+        <div className="guide-card">
+          <h4>💡 What this app even is</h4>
+          <p>
+            Bettin2Win is your <strong>scout</strong>, not a casino. It doesn't take
+            your money — it <em>shows</em> you the odds, finds the <strong>best price</strong>{" "}
+            across every sportsbook, and explains what it all means. You place the
+            actual bet later, at a real sportsbook. Think of this as the friend who
+            tells you where the good deal is.
+          </p>
+        </div>
+
+        <div className="guide-card">
+          <h4>🃏 How to read a game</h4>
+          <ul>
+            <li>
+              <strong>"Away @ Home"</strong> = visiting team vs. the team hosting at
+              their own stadium. (Look for the <em>visiting</em> / <em>hosting</em> tags.)
+            </li>
+            <li>
+              <strong>The number is the odds.</strong> A <strong>minus</strong> (e.g.
+              −150) = the favorite; you risk $150 to win $100. A <strong>plus</strong>{" "}
+              (e.g. +130) = the underdog; a $100 bet wins you $130.
+            </li>
+            <li>
+              <strong>"Best"</strong> shows the most generous price and which book has
+              it. Same bet, more winnings — that's the whole trick.
+            </li>
+            <li>
+              The <strong>D / A / F</strong> toggle up top switches the odds style.
+              <strong> Decimal</strong> is the friendliest: 2.50 means a $1 bet returns
+              $2.50 total.
+            </li>
+          </ul>
+        </div>
+
+        <div className="guide-card">
+          <h4>📈 "Drifting" vs "Shortening"</h4>
+          <p>
+            In the Market-movement box: <strong>shortening ↓</strong> = odds got
+            smaller, so it's now seen as <strong>more likely</strong> to win.{" "}
+            <strong>Drifting ↑</strong> = odds got bigger, seen as <strong>less
+            likely</strong>. It's the crowd changing its mind in real time.
+          </p>
+        </div>
+
+        <div className="guide-card">
+          <h4>✅ How to actually place a bet</h4>
+          <ol>
+            <li>Pick a game here and decide what you like.</li>
+            <li>
+              Find the <strong>"Best"</strong> price and note the sportsbook (DraftKings,
+              FanDuel, BetMGM…).
+            </li>
+            <li>
+              Open <strong>that sportsbook's own app/website</strong> and place the bet
+              there.
+            </li>
+            <li>
+              You must be <strong>21+</strong> and in a place where it's legal — the book
+              checks your location automatically.
+            </li>
+          </ol>
+        </div>
+
+        <div className="guide-card guide-card--warn">
+          <h4>💛 Be smart, be safe</h4>
+          <p>
+            It's real money and <strong>the math favors the house</strong> — the
+            sportsbook's profit is baked into every price, so most people lose over time.
+            Bet only what you'd be fine losing, treat it like paying for fun (not making
+            money), and stop the second it isn't fun. Free, confidential help in the US:{" "}
+            <strong>1-800-GAMBLER</strong>.
+          </p>
+        </div>
+      </div>
+    </details>
+  );
+}
 
 function Glossary() {
   return (

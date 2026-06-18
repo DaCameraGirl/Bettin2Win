@@ -949,6 +949,75 @@ body {
   border-top: 1px solid var(--line);
 }
 
+/* ---- beginner guide (welcome) ---- */
+.guide {
+  margin: 0 0 18px;
+  background: linear-gradient(180deg, rgba(124, 92, 255, 0.12), var(--panel));
+  border: 1px solid var(--accent);
+  border-radius: 14px;
+  padding: 4px 16px;
+}
+.guide > summary {
+  cursor: pointer;
+  padding: 12px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  user-select: none;
+  list-style: none;
+}
+.guide > summary::-webkit-details-marker {
+  display: none;
+}
+.guide > summary::before {
+  content: "▸ ";
+  color: var(--accent);
+}
+.guide[open] > summary::before {
+  content: "▾ ";
+}
+.guide > summary:hover {
+  color: var(--accent);
+}
+.guide-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+  margin: 6px 0 16px;
+}
+.guide-card {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 12px 14px;
+}
+.guide-card h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--text);
+}
+.guide-card p,
+.guide-card li {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.guide-card ul,
+.guide-card ol {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.guide-card strong {
+  color: var(--text);
+}
+.guide-card--warn {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.45);
+}
+
 .pill {
   font-size: 10px;
   text-transform: uppercase;
