@@ -57,6 +57,13 @@ export class Poller {
       message: result.message,
     });
 
+    const currentIds = new Set(result.events.map((event) => event.id));
+    for (const [id, event] of this.lastEvents) {
+      if (event.sport === sport && !currentIds.has(id)) {
+        this.lastEvents.delete(id);
+      }
+    }
+
     for (const event of result.events) {
       const previous = this.lastEvents.get(event.id);
       const movements = detectMovements(previous, event);
