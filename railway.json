@@ -1,0 +1,13 @@
+{
+  "$schema": "https://railway.app/railway.schema.json",
+  "build": {
+    "builder": "RAILPACK",
+    "buildCommand": "npm install -g pnpm@9.12.0 && pnpm install --frozen-lockfile && pnpm --filter @bettin2win/types build && pnpm --filter @bettin2win/odds-engine build"
+  },
+  "deploy": {
+    "startCommand": "node services/odds-engine/dist/index.js",
+    "healthcheckPath": "/health",
+    "restartPolicyType": "ON_FAILURE",
+    "restartPolicyMaxRetries": 10
+  }
+}
