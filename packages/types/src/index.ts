@@ -87,6 +87,22 @@ export interface TeamFormGuide {
   away?: string;
 }
 
+export type ClosingLineStatus =
+  | "tracking"
+  | "pending-result"
+  | "favorite-won"
+  | "favorite-lost";
+
+export interface ClosingLineCheck {
+  status: ClosingLineStatus;
+  favorite: string;
+  favoritePrice: number;
+  favoriteBookmaker?: string;
+  recordedAt: string;
+  closedAt?: string;
+  winner?: string;
+}
+
 export interface SportEvent {
   id: string;
   sport: SportKey;
@@ -107,6 +123,8 @@ export interface SportEvent {
   awayLogo?: string;
   /** Compact recent form guide, e.g. WDWLL. */
   form?: TeamFormGuide;
+  /** Pregame/closing moneyline check once odds and scores are available. */
+  lineCheck?: ClosingLineCheck;
   /** Provider key the data came from. */
   source: string;
 }

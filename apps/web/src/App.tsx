@@ -1,5 +1,11 @@
 import { useMemo, useState } from "react";
-import type { DataMode, OddsFormat, SportEvent, SportKey } from "@bettin2win/types";
+import type {
+  ClosingLineCheck,
+  DataMode,
+  OddsFormat,
+  SportEvent,
+  SportKey,
+} from "@bettin2win/types";
 import { formatOdds } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
 import { useOddsSocket } from "./useOddsSocket";
@@ -301,6 +307,7 @@ function EventCard({
           )}
         </div>
       )}
+      {event.lineCheck && <LineCheckBanner check={event.lineCheck} format={format} />}
       {event.sport !== "golf" && (
         <div className="runners">
           {event.runners.map((runner) => {
@@ -345,6 +352,32 @@ function EventCard({
         </div>
       )}
     </article>
+  );
+}
+
+function LineCheckBanner({
+  check,
+  format,
+}: {
+  check: ClosingLineCheck;
+  format: OddsFormat;
+}) {
+  const price = formatOdds(check.favoritePrice, format);
+  const book = check.favoriteBookmaker ? ` at ${check.favoriteBookmaker}` : "";
+  const base = `${check.favorite} ${price}${book}`;
+  const text =
+    check.status === "tracking"
+      ? `Tracking pregame favorite: ${base}`
+      : check.status === "pending-result"
+        ? `Closing favorite: ${base}. Waiting for final.`
+        : check.status === "favorite-won"
+          ? `Closing favorite won: ${base}. Final winner: ${check.winner}.`
+          : `Closing favorite lost: ${base}. Final winner: ${check.winner}.`;
+
+  return (
+    <div className={`line-check ${check.status}`}>
+      <span>{text}</span>
+    </div>
   );
 }
 

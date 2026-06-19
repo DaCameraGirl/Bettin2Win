@@ -7,6 +7,7 @@ import type {
 import { ALL_SPORTS, SPORTS } from "./config.js";
 import { adapters } from "./adapters/index.js";
 import { detectMovements } from "./movement.js";
+import { lineHistoryStore, type LineHistoryStore } from "./line-history.js";
 
 type Emit = (message: WebSocketMessage) => void;
 
@@ -20,7 +21,10 @@ export class Poller {
   private lastEvents = new Map<string, SportEvent>();
   private health = new Map<SportKey, ProviderHealth>();
 
-  constructor(private readonly emit: Emit) {}
+  constructor(
+    private readonly emit: Emit,
+    private readonly lineHistory: LineHistoryStore = lineHistoryStore,
+  ) {}
 
   start(): void {
     for (const sport of ALL_SPORTS) {
@@ -47,6 +51,7 @@ export class Poller {
   private async poll(sport: SportKey): Promise<void> {
     const adapter = adapters[sport];
     const result = await adapter.fetchEvents();
+    const events = result.events.map((event) => this.lineHistory.decorate(event));
 
     this.health.set(sport, {
       provider: adapter.provider,
@@ -57,14 +62,14 @@ export class Poller {
       message: result.message,
     });
 
-    const currentIds = new Set(result.events.map((event) => event.id));
+    const currentIds = new Set(events.map((event) => event.id));
     for (const [id, event] of this.lastEvents) {
       if (event.sport === sport && !currentIds.has(id)) {
         this.lastEvents.delete(id);
       }
     }
 
-    for (const event of result.events) {
+    for (const event of events) {
       const previous = this.lastEvents.get(event.id);
       const movements = detectMovements(previous, event);
       this.lastEvents.set(event.id, event);
