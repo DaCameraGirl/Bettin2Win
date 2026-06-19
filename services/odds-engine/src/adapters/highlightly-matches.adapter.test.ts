@@ -40,7 +40,7 @@ test("normalizes Highlightly baseball backup match with score and logos", () => 
 test("normalizes Highlightly basketball upcoming match with league and date", () => {
   const event = normalizeHighlightlyMatch("basketball", {
     id: 426674313,
-    date: "2026-06-19T17:00:00.000Z",
+    date: "2099-06-19T17:00:00.000Z",
     country: { name: "Turkey" },
     league: { name: "Super Ligi" },
     state: {

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import type { OddsFormat, SportEvent, SportKey } from "@bettin2win/types";
+import type { DataMode, OddsFormat, SportEvent, SportKey } from "@bettin2win/types";
 import { formatOdds } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
 import { useOddsSocket } from "./useOddsSocket";
@@ -21,6 +21,7 @@ export function App() {
     [movements, sport],
   );
   const scores = useBaseballScores(sport === "baseball");
+  const hasOdds = useMemo(() => events.some(eventHasOdds), [events]);
 
   return (
     <div className="app">
@@ -61,7 +62,7 @@ export function App() {
             <h2>{SPORT_TABS.find((t) => t.key === sport)?.label}</h2>
             {sportHealth && (
               <span className={`mode-badge ${sportHealth.mode}`}>
-                {sportHealth.mode === "live" ? "LIVE FEED" : "DEMO DATA"}
+                {feedLabel(sportHealth.mode, hasOdds)}
                 {sportHealth.message ? ` - ${sportHealth.message}` : ""}
               </span>
             )}
@@ -88,7 +89,11 @@ export function App() {
             <span className="drifting">↑ drifting = less likely</span>
           </p>
           {sportMovements.length === 0 ? (
-            <p className="empty small">No moves yet. Prices update every few seconds.</p>
+            <p className="empty small">
+              {hasOdds
+                ? "No moves yet. Prices update every few seconds."
+                : "No betting prices in this feed right now."}
+            </p>
           ) : (
             <ul>
               {sportMovements.map((m, i) => (
@@ -108,6 +113,15 @@ export function App() {
       <Glossary />
     </div>
   );
+}
+
+function feedLabel(mode: DataMode, hasOdds: boolean): string {
+  if (mode === "mock") return "DEMO DATA";
+  return hasOdds ? "LIVE ODDS" : "REAL GAME FEED";
+}
+
+function eventHasOdds(event: SportEvent): boolean {
+  return event.runners.some((runner) => runner.odds.length > 0 || runner.bestPrice !== undefined);
 }
 
 /** Plain-English meaning shown next to each market move. */
