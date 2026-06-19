@@ -1,12 +1,10 @@
 import type { SportEvent, SportKey } from "@bettin2win/types";
 import { decorateRunners } from "./base.js";
 
-const BOOKS = ["DraftKings", "FanDuel", "BetMGM", "Caesars"];
-
 const NAME_POOLS: Record<SportKey, { events: string[]; runners: string[][] }> = {
   football: {
-    events: ["Lakers FC @ Celtics SC", "Rovers @ United", "City @ Albion"],
-    runners: [["Home", "Draw", "Away"]],
+    events: ["Chiefs @ Eagles", "Ravens @ Bills", "Cowboys @ 49ers"],
+    runners: [["Away", "Home"]],
   },
   baseball: {
     events: ["Sox @ Yankees", "Cubs @ Dodgers", "Mets @ Braves"],
@@ -42,12 +40,6 @@ const NAME_POOLS: Record<SportKey, { events: string[]; runners: string[][] }> = 
   },
 };
 
-/** Deterministic-ish pseudo random so mock odds drift between polls. */
-function jitter(base: number): number {
-  const delta = (Math.random() - 0.5) * 0.4;
-  return Math.max(1.05, Number((base + delta).toFixed(2)));
-}
-
 export function generateMockEvents(sport: SportKey): SportEvent[] {
   const pool = NAME_POOLS[sport];
   const runnerNames = pool.runners[0] ?? ["Home", "Away"];
@@ -61,24 +53,15 @@ export function generateMockEvents(sport: SportKey): SportEvent[] {
       startTime: new Date(now + (index + 1) * 30 * 60_000).toISOString(),
       status: index === 0 ? "live" : "upcoming",
       source: "mock",
-      runners: runnerNames.map((name, rIdx) => {
-        const basePrice = 2 + rIdx * 1.5;
-        return {
-          id: `mock-${sport}-${index}-r${rIdx}`,
-          name,
-          number: ["football", "baseball", "basketball", "hockey", "soccer"].includes(sport)
-            ? undefined
-            : rIdx + 1,
-          position: sport === "golf" ? rIdx + 1 : undefined,
-          odds: BOOKS.map((book) => ({
-            bookmaker: book,
-            runnerId: `mock-${sport}-${index}-r${rIdx}`,
-            price: jitter(basePrice),
-            impliedProbability: 0,
-            lastUpdate: new Date().toISOString(),
-          })),
-        };
-      }),
+      runners: runnerNames.map((name, rIdx) => ({
+        id: `mock-${sport}-${index}-r${rIdx}`,
+        name,
+        number: ["football", "baseball", "basketball", "hockey", "soccer"].includes(sport)
+          ? undefined
+          : rIdx + 1,
+        position: sport === "golf" ? rIdx + 1 : undefined,
+        odds: [],
+      })),
     };
     return decorateRunners(event);
   });
