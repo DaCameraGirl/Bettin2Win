@@ -1,12 +1,23 @@
 # Bettin2Win screenshots
 
-Add portfolio images here and reference them from the root README.
+Portfolio images for the root README.
 
-Suggested captures:
+| File | What it shows |
+|---|---|
+| `dashboard.png` | Main odds board (demo basketball tab) |
+| `provider-status.png` | Provider status control-room grid |
+| `market-movement.png` | Market movement sidebar |
+| `beginner-guide.png` | Expanded beginner guide |
 
-1. **dashboard.png** — Baseball or basketball tab with LIVE ODDS cards
-2. **market-movement.png** — Right-hand movement feed with price changes
-3. **beginner-guide.png** — Expanded “New to betting?” guide
-4. **provider-status.png** — Provider status grid under the sport tabs
+## Regenerate
 
-Live site: https://dacameragirl.github.io/Bettin2Win/
+```bash
+corepack pnpm exec playwright install chromium   # first time only
+pnpm screenshots
+```
+
+Defaults to the live GitHub Pages site. Pass a local URL to capture from dev:
+
+```bash
+pnpm screenshots http://localhost:5173/
+```

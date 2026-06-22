@@ -34,14 +34,33 @@ swapping a feed stays inside the engine.
 
 ## Screenshots
 
-Visual proof lives in [`docs/screenshots/`](docs/screenshots/). Capture these from the live site or `pnpm dev`:
+Live app: [dacameragirl.github.io/Bettin2Win](https://dacameragirl.github.io/Bettin2Win/)
 
-| File | What to show |
-|---|---|
-| `dashboard.png` | Main odds board with sport tabs and event cards |
-| `market-movement.png` | Market movement sidebar with shortening/drifting |
-| `beginner-guide.png` | Expanded beginner guide |
-| `provider-status.png` | Provider status control-room panel + demo toggle |
+### Dashboard
+
+Main odds board with best-price comparison across sportsbooks (demo data shown here for a full board).
+
+![Basketball odds board with live and upcoming games, best prices, and market movement sidebar](docs/screenshots/dashboard.png)
+
+### Provider status
+
+Control-room grid for every sport feed — live odds, real game data, demo, quota, or provider issues.
+
+![Provider status panel showing per-sport feed health badges](docs/screenshots/provider-status.png)
+
+### Market movement
+
+Shortening and drifting odds with plain-English hints in the right-hand feed.
+
+![Market movement sidebar with shortening and drifting legend](docs/screenshots/market-movement.png)
+
+### Beginner guide
+
+Plain-English onboarding for first-time visitors, including responsible gambling copy.
+
+![Expanded beginner guide with how-to-read odds and safety tips](docs/screenshots/beginner-guide.png)
+
+Regenerate anytime: `pnpm screenshots` (requires Chromium via Playwright).
 
 ## Quick start
 
