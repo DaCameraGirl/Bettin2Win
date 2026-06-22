@@ -8,7 +8,7 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   football: {
     key: "football",
     label: "Football",
-    provider: "the-odds-api+sportsbook-api+highlightly-matches",
+    provider: "the-odds-api+sportsbook-api+espn-nfl-odds",
     pollIntervalMs: 15_000,
   },
   baseball: {
