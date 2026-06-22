@@ -2,13 +2,15 @@ import type { ProviderHealth, SportEvent, SportKey } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
 import {
   classifyFeedStatus,
+  feedSummaryFromHealth,
   FEED_STATUS_LABELS,
   type FeedStatus,
 } from "./providerStatus";
 
 interface ProviderStatusPanelProps {
   health: ProviderHealth[];
-  eventsBySport: Record<string, SportEvent[]>;
+  /** Live socket events — never client demo boards. */
+  liveEventsBySport: Record<string, SportEvent[]>;
   activeSport: SportKey;
   demoMode: boolean;
   onSelectSport: (sport: SportKey) => void;
@@ -16,7 +18,7 @@ interface ProviderStatusPanelProps {
 
 export function ProviderStatusPanel({
   health,
-  eventsBySport,
+  liveEventsBySport,
   activeSport,
   demoMode,
   onSelectSport,
@@ -30,8 +32,12 @@ export function ProviderStatusPanel({
       <div className="status-grid">
         {SPORT_TABS.map((tab) => {
           const sportHealth = health.find((row) => row.sport === tab.key);
-          const events = eventsBySport[tab.key] ?? [];
-          const status = classifyFeedStatus(sportHealth, events, demoMode);
+          const events = liveEventsBySport[tab.key] ?? [];
+          const status = classifyFeedStatus(
+            sportHealth,
+            events,
+            demoMode && tab.key === activeSport,
+          );
           const isActive = tab.key === activeSport;
 
           return (
@@ -63,15 +69,11 @@ function statusDetail(
   if (status === "no-key") return shortMessage(health, "API key missing on server");
   if (status === "quota-hit") return shortMessage(health, "Provider quota exhausted");
   if (status === "provider-down") return shortMessage(health, "Provider unreachable");
-  return `${eventCount} event${eventCount === 1 ? "" : "s"}${health?.provider ? ` · ${providerShort(health.provider)}` : ""}`;
+  return feedSummaryFromHealth(health, eventCount);
 }
 
 function shortMessage(health: ProviderHealth | undefined, fallback: string): string {
   const text = health?.message?.trim();
   if (!text) return fallback;
   return text.length > 84 ? `${text.slice(0, 81)}…` : text;
-}
-
-function providerShort(provider: string): string {
-  return provider.split("+")[0] ?? provider;
 }
