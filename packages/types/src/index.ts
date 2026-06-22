@@ -183,6 +183,39 @@ export interface MarketTickerSnapshot {
   categories?: Record<string, string>;
 }
 
+export type WeatherBadgeKind =
+  | "wind-alert"
+  | "rain-risk"
+  | "heat-alert"
+  | "track-condition"
+  | "indoor-venue";
+
+export type WeatherImpactLevel = "low" | "medium" | "high";
+
+/** Outdoor game conditions translated for beginner bettors. */
+export interface WeatherImpact {
+  eventId: string;
+  impactLevel: WeatherImpactLevel;
+  badges: WeatherBadgeKind[];
+  /** One-line ticker-style summary, e.g. "41°F · Wind 18 mph · Rain likely". */
+  summary: string;
+  /** Short context line under the badge row. */
+  headline: string;
+  /** Plain-English betting/sports angle for the expandable panel. */
+  whyItMatters: string;
+  temperatureF?: number;
+  windMph?: number;
+  precipitationChance?: number;
+  trackCondition?: string;
+}
+
+export interface WeatherImpactSnapshot {
+  impacts: Record<string, WeatherImpact>;
+  source: string;
+  updatedAt: string;
+  message?: string;
+}
+
 /** Messages pushed from the odds-engine to the browser over WebSocket. */
 export type WebSocketMessage =
   | { type: "snapshot"; sport: SportKey; events: SportEvent[] }

@@ -7,6 +7,7 @@ import { Broadcaster } from "./broadcaster.js";
 import { highlightly } from "./highlightly/client.js";
 import { isEnrichSport } from "./highlightly/types.js";
 import { getMarketTicker } from "./market-ticker.js";
+import { buildWeatherImpacts, isWeatherSport } from "./weather/impact.js";
 
 const app = express();
 
@@ -53,6 +54,44 @@ app.get("/api/enrich/:sport/standings", async (req, res) => {
 
 // Live baseball game states (score + inning) from Highlightly, matched to odds
 // events by "Away @ Home" name. e.g. GET /api/enrich/baseball/scores
+app.get("/api/weather-impact/:sport", async (req, res) => {
+  const sport = req.params.sport as (typeof ALL_SPORTS)[number];
+  if (!ALL_SPORTS.includes(sport)) {
+    res.status(404).json({ error: "unknown sport" });
+    return;
+  }
+  if (!isWeatherSport(sport)) {
+    res.json({
+      impacts: {},
+      source: "open-meteo",
+      updatedAt: new Date().toISOString(),
+      message: "Weather impact not shown for this sport",
+    });
+    return;
+  }
+
+  try {
+    const events = poller.snapshot(sport);
+    const impacts = await buildWeatherImpacts(events);
+    res.json({
+      impacts,
+      source: "open-meteo",
+      updatedAt: new Date().toISOString(),
+      message:
+        Object.keys(impacts).length > 0
+          ? `${Object.keys(impacts).length} game weather card${Object.keys(impacts).length === 1 ? "" : "s"}`
+          : "No weather cards for current board",
+    });
+  } catch (err) {
+    res.status(502).json({
+      impacts: {},
+      source: "open-meteo",
+      updatedAt: new Date().toISOString(),
+      message: err instanceof Error ? err.message : "weather impact failed",
+    });
+  }
+});
+
 app.get("/api/market-ticker", async (_req, res) => {
   try {
     res.json(await getMarketTicker());
