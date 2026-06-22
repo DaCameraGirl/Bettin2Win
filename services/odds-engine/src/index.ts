@@ -6,6 +6,7 @@ import { Poller } from "./poller.js";
 import { Broadcaster } from "./broadcaster.js";
 import { highlightly } from "./highlightly/client.js";
 import { isEnrichSport } from "./highlightly/types.js";
+import { getMarketTicker } from "./market-ticker.js";
 
 const app = express();
 
@@ -52,6 +53,19 @@ app.get("/api/enrich/:sport/standings", async (req, res) => {
 
 // Live baseball game states (score + inning) from Highlightly, matched to odds
 // events by "Away @ Home" name. e.g. GET /api/enrich/baseball/scores
+app.get("/api/market-ticker", async (_req, res) => {
+  try {
+    res.json(await getMarketTicker());
+  } catch (err) {
+    res.status(502).json({
+      quotes: [],
+      source: "yahoo-finance",
+      updatedAt: new Date().toISOString(),
+      message: err instanceof Error ? err.message : "market ticker failed",
+    });
+  }
+});
+
 app.get("/api/enrich/baseball/scores", async (req, res) => {
   const date = String(req.query.date ?? new Date().toLocaleDateString("en-CA"));
   try {

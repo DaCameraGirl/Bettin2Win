@@ -160,6 +160,25 @@ export interface ProviderHealth {
   message?: string;
 }
 
+/** Live equity quote for the market ticker bar. */
+export interface StockQuote {
+  symbol: string;
+  label: string;
+  price: number;
+  change: number;
+  changePercent: number;
+  currency: string;
+  marketState?: string;
+  updatedAt: string;
+}
+
+export interface MarketTickerSnapshot {
+  quotes: StockQuote[];
+  source: string;
+  updatedAt: string;
+  message?: string;
+}
+
 /** Messages pushed from the odds-engine to the browser over WebSocket. */
 export type WebSocketMessage =
   | { type: "snapshot"; sport: SportKey; events: SportEvent[] }
