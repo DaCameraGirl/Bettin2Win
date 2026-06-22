@@ -1,9 +1,12 @@
+import { useState } from "react";
 import type { ProviderHealth, SportEvent, SportKey } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
 import {
   classifyFeedStatus,
-  feedSummaryFromHealth,
+  developerStatusDetail,
   FEED_STATUS_LABELS,
+  userStatusDetail,
+  USER_FEED_STATUS_LABELS,
   type FeedStatus,
 } from "./providerStatus";
 
@@ -23,11 +26,25 @@ export function ProviderStatusPanel({
   demoMode,
   onSelectSport,
 }: ProviderStatusPanelProps) {
+  const [showDevDetails, setShowDevDetails] = useState(false);
+
   return (
     <section className="status-panel" aria-label="Provider status control room">
       <div className="status-panel-head">
-        <h3>Provider status</h3>
-        <p>Control-room view of every sport feed. Click a row to jump there.</p>
+        <div className="status-panel-head-row">
+          <div>
+            <h3>Feed health</h3>
+            <p>Quick check that each sport has live games or prices. Click a row to jump there.</p>
+          </div>
+          <label className="status-dev-toggle">
+            <input
+              type="checkbox"
+              checked={showDevDetails}
+              onChange={(event) => setShowDevDetails(event.target.checked)}
+            />
+            Technical details
+          </label>
+        </div>
       </div>
       <div className="status-grid">
         {SPORT_TABS.map((tab) => {
@@ -39,6 +56,7 @@ export function ProviderStatusPanel({
             demoMode && tab.key === activeSport,
           );
           const isActive = tab.key === activeSport;
+          const devDetail = developerStatusDetail(sportHealth);
 
           return (
             <button
@@ -49,31 +67,17 @@ export function ProviderStatusPanel({
             >
               <span className="status-card-icon">{tab.icon}</span>
               <span className="status-card-label">{tab.label}</span>
-              <span className={`status-pill ${status}`}>{FEED_STATUS_LABELS[status]}</span>
-              <span className="status-card-detail">{statusDetail(status, sportHealth, events.length)}</span>
+              <span className={`status-pill user ${status}`}>{USER_FEED_STATUS_LABELS[status]}</span>
+              <span className="status-card-detail">{userStatusDetail(status, sportHealth, events.length)}</span>
+              {showDevDetails && (
+                <span className="status-card-dev" title={FEED_STATUS_LABELS[status]}>
+                  {devDetail ?? "No engine message yet"}
+                </span>
+              )}
             </button>
           );
         })}
       </div>
     </section>
   );
-}
-
-function statusDetail(
-  status: FeedStatus,
-  health: ProviderHealth | undefined,
-  eventCount: number,
-): string {
-  if (status === "demo") return "Sample games with demo prices";
-  if (status === "waiting") return health?.message?.slice(0, 72) ?? "Waiting for first snapshot";
-  if (status === "no-key") return shortMessage(health, "API key missing on server");
-  if (status === "quota-hit") return shortMessage(health, "Provider quota exhausted");
-  if (status === "provider-down") return shortMessage(health, "Provider unreachable");
-  return feedSummaryFromHealth(health, eventCount);
-}
-
-function shortMessage(health: ProviderHealth | undefined, fallback: string): string {
-  const text = health?.message?.trim();
-  if (!text) return fallback;
-  return text.length > 84 ? `${text.slice(0, 81)}…` : text;
 }

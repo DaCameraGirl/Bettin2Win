@@ -4,7 +4,9 @@ import type { ProviderHealth, SportEvent } from "@bettin2win/types";
 import {
   activeFeedNote,
   classifyFeedStatus,
+  developerStatusDetail,
   feedSummaryFromHealth,
+  userStatusDetail,
 } from "./providerStatus";
 
 const mockFootballEvent: SportEvent = {
@@ -192,6 +194,42 @@ describe("classifyFeedStatus", () => {
     };
 
     assert.equal(classifyFeedStatus(health, [pricedFootballEvent]), "live-odds");
+  });
+});
+
+describe("userStatusDetail", () => {
+  it("uses plain language for live odds without HTTP codes", () => {
+    const health: ProviderHealth = {
+      sport: "football",
+      provider: "espn-nfl-odds",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "backup espn-nfl-odds - 16/16 NFL games with DraftKings moneyline odds from ESPN",
+    };
+
+    assert.equal(
+      userStatusDetail("live-odds", health, 16),
+      "Betting lines from our backup sports feed",
+    );
+  });
+
+  it("hides provider 401 jargon from beginners", () => {
+    const health: ProviderHealth = {
+      sport: "basketball",
+      provider: "the-odds-api",
+      mode: "mock",
+      ok: false,
+      lastChecked: new Date().toISOString(),
+      message: "provider 401; backup highlightly-matches: provider 429",
+    };
+
+    assert.equal(
+      userStatusDetail("quota-hit", health, 0),
+      "Primary feed busy — showing backup data when available",
+    );
+    assert.match(developerStatusDetail(health) ?? "", /401/);
   });
 });
 

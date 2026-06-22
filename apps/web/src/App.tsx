@@ -15,11 +15,14 @@ import { MarketTicker } from "./MarketTicker";
 import { ProviderStatusPanel } from "./ProviderStatusPanel";
 import { BetTypeGuide } from "./BetTypeGuide";
 import { OddsTranslator } from "./OddsTranslator";
+import { HowItWorksStrip } from "./HowItWorksStrip";
 import { buildDemoEventsBySport } from "./mockEvents";
 import {
   classifyFeedStatus,
-  feedLabelFromStatus,
+  developerStatusDetail,
   sportHasOdds,
+  USER_FEED_STATUS_LABELS,
+  userStatusDetail,
 } from "./providerStatus";
 
 const DEMO_EVENTS_BY_SPORT = buildDemoEventsBySport();
@@ -86,6 +89,8 @@ export function App() {
         </p>
       )}
 
+      <HowItWorksStrip />
+
       <nav className="tabs">
         {SPORT_TABS.map((tab) => (
           <button
@@ -114,10 +119,18 @@ export function App() {
         <section className="board">
           <div className="board-head">
             <h2>{SPORT_TABS.find((t) => t.key === sport)?.label}</h2>
-            <span className={`mode-badge ${demoMode ? "mock" : sportHealth?.mode ?? "mock"}`}>
-              {feedLabelFromStatus(feedStatus)}
-              {!demoMode && sportHealth?.message ? ` - ${sportHealth.message}` : ""}
-            </span>
+            <div className="board-feed-status">
+              <span className={`mode-badge user ${feedStatus}`}>
+                {USER_FEED_STATUS_LABELS[feedStatus]}
+              </span>
+              {!demoMode && developerStatusDetail(sportHealth) && (
+                <details className="board-feed-dev">
+                  <summary>Technical feed details</summary>
+                  <p>{developerStatusDetail(sportHealth)}</p>
+                </details>
+              )}
+              <span className="board-feed-user-note">{userStatusDetail(feedStatus, sportHealth, liveEvents.length)}</span>
+            </div>
           </div>
 
           {events.length === 0 ? (
@@ -357,8 +370,8 @@ function EventCard({
         <h4>{event.name}</h4>
         <span className={`pill ${event.status}`}>{event.status}</span>
       </div>
-      <SportField event={event} score={score} />
       <OddsTranslator event={event} format={format} />
+      <SportField event={event} score={score} />
       {event.prediction && (
         <div className={`model-pick ${event.prediction.status}`}>
           <span className="mp-star">★</span>
