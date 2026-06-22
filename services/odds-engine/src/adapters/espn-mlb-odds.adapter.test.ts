@@ -5,7 +5,7 @@ import { normalizeEspnMlbEvent, normalizeEspnMlbScoreboard } from "./espn-mlb-od
 test("normalizes ESPN MLB game with DraftKings moneyline odds", () => {
   const event = normalizeEspnMlbEvent({
     id: "401815812",
-    date: "2026-06-19T22:40Z",
+    date: "2027-06-19T22:40Z",
     competitions: [
       {
         venue: { fullName: "Comerica Park" },
