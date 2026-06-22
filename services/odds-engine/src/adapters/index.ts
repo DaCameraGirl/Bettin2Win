@@ -13,6 +13,9 @@ import { Tank01MlbAdapter } from "./tank01-mlb.adapter.js";
 import { MlbStatsAdapter } from "./mlb-stats.adapter.js";
 import { EspnGolfAdapter } from "./espn-golf.adapter.js";
 import { EspnMlbOddsAdapter } from "./espn-mlb-odds.adapter.js";
+import { EspnNhlOddsAdapter } from "./espn-nhl-odds.adapter.js";
+import { EspnNascarAdapter } from "./espn-nascar.adapter.js";
+import { GreyhoundRacingUkAdapter } from "./greyhound-racing-uk.adapter.js";
 import { NhlScoreboardAdapter } from "./nhl-scoreboard.adapter.js";
 
 /** Registry mapping each sport to the adapter that owns it. */
@@ -46,16 +49,16 @@ export const adapters: Record<SportKey, SportAdapter> = {
       ),
       new HighlightlyMatchesAdapter("hockey"),
     ),
-    new NhlScoreboardAdapter(),
+    new FallbackAdapter(new EspnNhlOddsAdapter(), new NhlScoreboardAdapter()),
   ),
   soccer: new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),
   golf: new EspnGolfAdapter(),
-  nascar: new TheRundownAdapter(),
+  nascar: new FallbackAdapter(new EspnNascarAdapter(), new TheRundownAdapter()),
   "horse-racing": new FallbackAdapter(
     new HorseRacingRapidApiAdapter(),
     new RacingApiAdapter(),
   ),
-  greyhound: new BetsApiAdapter(),
+  greyhound: new FallbackAdapter(new GreyhoundRacingUkAdapter(), new BetsApiAdapter()),
 };
 
 export type { SportAdapter } from "./base.js";
