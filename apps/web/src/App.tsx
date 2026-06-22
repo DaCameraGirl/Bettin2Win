@@ -5,6 +5,7 @@ import type {
   ProviderHealth,
   SportEvent,
   SportKey,
+  WeatherImpact,
 } from "@bettin2win/types";
 import { formatOdds } from "@bettin2win/types";
 import { SPORT_TABS } from "./sports";
@@ -16,6 +17,8 @@ import { ProviderStatusPanel } from "./ProviderStatusPanel";
 import { BetTypeGuide } from "./BetTypeGuide";
 import { OddsTranslator } from "./OddsTranslator";
 import { HowItWorksStrip } from "./HowItWorksStrip";
+import { WeatherImpactBadge } from "./WeatherImpactBadge";
+import { useWeatherImpact } from "./useWeatherImpact";
 import { buildDemoEventsBySport } from "./mockEvents";
 import {
   classifyFeedStatus,
@@ -49,6 +52,11 @@ export function App() {
   );
   const scores = useBaseballScores(sport === "baseball" && !demoMode);
   const hasOdds = useMemo(() => sportHasOdds(events), [events]);
+  const { impacts: weatherImpacts, loading: weatherLoading } = useWeatherImpact(
+    sport,
+    liveEvents,
+    !demoMode,
+  );
 
   return (
     <div className="app">
@@ -144,6 +152,8 @@ export function App() {
                 event={event}
                 format={format}
                 score={scores.get(event.name)}
+                weatherImpact={weatherImpacts[event.id]}
+                weatherLoading={weatherLoading}
               />
             ))
           )}
@@ -359,10 +369,14 @@ function EventCard({
   event,
   format,
   score,
+  weatherImpact,
+  weatherLoading,
 }: {
   event: SportEvent;
   format: OddsFormat;
   score?: GameScore;
+  weatherImpact?: WeatherImpact;
+  weatherLoading?: boolean;
 }) {
   return (
     <article className="event">
@@ -372,6 +386,7 @@ function EventCard({
       </div>
       <OddsTranslator event={event} format={format} />
       <SportField event={event} score={score} />
+      <WeatherImpactBadge event={event} impact={weatherImpact} loading={weatherLoading} />
       {event.prediction && (
         <div className={`model-pick ${event.prediction.status}`}>
           <span className="mp-star">★</span>
