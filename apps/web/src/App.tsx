@@ -311,6 +311,9 @@ const GLOSSARY: { term: string; plain: string }[] = [
   { term: "Spread", plain: "Bet whether a team wins by enough points, or loses by fewer than the line." },
   { term: "Total (O/U)", plain: "Bet whether both teams' combined score goes over or under a number." },
   { term: "Implied probability", plain: "What the odds suggest about chance before the sportsbook's profit margin." },
+  { term: "Favorite (−)", plain: "Expected to win more often — smaller payout, losses still happen. e.g. −285." },
+  { term: "Underdog (+)", plain: "Expected to win less often — bigger payout if it hits. e.g. +230." },
+  { term: "Sportsbook margin", plain: "The house edge baked into prices. Two implied chances often add up to more than 100%." },
   { term: "Decimal (D)", plain: "e.g. 2.50 — bet $1, get $2.50 back total if it wins (European style)." },
   { term: "American (A)", plain: "e.g. +150 / -200 — plus = underdog payout, minus = how much to risk to win $100." },
   { term: "Fractional (F)", plain: "e.g. 3/2 — win $3 for every $2 staked (UK / horse-racing style)." },
@@ -367,6 +370,17 @@ function BeginnerGuide() {
             smaller, so it's now seen as <strong>more likely</strong> to win.{" "}
             <strong>Drifting ↑</strong> = odds got bigger, seen as <strong>less
             likely</strong>. It's the crowd changing its mind in real time.
+          </p>
+        </div>
+
+        <div className="guide-card">
+          <h4>🤔 Why isn&apos;t everyone rich?</h4>
+          <p>
+            Because <strong>odds are prices, not guarantees</strong>. A{" "}
+            <strong>−285 favorite</strong> is expected to win more often, but the payout is
+            smaller and losses still happen. A <strong>+230 underdog</strong> pays more because
+            it is expected to win less often. Sportsbooks also build in a margin, so the two
+            implied chances usually add up to <strong>more than 100%</strong>.
           </p>
         </div>
 
