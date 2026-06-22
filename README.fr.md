@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/readme-hero.svg" alt="Bettin2Win — guide des cotes pour débutants" width="100%"/>
+</p>
+
 # Bettin2Win
 
 <p align="center">

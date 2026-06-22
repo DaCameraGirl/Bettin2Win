@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/readme-hero.svg" alt="Bettin2Win — 初心者向けオッズガイド" width="100%"/>
+</p>
+
 # Bettin2Win
 
 <p align="center">

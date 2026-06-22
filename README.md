@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/readme-hero.svg" alt="Bettin2Win — beginner odds guide, not a sportsbook" width="100%"/>
+</p>
+
 # Bettin2Win
 
 <p align="center">
