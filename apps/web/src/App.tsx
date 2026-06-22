@@ -3,6 +3,7 @@ import type {
   ClosingLineCheck,
   DataMode,
   OddsFormat,
+  ProviderHealth,
   SportEvent,
   SportKey,
 } from "@bettin2win/types";
@@ -75,7 +76,7 @@ export function App() {
           </div>
 
           {events.length === 0 ? (
-            <p className="empty">Waiting for the first snapshot...</p>
+            <p className="empty">{emptyBoardMessage(sport, sportHealth)}</p>
           ) : (
             events.map((event) => (
               <EventCard
@@ -124,6 +125,16 @@ export function App() {
 function feedLabel(mode: DataMode, hasOdds: boolean): string {
   if (mode === "mock") return "DEMO DATA";
   return hasOdds ? "LIVE ODDS" : "REAL GAME FEED";
+}
+
+function emptyBoardMessage(sport: SportKey, health?: ProviderHealth): string {
+  if (!health || health.mode === "mock") {
+    return "Waiting for the first snapshot...";
+  }
+  if (sport === "football") {
+    return "No NFL games on the board right now. It's offseason — the board fills back up when the season starts.";
+  }
+  return "Connected to a live feed, but nothing is scheduled for this sport right now.";
 }
 
 function eventHasOdds(event: SportEvent): boolean {
