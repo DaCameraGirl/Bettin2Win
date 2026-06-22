@@ -16,7 +16,7 @@ import { EspnMlbOddsAdapter } from "./espn-mlb-odds.adapter.js";
 import { EspnNhlOddsAdapter } from "./espn-nhl-odds.adapter.js";
 import { EspnNascarAdapter } from "./espn-nascar.adapter.js";
 import { GreyhoundRacingUkAdapter } from "./greyhound-racing-uk.adapter.js";
-import { NhlScoreboardAdapter } from "./nhl-scoreboard.adapter.js";
+import { NhlCompositeAdapter } from "./nhl-composite.adapter.js";
 import { EspnNflScoreboardAdapter } from "./espn-nfl-scoreboard.adapter.js";
 import { EspnSoccerScoreboardAdapter } from "./espn-soccer-scoreboard.adapter.js";
 
@@ -51,7 +51,7 @@ export const adapters: Record<SportKey, SportAdapter> = {
       ),
       new HighlightlyMatchesAdapter("hockey"),
     ),
-    new FallbackAdapter(new EspnNhlOddsAdapter(), new NhlScoreboardAdapter()),
+    new NhlCompositeAdapter(),
   ),
   soccer: new FallbackAdapter(
     new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),

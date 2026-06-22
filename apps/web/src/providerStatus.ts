@@ -54,16 +54,14 @@ export function classifyFeedStatus(
 ): FeedStatus {
   if (forceDemo) return "demo";
 
+  if (events.length > 0 && !isEngineMockBoard(events)) {
+    return sportHasOdds(events) ? "live-odds" : "real-game-feed";
+  }
+
   const message = (health?.message ?? "").toLowerCase();
   const messageStatus = message ? statusFromHealthMessage(message) : null;
 
   if (sportHasOdds(events)) return "live-odds";
-
-  if (events.length > 0) {
-    if (health?.mode === "live" || !isEngineMockBoard(events)) return "real-game-feed";
-    if (messageStatus) return messageStatus;
-    return "provider-down";
-  }
 
   if (messageStatus) return messageStatus;
   if (health && !health.ok) return "provider-down";

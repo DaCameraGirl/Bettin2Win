@@ -59,4 +59,18 @@ describe("classifyFeedStatus", () => {
   it("keeps intentional demo mode yellow", () => {
     assert.equal(classifyFeedStatus(undefined, [mockFootballEvent], true), "demo");
   });
+
+  it("shows real game feed even when health message mentions quota errors", () => {
+    const health: ProviderHealth = {
+      sport: "hockey",
+      provider: "espn-nhl-odds+nhl-scoreboard",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "the-odds-api unavailable (provider 401); backup highlightly-matches: provider 429); backup espn-nhl-odds+nhl-scoreboard - 1 real NHL game (odds unavailable)",
+    };
+
+    assert.equal(classifyFeedStatus(health, [realFootballEvent]), "real-game-feed");
+  });
 });
