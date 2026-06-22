@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import type {
   ClosingLineCheck,
-  DataMode,
   OddsFormat,
   ProviderHealth,
   SportEvent,
@@ -13,23 +12,39 @@ import { useOddsSocket } from "./useOddsSocket";
 import { useBaseballScores, type GameScore } from "./useScores";
 import { SportField } from "./SportField";
 import { MarketTicker } from "./MarketTicker";
+import { ProviderStatusPanel } from "./ProviderStatusPanel";
+import { buildDemoEventsBySport } from "./mockEvents";
+import {
+  classifyFeedStatus,
+  feedLabelFromStatus,
+  sportHasOdds,
+} from "./providerStatus";
+
+const DEMO_EVENTS_BY_SPORT = buildDemoEventsBySport();
 
 export function App() {
   const { connected, eventsBySport, movements, health } = useOddsSocket();
   const [sport, setSport] = useState<SportKey>("football");
   const [format, setFormat] = useState<OddsFormat>("decimal");
+  const [demoMode, setDemoMode] = useState(false);
 
-  const events = eventsBySport[sport] ?? [];
+  const liveEvents = eventsBySport[sport] ?? [];
+  const events = demoMode ? (DEMO_EVENTS_BY_SPORT[sport] ?? []) : liveEvents;
   const sportHealth = useMemo(
     () => health.find((h) => h.sport === sport),
     [health, sport],
   );
-  const sportMovements = useMemo(
-    () => movements.filter((m) => m.sport === sport),
-    [movements, sport],
+  const feedStatus = useMemo(
+    () => classifyFeedStatus(sportHealth, liveEvents, demoMode),
+    [sportHealth, liveEvents, demoMode],
   );
-  const scores = useBaseballScores(sport === "baseball");
-  const hasOdds = useMemo(() => events.some(eventHasOdds), [events]);
+  const sportMovements = useMemo(
+    () => (demoMode ? [] : movements.filter((m) => m.sport === sport)),
+    [movements, sport, demoMode],
+  );
+  const scores = useBaseballScores(sport === "baseball" && !demoMode);
+  const hasOdds = useMemo(() => sportHasOdds(events), [events]);
+  const displayEventsBySport = demoMode ? DEMO_EVENTS_BY_SPORT : eventsBySport;
 
   return (
     <div className="app">
@@ -46,12 +61,25 @@ export function App() {
           </div>
         </div>
         <div className="topbar-right">
+          <button
+            type="button"
+            className={`demo-toggle ${demoMode ? "active" : ""}`}
+            onClick={() => setDemoMode((value) => !value)}
+          >
+            {demoMode ? "Exit demo" : "View demo data"}
+          </button>
           <FormatToggle value={format} onChange={setFormat} />
           <span className={`status-dot ${connected ? "live" : "down"}`}>
             {connected ? "live" : "reconnecting"}
           </span>
         </div>
       </header>
+
+      {demoMode && (
+        <p className="demo-banner">
+          Viewing <strong>demo data</strong> — sample games and prices for exploring the UI, not live feeds.
+        </p>
+      )}
 
       <nav className="tabs">
         {SPORT_TABS.map((tab) => (
@@ -66,22 +94,30 @@ export function App() {
         ))}
       </nav>
 
+      <ProviderStatusPanel
+        health={health}
+        eventsBySport={displayEventsBySport}
+        activeSport={sport}
+        demoMode={demoMode}
+        onSelectSport={setSport}
+      />
+
       <BeginnerGuide />
 
       <main className="layout">
         <section className="board">
           <div className="board-head">
             <h2>{SPORT_TABS.find((t) => t.key === sport)?.label}</h2>
-            {sportHealth && (
-              <span className={`mode-badge ${sportHealth.mode}`}>
-                {feedLabel(sportHealth.mode, hasOdds)}
-                {sportHealth.message ? ` - ${sportHealth.message}` : ""}
-              </span>
-            )}
+            <span className={`mode-badge ${demoMode ? "mock" : sportHealth?.mode ?? "mock"}`}>
+              {feedLabelFromStatus(feedStatus)}
+              {!demoMode && sportHealth?.message ? ` - ${sportHealth.message}` : ""}
+            </span>
           </div>
 
           {events.length === 0 ? (
-            <p className="empty">{emptyBoardMessage(sport, sportHealth)}</p>
+            <p className="empty">
+              {emptyBoardMessage(sport, sportHealth, demoMode, () => setDemoMode(true))}
+            </p>
           ) : (
             events.map((event) => (
               <EventCard
@@ -127,23 +163,44 @@ export function App() {
   );
 }
 
-function feedLabel(mode: DataMode, hasOdds: boolean): string {
-  if (mode === "mock") return "DEMO DATA";
-  return hasOdds ? "LIVE ODDS" : "REAL GAME FEED";
-}
-
-function emptyBoardMessage(sport: SportKey, health?: ProviderHealth): string {
+function emptyBoardMessage(
+  sport: SportKey,
+  health: ProviderHealth | undefined,
+  demoMode: boolean,
+  onDemo: () => void,
+): ReactNode {
+  if (demoMode) {
+    return "Demo board is loading…";
+  }
   if (!health || health.mode === "mock") {
-    return "Waiting for the first snapshot...";
+    return (
+      <>
+        Waiting for the first snapshot from the engine.{" "}
+        <button type="button" className="empty-demo-link" onClick={onDemo}>
+          View demo data
+        </button>{" "}
+        to explore the UI while providers connect.
+      </>
+    );
   }
   if (sport === "football") {
-    return "No NFL games on the board right now. It's offseason — the board fills back up when the season starts.";
+    return (
+      <>
+        No NFL games on the board right now. It's offseason — the board fills back up when the season starts.{" "}
+        <button type="button" className="empty-demo-link" onClick={onDemo}>
+          View demo data
+        </button>
+      </>
+    );
   }
-  return "Connected to a live feed, but nothing is scheduled for this sport right now.";
-}
-
-function eventHasOdds(event: SportEvent): boolean {
-  return event.runners.some((runner) => runner.odds.length > 0 || runner.bestPrice !== undefined);
+  return (
+    <>
+      Connected to a live feed, but nothing is scheduled for this sport right now.{" "}
+      <button type="button" className="empty-demo-link" onClick={onDemo}>
+        View demo data
+      </button>
+    </>
+  );
 }
 
 /** Plain-English meaning shown next to each market move. */

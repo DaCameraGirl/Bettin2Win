@@ -150,6 +150,136 @@ body {
   text-align: center;
 }
 
+.demo-toggle {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--text);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.demo-toggle:hover,
+.demo-toggle.active {
+  border-color: rgba(251, 191, 36, 0.55);
+  background: rgba(251, 191, 36, 0.12);
+  color: #fde68a;
+}
+
+.demo-banner {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.08);
+  color: #fde68a;
+  font-size: 13px;
+}
+
+.empty-demo-link {
+  border: none;
+  background: none;
+  color: var(--accent);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+}
+
+.status-panel {
+  margin: 0 0 18px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(26, 35, 49, 0.9), rgba(19, 26, 38, 0.92));
+}
+
+.status-panel-head h3 {
+  margin: 0 0 4px;
+  font-size: 15px;
+}
+
+.status-panel-head p {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.status-card {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  background: rgba(11, 15, 23, 0.55);
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.status-card:hover,
+.status-card.active {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(74, 222, 128, 0.06);
+}
+
+.status-card-icon {
+  font-size: 18px;
+}
+
+.status-card-label {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.status-pill {
+  display: inline-flex;
+  width: fit-content;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.status-pill.live-odds {
+  color: #bbf7d0;
+  background: rgba(74, 222, 128, 0.15);
+}
+
+.status-pill.real-game-feed {
+  color: #bae6fd;
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.status-pill.demo,
+.status-pill.waiting {
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.12);
+}
+
+.status-pill.no-key,
+.status-pill.quota-hit,
+.status-pill.provider-down {
+  color: #fecaca;
+  background: rgba(248, 113, 113, 0.12);
+}
+
+.status-card-detail {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
 @keyframes ticker-scroll {
   from {
     transform: translateX(0);
