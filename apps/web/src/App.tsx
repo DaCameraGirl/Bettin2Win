@@ -12,6 +12,7 @@ import { SPORT_TABS } from "./sports";
 import { useOddsSocket } from "./useOddsSocket";
 import { useBaseballScores, type GameScore } from "./useScores";
 import { SportField } from "./SportField";
+import { MarketTicker } from "./MarketTicker";
 
 export function App() {
   const { connected, eventsBySport, movements, health } = useOddsSocket();
@@ -32,12 +33,16 @@ export function App() {
 
   return (
     <div className="app">
+      <MarketTicker />
+      <p className="legal-strip">
+        Informational only. Not financial advice. Not a sportsbook. 21+ where legal.
+      </p>
       <header className="topbar">
         <div className="brand">
           <span className="brand-mark">B2W</span>
           <div>
             <h1>Bettin2Win</h1>
-            <p>real-time multi-sport odds</p>
+            <p>Live odds, best-price tracking, and plain-English betting context.</p>
           </div>
         </div>
         <div className="topbar-right">

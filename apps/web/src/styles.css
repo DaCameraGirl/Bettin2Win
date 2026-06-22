@@ -32,6 +32,125 @@ body {
   padding: 20px;
 }
 
+/* ---- market ticker ---- */
+.market-ticker {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin: -4px 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(26, 35, 49, 0.95), rgba(19, 26, 38, 0.95));
+  overflow: hidden;
+}
+
+.market-ticker-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.market-ticker-viewport {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.market-ticker-track {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  animation: ticker-scroll 42s linear infinite;
+}
+
+.market-ticker-track.static {
+  animation: none;
+  flex-wrap: wrap;
+}
+
+.market-ticker-track:hover {
+  animation-play-state: paused;
+}
+
+.ticker-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: rgba(11, 15, 23, 0.65);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.ticker-chip.up {
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.ticker-chip.down {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.ticker-symbol {
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.ticker-label {
+  color: var(--muted);
+}
+
+.ticker-price {
+  font-variant-numeric: tabular-nums;
+}
+
+.ticker-change {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.ticker-chip.up .ticker-change {
+  color: var(--up);
+}
+
+.ticker-chip.down .ticker-change {
+  color: var(--down);
+}
+
+.market-ticker-meta {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.legal-strip {
+  margin: 0 0 14px;
+  font-size: 11px;
+  color: var(--muted);
+  text-align: center;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .market-ticker-track {
+    animation: none;
+    flex-wrap: wrap;
+  }
+}
+
 /* ---- top bar ---- */
 .topbar {
   display: flex;
