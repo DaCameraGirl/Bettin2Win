@@ -1223,6 +1223,10 @@ body::after {
   animation-direction: alternate;
   will-change: left;
 }
+.race-lanes--horse .race-runner,
+.race-lanes--greyhound .race-runner {
+  animation-timing-function: linear;
+}
 @keyframes race-run {
   from {
     left: 16px;

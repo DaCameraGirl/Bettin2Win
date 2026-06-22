@@ -1,4 +1,10 @@
 import type { SportEvent, SportKey } from "@bettin2win/types";
+import {
+  raceCaption,
+  raceLaneTiming,
+  resolveRunnerNumber,
+  trackRunners,
+} from "./raceDisplay";
 import type { GameScore } from "./useScores";
 
 /** Sports that are a genuine two-team contest (away @ home + a score). */
@@ -252,33 +258,9 @@ const RACE_EMOJI: Partial<Record<SportKey, string>> = {
   greyhound: "🐕",
 };
 
-/**
- * Real (non-scratched) runners in best-guess running order: favourite first
- * (lowest decimal price), falling back to program number when a feed carries
- * no prices (e.g. the horse-racing free tier). True live in-race positions
- * aren't in the current feeds, so this is a proxy that upgrades automatically
- * the day a positions feed is wired.
- */
-function runningOrder(runners: SportEvent["runners"]): SportEvent["runners"] {
-  return runners
-    .filter((r) => r.name && !/non[- ]?runner/i.test(r.name))
-    .slice()
-    .sort((a, b) => {
-      // Real finishing position wins when a race is decided; otherwise fall
-      // back to the betting favourite, then the program number.
-      const posA = a.position ?? Number.POSITIVE_INFINITY;
-      const posB = b.position ?? Number.POSITIVE_INFINITY;
-      if (posA !== posB) return posA - posB;
-      const pa = a.bestPrice ?? Number.POSITIVE_INFINITY;
-      const pb = b.bestPrice ?? Number.POSITIVE_INFINITY;
-      if (pa !== pb) return pa - pb;
-      return (a.number ?? 999) - (b.number ?? 999);
-    });
-}
-
 function TrackField({ event }: { event: SportEvent }) {
   const isOval = event.sport === "nascar";
-  const order = runningOrder(event.runners);
+  const order = trackRunners(event.sport, event.runners);
   const runnerCount = order.length;
   const ranked = order.some((r) => r.bestPrice != null);
   const resulted = order.some((r) => r.position != null);
@@ -329,32 +311,42 @@ function RaceLanes({
   resulted: boolean;
 }) {
   const emoji = RACE_EMOJI[sport] ?? "•";
-  const MAX = 6;
-  const shown = runners.slice(0, MAX);
+  const shown = runners;
   if (shown.length === 0) return null;
+  const laneClass =
+    sport === "horse-racing"
+      ? "race-lanes--horse"
+      : sport === "greyhound"
+        ? "race-lanes--greyhound"
+        : "";
   return (
-    <div className={`race-lanes ${live ? "live" : ""} ${resulted ? "resulted" : ""}`} aria-hidden>
-      {shown.map((runner, i) => (
-        <div className="race-lane" key={runner.id}>
-          <span className="race-pos">{runner.position ?? i + 1}</span>
-          <span
-            className="race-runner"
-            style={{
-              animationDuration: `${(live ? 2.6 : 4.2) + i * 0.35}s`,
-              animationDelay: `${i * -0.5}s`,
-            }}
-          >
-            <span className="race-emoji">{emoji}</span>
-            <span className="race-num">{runner.number ?? i + 1}</span>
-          </span>
-        </div>
-      ))}
+    <div
+      className={`race-lanes ${laneClass} ${live ? "live" : ""} ${resulted ? "resulted" : ""}`}
+      aria-hidden
+    >
+      {shown.map((runner, i) => {
+        const programNumber = resolveRunnerNumber(runner, i);
+        const timing = raceLaneTiming(sport, programNumber, live);
+        const laneLabel =
+          resulted && runner.position != null ? runner.position : programNumber;
+        return (
+          <div className="race-lane" key={runner.id}>
+            <span className="race-pos">{laneLabel}</span>
+            <span
+              className="race-runner"
+              style={{
+                animationDuration: timing.duration,
+                animationDelay: timing.delay,
+              }}
+            >
+              <span className="race-emoji">{emoji}</span>
+              <span className="race-num">{programNumber}</span>
+            </span>
+          </div>
+        );
+      })}
       <span className="race-caption">
-        {resulted
-          ? `🏁 real finishing order — ${emoji} 1 won`
-          : ranked
-            ? `running order — favourite (${emoji} 1) leads`
-            : `${shown.length} on track${runners.length > MAX ? ` of ${runners.length}` : ""} · by number`}
+        {raceCaption(sport, shown, runners.length, ranked, resulted, emoji)}
       </span>
     </div>
   );
