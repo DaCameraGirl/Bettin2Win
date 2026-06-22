@@ -26,7 +26,7 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   hockey: {
     key: "hockey",
     label: "Hockey",
-    provider: "the-odds-api+sportsbook-api+highlightly-matches",
+    provider: "the-odds-api+sportsbook-api+highlightly-matches+espn-nhl-odds+nhl-scoreboard",
     pollIntervalMs: 15_000,
   },
   soccer: {
@@ -46,8 +46,8 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   nascar: {
     key: "nascar",
     label: "NASCAR",
-    provider: "therundown",
-    pollIntervalMs: 10_000,
+    provider: "espn-nascar+therundown",
+    pollIntervalMs: 60_000,
   },
   "horse-racing": {
     key: "horse-racing",
@@ -60,21 +60,26 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   greyhound: {
     key: "greyhound",
     label: "Greyhound",
-    provider: "betsapi",
-    pollIntervalMs: 5_000,
+    provider: "greyhound-racing-uk+betsapi",
+    pollIntervalMs: 120_000,
   },
 };
 
+/** Trim env values — Render pastes often include trailing whitespace or quotes. */
+function trimEnv(name: string): string {
+  return (process.env[name] ?? "").trim().replace(/^["']|["']$/g, "");
+}
+
 export const env = {
-  oddsApiKey: process.env.ODDS_API_KEY ?? "",
-  theRundownKey: process.env.THERUNDOWN_API_KEY ?? "",
-  racingApiUsername: process.env.RACING_API_USERNAME ?? "",
-  racingApiPassword: process.env.RACING_API_PASSWORD ?? "",
-  betsApiKey: process.env.BETSAPI_KEY ?? "",
-  highlightlyKey: process.env.HIGHLIGHTLY_API_KEY ?? "",
+  oddsApiKey: trimEnv("ODDS_API_KEY"),
+  theRundownKey: trimEnv("THERUNDOWN_API_KEY"),
+  racingApiUsername: trimEnv("RACING_API_USERNAME"),
+  racingApiPassword: trimEnv("RACING_API_PASSWORD"),
+  betsApiKey: trimEnv("BETSAPI_KEY"),
+  highlightlyKey: trimEnv("HIGHLIGHTLY_API_KEY"),
   // Shared RapidAPI key for prediction + fallback providers such as
   // football-prediction-api and Tank01 MLB.
-  rapidApiKey: process.env.RAPIDAPI_KEY ?? "",
+  rapidApiKey: trimEnv("RAPIDAPI_KEY"),
   // Hosts like Render inject PORT; fall back to our local default otherwise.
   port: Number(process.env.PORT ?? process.env.ODDS_ENGINE_PORT ?? 4000),
 };
