@@ -17,6 +17,8 @@ import { EspnNhlOddsAdapter } from "./espn-nhl-odds.adapter.js";
 import { EspnNascarAdapter } from "./espn-nascar.adapter.js";
 import { GreyhoundRacingUkAdapter } from "./greyhound-racing-uk.adapter.js";
 import { NhlScoreboardAdapter } from "./nhl-scoreboard.adapter.js";
+import { EspnNflScoreboardAdapter } from "./espn-nfl-scoreboard.adapter.js";
+import { EspnSoccerScoreboardAdapter } from "./espn-soccer-scoreboard.adapter.js";
 
 /** Registry mapping each sport to the adapter that owns it. */
 export const adapters: Record<SportKey, SportAdapter> = {
@@ -25,7 +27,7 @@ export const adapters: Record<SportKey, SportAdapter> = {
       new TheOddsApiAdapter("football"),
       new SportsbookAdvantagesAdapter("football"),
     ),
-    new HighlightlyMatchesAdapter("football"),
+    new FallbackAdapter(new HighlightlyMatchesAdapter("football"), new EspnNflScoreboardAdapter()),
   ),
   baseball: new FallbackAdapter(
     new FallbackAdapter(
@@ -51,7 +53,10 @@ export const adapters: Record<SportKey, SportAdapter> = {
     ),
     new FallbackAdapter(new EspnNhlOddsAdapter(), new NhlScoreboardAdapter()),
   ),
-  soccer: new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),
+  soccer: new FallbackAdapter(
+    new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),
+    new EspnSoccerScoreboardAdapter(),
+  ),
   golf: new EspnGolfAdapter(),
   nascar: new FallbackAdapter(new EspnNascarAdapter(), new TheRundownAdapter()),
   "horse-racing": new FallbackAdapter(

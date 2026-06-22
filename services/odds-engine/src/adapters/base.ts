@@ -75,10 +75,17 @@ export class FallbackAdapter implements SportAdapter {
       };
     }
 
+    const message = `${primary.message ?? this.primary.provider}; backup ${this.backup.provider}: ${backup.message ?? "unavailable"}`;
+
+    // Never surface engine placeholder games when every provider failed.
+    if (primary.mode === "mock" && backup.mode === "mock") {
+      return { mode: "live", events: [], message };
+    }
+
     return {
       mode: primary.mode,
       events: primary.events,
-      message: `${primary.message ?? this.primary.provider}; backup ${this.backup.provider}: ${backup.message ?? "unavailable"}`,
+      message,
     };
   }
 }

@@ -24,6 +24,35 @@ test("fallback prefers backup when primary has live games without odds", async (
   assert.match(result.message ?? "", /no priced events|11 real baseball matches/);
 });
 
+test("fallback drops placeholder games when every provider fails", async () => {
+  const mockOnly = await new FallbackAdapter(
+    {
+      sport: "football",
+      provider: "primary",
+      hasCredentials: () => true,
+      fetchEvents: async () => ({
+        mode: "mock",
+        events: [game("mock-1", [])],
+        message: "provider 401",
+      }),
+    },
+    {
+      sport: "football",
+      provider: "backup",
+      hasCredentials: () => true,
+      fetchEvents: async () => ({
+        mode: "mock",
+        events: [game("mock-2", [])],
+        message: "provider 429",
+      }),
+    },
+  ).fetchEvents();
+
+  assert.equal(mockOnly.mode, "live");
+  assert.equal(mockOnly.events.length, 0);
+  assert.match(mockOnly.message ?? "", /provider 401/);
+});
+
 test("fallback keeps primary when it already has priced live events", async () => {
   const primary = stubAdapter("the-odds-api", [
     {

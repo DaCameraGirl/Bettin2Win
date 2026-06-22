@@ -21,14 +21,15 @@ export function MarketTicker() {
 
   const segments = buildSegments(quotes, categories ?? CATEGORY_LABELS);
   const track = [...segments, ...segments];
+  const scrollSeconds = Math.max(360, segments.length * 12);
 
   return (
     <div className="market-ticker" aria-label="Live market quotes">
       <div className="market-ticker-label">Markets</div>
-      <div className="market-ticker-viewport">
+      <div className="market-ticker-viewport" title="Hover to pause the ticker">
         <div
-          className={`market-ticker-track ${quotes.length < 6 ? "static" : ""}`}
-          style={{ animationDuration: `${Math.max(60, quotes.length * 2.5)}s` }}
+          className={`market-ticker-track ${segments.length < 6 ? "static" : ""}`}
+          style={{ animationDuration: `${scrollSeconds}s` }}
         >
           {track.map((segment, index) =>
             segment.type === "category" ? (
