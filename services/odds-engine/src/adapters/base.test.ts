@@ -24,6 +24,35 @@ test("fallback prefers backup when primary has live games without odds", async (
   assert.match(result.message ?? "", /no priced events|11 real baseball matches/);
 });
 
+test("fallback strips placeholder games when primary mock board leaks through", async () => {
+  const adapter = new FallbackAdapter(
+    {
+      sport: "football",
+      provider: "primary",
+      hasCredentials: () => true,
+      fetchEvents: async () => ({
+        mode: "mock",
+        events: [game("mock-football-0", [])],
+        message: "provider 401",
+      }),
+    },
+    {
+      sport: "football",
+      provider: "espn-nfl-odds",
+      hasCredentials: () => true,
+      fetchEvents: async () => ({
+        mode: "live",
+        events: [game("espn-nfl-1", [{ bookmaker: "DraftKings", price: 2.05 }])],
+        message: "1/1 NFL games with DraftKings moneyline odds from ESPN",
+      }),
+    },
+  );
+
+  const result = await adapter.fetchEvents();
+  assert.equal(result.events[0]?.id, "espn-nfl-1");
+  assert.match(result.message ?? "", /espn-nfl-odds/);
+});
+
 test("fallback drops placeholder games when every provider fails", async () => {
   const mockOnly = await new FallbackAdapter(
     {

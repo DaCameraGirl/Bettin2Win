@@ -1,7 +1,5 @@
 import type { Runner, SportEvent } from "@bettin2win/types";
 import { decorateRunners, type AdapterResult, type SportAdapter } from "./base.js";
-import { generateMockEvents } from "./mock.js";
-
 type Obj = Record<string, unknown>;
 
 const SCOREBOARD_URL = "https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard";
@@ -22,11 +20,7 @@ export class EspnNflScoreboardAdapter implements SportAdapter {
     try {
       const res = await fetch(SCOREBOARD_URL);
       if (!res.ok) {
-        return {
-          mode: "mock",
-          events: generateMockEvents(this.sport),
-          message: `provider ${res.status}`,
-        };
+        return { mode: "live", events: [], message: `provider ${res.status}` };
       }
 
       const events = normalizeEspnNflScoreboard(await res.json());
@@ -41,8 +35,8 @@ export class EspnNflScoreboardAdapter implements SportAdapter {
       };
     } catch (err) {
       return {
-        mode: "mock",
-        events: generateMockEvents(this.sport),
+        mode: "live",
+        events: [],
         message: err instanceof Error ? err.message : "fetch failed",
       };
     }
