@@ -199,7 +199,7 @@ function emptyBoardMessage(
   if (sport === "football") {
     return (
       <>
-        No NFL games on the board right now. It's offseason — the board fills back up when the season starts.{" "}
+        No NFL games on the board right now. Preseason and regular season boards fill automatically when ESPN lists games.{" "}
         <button type="button" className="empty-demo-link" onClick={onDemo}>
           View demo data
         </button>

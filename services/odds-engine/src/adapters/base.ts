@@ -39,10 +39,10 @@ export class FallbackAdapter implements SportAdapter {
   }
 
   async fetchEvents(): Promise<AdapterResult> {
-    const primary = await this.primary.fetchEvents();
+    const primary = withoutPlaceholderEvents(await this.primary.fetchEvents());
     if (primaryHasPricedLiveEvents(primary)) return primary;
 
-    const backup = await this.backup.fetchEvents();
+    const backup = withoutPlaceholderEvents(await this.backup.fetchEvents());
     if (backupHasPricedLiveEvents(backup)) {
       return {
         mode: "live",
@@ -82,12 +82,20 @@ export class FallbackAdapter implements SportAdapter {
       return { mode: "live", events: [], message };
     }
 
-    return {
+    return withoutPlaceholderEvents({
       mode: primary.mode,
       events: primary.events,
       message,
-    };
+    });
   }
+}
+
+function withoutPlaceholderEvents(result: AdapterResult): AdapterResult {
+  const placeholders =
+    result.events.length > 0 &&
+    result.events.every((event) => event.source === "mock" || event.id.startsWith("mock-"));
+  if (!placeholders) return result;
+  return { mode: "live", events: [], message: result.message };
 }
 
 function primaryHasPricedLiveEvents(result: AdapterResult): boolean {

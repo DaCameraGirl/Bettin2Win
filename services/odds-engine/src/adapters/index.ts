@@ -17,7 +17,7 @@ import { EspnNhlOddsAdapter } from "./espn-nhl-odds.adapter.js";
 import { EspnNascarAdapter } from "./espn-nascar.adapter.js";
 import { GreyhoundRacingUkAdapter } from "./greyhound-racing-uk.adapter.js";
 import { NhlCompositeAdapter } from "./nhl-composite.adapter.js";
-import { EspnNflScoreboardAdapter } from "./espn-nfl-scoreboard.adapter.js";
+import { EspnNflOddsAdapter } from "./espn-nfl-odds.adapter.js";
 import { EspnSoccerScoreboardAdapter } from "./espn-soccer-scoreboard.adapter.js";
 
 /** Registry mapping each sport to the adapter that owns it. */
@@ -27,7 +27,7 @@ export const adapters: Record<SportKey, SportAdapter> = {
       new TheOddsApiAdapter("football"),
       new SportsbookAdvantagesAdapter("football"),
     ),
-    new FallbackAdapter(new HighlightlyMatchesAdapter("football"), new EspnNflScoreboardAdapter()),
+    new EspnNflOddsAdapter(),
   ),
   baseball: new FallbackAdapter(
     new FallbackAdapter(
