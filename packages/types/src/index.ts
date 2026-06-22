@@ -164,6 +164,8 @@ export interface ProviderHealth {
 export interface StockQuote {
   symbol: string;
   label: string;
+  /** Watchlist bucket, e.g. indexes or retailFavorites. */
+  category?: string;
   price: number;
   change: number;
   changePercent: number;
@@ -177,6 +179,8 @@ export interface MarketTickerSnapshot {
   source: string;
   updatedAt: string;
   message?: string;
+  /** Human labels for each watchlist category present in quotes. */
+  categories?: Record<string, string>;
 }
 
 /** Messages pushed from the odds-engine to the browser over WebSocket. */

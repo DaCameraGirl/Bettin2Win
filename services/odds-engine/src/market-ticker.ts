@@ -1,21 +1,14 @@
 import type { MarketTickerSnapshot, StockQuote } from "@bettin2win/types";
+import {
+  TICKER_WATCHLIST,
+  WATCHLIST_CATEGORY_LABELS,
+  type TickerEntry,
+} from "./market-watchlist.js";
 
 const USER_AGENT = "Mozilla/5.0 (compatible; Bettin2Win/1.0)";
-const CACHE_TTL_MS = 60_000;
+const CACHE_TTL_MS = 90_000;
+const FETCH_BATCH_SIZE = 8;
 const CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart";
-
-export const TICKER_SYMBOLS: Array<{ symbol: string; label: string }> = [
-  { symbol: "SPY", label: "S&P 500" },
-  { symbol: "QQQ", label: "Nasdaq" },
-  { symbol: "DIA", label: "Dow" },
-  { symbol: "AAPL", label: "Apple" },
-  { symbol: "MSFT", label: "Microsoft" },
-  { symbol: "NVDA", label: "NVIDIA" },
-  { symbol: "TSLA", label: "Tesla" },
-  { symbol: "AMZN", label: "Amazon" },
-  { symbol: "META", label: "Meta" },
-  { symbol: "GOOGL", label: "Alphabet" },
-];
 
 let cache: MarketTickerSnapshot | null = null;
 let cacheAt = 0;
@@ -23,23 +16,16 @@ let cacheAt = 0;
 export async function getMarketTicker(): Promise<MarketTickerSnapshot> {
   if (cache && Date.now() - cacheAt < CACHE_TTL_MS) return cache;
 
-  const settled = await Promise.allSettled(
-    TICKER_SYMBOLS.map(({ symbol, label }) => fetchQuote(symbol, label)),
-  );
-
-  const quotes = settled
-    .filter((result): result is PromiseFulfilledResult<StockQuote | null> => result.status === "fulfilled")
-    .map((result) => result.value)
-    .filter((quote): quote is StockQuote => quote !== null);
-
+  const quotes = await fetchAllQuotes(TICKER_WATCHLIST);
   const snapshot: MarketTickerSnapshot = {
     quotes,
     source: "yahoo-finance",
     updatedAt: new Date().toISOString(),
+    categories: WATCHLIST_CATEGORY_LABELS,
     message:
       quotes.length === 0
         ? "market data unavailable"
-        : `${quotes.length}/${TICKER_SYMBOLS.length} symbols from Yahoo Finance`,
+        : `${quotes.length}/${TICKER_WATCHLIST.length} symbols from Yahoo Finance`,
   };
 
   if (quotes.length > 0) {
@@ -50,16 +36,33 @@ export async function getMarketTicker(): Promise<MarketTickerSnapshot> {
   return snapshot;
 }
 
-async function fetchQuote(symbol: string, label: string): Promise<StockQuote | null> {
-  const res = await fetch(`${CHART_URL}/${encodeURIComponent(symbol)}?interval=1d&range=1d`, {
-    headers: { "User-Agent": USER_AGENT },
-  });
-  if (!res.ok) return null;
+async function fetchAllQuotes(entries: TickerEntry[]): Promise<StockQuote[]> {
+  const quotes: StockQuote[] = [];
 
-  return normalizeYahooChart(symbol, label, await res.json());
+  for (let index = 0; index < entries.length; index += FETCH_BATCH_SIZE) {
+    const batch = entries.slice(index, index + FETCH_BATCH_SIZE);
+    const settled = await Promise.allSettled(batch.map((entry) => fetchQuote(entry)));
+    for (const result of settled) {
+      if (result.status === "fulfilled" && result.value) quotes.push(result.value);
+    }
+  }
+
+  const order = new Map(entries.map((entry, idx) => [entry.symbol, idx]));
+  quotes.sort((a, b) => (order.get(a.symbol) ?? 999) - (order.get(b.symbol) ?? 999));
+  return quotes;
 }
 
-export function normalizeYahooChart(symbol: string, label: string, body: unknown): StockQuote | null {
+async function fetchQuote(entry: TickerEntry): Promise<StockQuote | null> {
+  const res = await fetch(
+    `${CHART_URL}/${encodeURIComponent(entry.symbol)}?interval=1d&range=1d`,
+    { headers: { "User-Agent": USER_AGENT } },
+  );
+  if (!res.ok) return null;
+
+  return normalizeYahooChart(entry, await res.json());
+}
+
+export function normalizeYahooChart(entry: TickerEntry, body: unknown): StockQuote | null {
   const chart = object(field(object(body), "chart"));
   const result = object(array(chart, "result")[0]);
   const meta = object(field(result, "meta"));
@@ -70,10 +73,12 @@ export function normalizeYahooChart(symbol: string, label: string, body: unknown
   const change = Number((price - previousClose).toFixed(2));
   const changePercent = Number(((change / previousClose) * 100).toFixed(2));
   const marketTime = number(field(meta, "regularMarketTime"));
+  const shortName = str(field(meta, "shortName") ?? field(meta, "longName")).trim();
 
   return {
-    symbol,
-    label,
+    symbol: entry.symbol,
+    label: shortName || entry.label,
+    category: entry.category,
     price,
     change,
     changePercent,

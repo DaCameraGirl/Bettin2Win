@@ -64,7 +64,7 @@ body {
   display: flex;
   gap: 10px;
   width: max-content;
-  animation: ticker-scroll 42s linear infinite;
+  animation: ticker-scroll 90s linear infinite;
 }
 
 .market-ticker-track.static {
@@ -74,6 +74,21 @@ body {
 
 .market-ticker-track:hover {
   animation-play-state: paused;
+}
+
+.ticker-category {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px dashed rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.08);
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .ticker-chip {
