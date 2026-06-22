@@ -57,5 +57,7 @@ describe("oddsExplain", () => {
     assert.equal(explanation.runners.length, 2);
     assert.ok(explanation.riskBadges.some((badge) => badge.label === "beginner-friendly"));
     assert.equal(impliedPercent(2), 50);
+    assert.match(explanation.houseMarginNote ?? "", /more than 100%/i);
+    assert.match(explanation.houseMarginNote ?? "", /isn't everyone rich/i);
   });
 });

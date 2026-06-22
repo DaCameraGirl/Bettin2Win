@@ -34,6 +34,8 @@ export interface EventExplanation {
   winCondition: string;
   riskBadges: RiskBadge[];
   disclaimer: string;
+  /** Shown on two-way boards when implied chances sum above 100%. */
+  houseMarginNote?: string;
 }
 
 export function parseMatchup(name: string): { away: string; home: string } | null {
@@ -207,9 +209,30 @@ export function explainEvent(event: SportEvent, format: OddsFormat): EventExplan
     runners,
     winCondition: winCondition(event, priced),
     riskBadges: assessRisk(event, priced),
+    houseMarginNote: houseMarginNote(runners),
     disclaimer:
       "This explains what the line implies — not whether you should bet. Bettin2Win does not accept wagers.",
   };
+}
+
+function houseMarginNote(runners: RunnerExplanation[]): string | undefined {
+  if (runners.length !== 2) return undefined;
+
+  const totalImplied = runners.reduce((sum, runner) => sum + runner.impliedPercent, 0);
+  if (totalImplied <= 100) return undefined;
+
+  const favorite = runners.find((runner) => runner.role === "favorite");
+  const underdog = runners.find((runner) => runner.role === "underdog");
+
+  if (favorite && underdog) {
+    return (
+      `Why isn't everyone rich? Odds are prices, not guarantees. ${favorite.name} at ${favorite.oddsText} is expected to win more often, but the payout is smaller and losses still happen. ${underdog.name} at ${underdog.oddsText} pays more because it is expected to win less often. The two implied chances here add up to about ${totalImplied}% — more than 100% because sportsbooks build in a margin.`
+    );
+  }
+
+  return (
+    `The two implied chances here add up to about ${totalImplied}% — more than 100% because sportsbooks build in a margin. Odds are prices, not guarantees.`
+  );
 }
 
 export const BET_TYPES = [

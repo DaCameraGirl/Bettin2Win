@@ -89,6 +89,9 @@ export function OddsTranslator({ event, format }: OddsTranslatorProps) {
           <p>
             <strong>What has to happen:</strong> {explanation.winCondition}
           </p>
+          {explanation.houseMarginNote && (
+            <p className="odds-translator-margin">{explanation.houseMarginNote}</p>
+          )}
           <p className="odds-translator-note">
             Lower payout usually means the books see that outcome as more likely. Higher payout
             usually means less likely, but more reward if correct. {explanation.disclaimer}
