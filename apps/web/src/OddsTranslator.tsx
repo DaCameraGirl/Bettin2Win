@@ -23,8 +23,17 @@ export function OddsTranslator({ event, format }: OddsTranslatorProps) {
   }
 
   return (
-    <details className="odds-translator">
-      <summary>Explain this bet like I&apos;m brand new</summary>
+    <details className="odds-translator odds-translator--cta">
+      <summary className="explain-bet-cta">
+        <span className="explain-bet-cta-icon" aria-hidden>
+          ✦
+        </span>
+        <span className="explain-bet-cta-text">
+          <strong>Explain this bet like I&apos;m brand new</strong>
+          <em>Payouts, implied chance, and what has to happen to win</em>
+        </span>
+        <span className="explain-bet-cta-action" aria-hidden />
+      </summary>
       <div className="odds-translator-body">
         <div className="odds-translator-intro">
           <span className="market-chip">{explanation.marketType}</span>

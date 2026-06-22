@@ -19,6 +19,17 @@ export const FEED_STATUS_LABELS: Record<FeedStatus, string> = {
   waiting: "Waiting",
 };
 
+/** Beginner-friendly labels for the provider control room. */
+export const USER_FEED_STATUS_LABELS: Record<FeedStatus, string> = {
+  "live-odds": "Live prices",
+  "real-game-feed": "Live games",
+  demo: "Sample data",
+  "no-key": "Setup needed",
+  "quota-hit": "Backup feed",
+  "provider-down": "Backup feed",
+  waiting: "Loading",
+};
+
 export function eventHasOdds(event: SportEvent): boolean {
   return event.runners.some((runner) => runner.odds.length > 0 || runner.bestPrice !== undefined);
 }
@@ -132,4 +143,60 @@ export function feedSummaryFromHealth(
   const note = activeFeedNote(health?.message ?? "");
   if (note) return note.length > 84 ? `${note.slice(0, 81)}…` : note;
   return `${eventCount} event${eventCount === 1 ? "" : "s"}`;
+}
+
+/** Plain-language status line for beginners (no HTTP codes). */
+export function userStatusDetail(
+  status: FeedStatus,
+  health: ProviderHealth | undefined,
+  eventCount: number,
+): string {
+  switch (status) {
+    case "demo":
+      return "Practice board with sample prices";
+    case "waiting":
+      return "Connecting to live feeds…";
+    case "live-odds":
+      return simplifyActiveNote(health) ?? `${eventCount} game${eventCount === 1 ? "" : "s"} with prices`;
+    case "real-game-feed":
+      return simplifyActiveNote(health) ?? `${eventCount} real game${eventCount === 1 ? "" : "s"} — odds may be limited`;
+    case "no-key":
+      return "Needs a server API key to go fully live";
+    case "quota-hit":
+    case "provider-down":
+      return "Primary feed busy — showing backup data when available";
+    default:
+      return "Checking feeds…";
+  }
+}
+
+/** Raw engine message for developers / troubleshooting. */
+export function developerStatusDetail(health: ProviderHealth | undefined): string | undefined {
+  const text = health?.message?.trim();
+  if (!text) return health?.provider ? `Provider chain: ${health.provider}` : undefined;
+  return text.length > 200 ? `${text.slice(0, 197)}…` : text;
+}
+
+function simplifyActiveNote(health: ProviderHealth | undefined): string | undefined {
+  const note = activeFeedNote(health?.message ?? "").toLowerCase();
+  if (!note) return undefined;
+  if (/draftkings|moneyline|sportsbook opportunities/.test(note)) {
+    return "Betting lines from our backup sports feed";
+  }
+  if (/from espn|espn/.test(note)) {
+    return "Games and scores from ESPN";
+  }
+  if (/racecards live|greyhound/.test(note)) {
+    return "Race cards from our backup racing feed";
+  }
+  if (/leaderboard|nascar|pga/.test(note)) {
+    return "Live event data from ESPN";
+  }
+  if (/\d+\/\d+/.test(note) && /odds/.test(note)) {
+    return "Betting lines from our backup sports feed";
+  }
+  if (/\d+\s+real/.test(note)) {
+    return "Real games on the board";
+  }
+  return undefined;
 }
