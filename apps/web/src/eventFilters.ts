@@ -1,5 +1,5 @@
 import type { SportEvent, SportKey } from "@bettin2win/types";
-import type { BasketballMatchupGroup } from "./matchupGroup";
+import { groupBasketballMatchups, type BasketballMatchupGroup } from "./matchupGroup";
 import { eventHasOdds } from "./providerStatus";
 
 const TEAM_SPORTS: SportKey[] = ["football", "baseball", "basketball", "hockey", "soccer"];
@@ -110,8 +110,30 @@ export function boardFilterEmptyMessage(filter: BoardFilter, sportLabel: string)
     case "with-prices":
       return `No ${sportLabel.toLowerCase()} games with posted prices right now.`;
     case "live":
-      return `No live ${sportLabel.toLowerCase()} games right now.`;
+      return `No live ${sportLabel.toLowerCase()} games right now. Everything on this board is upcoming or final. Try Show all to browse tipoff times.`;
     default:
       return `No ${sportLabel.toLowerCase()} games to show.`;
   }
+}
+
+export function boardFilterCounts(
+  sport: SportKey,
+  sourceEvents: SportEvent[],
+): Record<BoardFilter, number> {
+  if (sport === "basketball") {
+    const groups = groupBasketballMatchups(sourceEvents);
+    return {
+      all: groups.length,
+      "beginner-friendly": filterBasketballMatchups(groups, "beginner-friendly").length,
+      "with-prices": filterBasketballMatchups(groups, "with-prices").length,
+      live: filterBasketballMatchups(groups, "live").length,
+    };
+  }
+
+  return {
+    all: sourceEvents.length,
+    "beginner-friendly": filterBoardEvents(sourceEvents, "beginner-friendly").length,
+    "with-prices": filterBoardEvents(sourceEvents, "with-prices").length,
+    live: filterBoardEvents(sourceEvents, "live").length,
+  };
 }
