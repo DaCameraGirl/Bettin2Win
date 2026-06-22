@@ -1,6 +1,5 @@
 import type { OddsLine, Runner, SportEvent } from "@bettin2win/types";
 import { decorateRunners, type AdapterResult, type SportAdapter } from "./base.js";
-import { generateMockEvents } from "./mock.js";
 
 type Obj = Record<string, unknown>;
 
@@ -22,11 +21,7 @@ export class EspnMlbOddsAdapter implements SportAdapter {
     try {
       const res = await fetch(`${SCOREBOARD_URL}?dates=${espnDate()}`);
       if (!res.ok) {
-        return {
-          mode: "mock",
-          events: generateMockEvents(this.sport),
-          message: `provider ${res.status}`,
-        };
+        return { mode: "live", events: [], message: `ESPN MLB scoreboard ${res.status}` };
       }
 
       const events = normalizeEspnMlbScoreboard(await res.json());
@@ -42,9 +37,9 @@ export class EspnMlbOddsAdapter implements SportAdapter {
       };
     } catch (err) {
       return {
-        mode: "mock",
-        events: generateMockEvents(this.sport),
-        message: err instanceof Error ? err.message : "fetch failed",
+        mode: "live",
+        events: [],
+        message: err instanceof Error ? err.message : "ESPN MLB fetch failed",
       };
     }
   }

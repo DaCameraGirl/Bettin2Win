@@ -18,7 +18,9 @@ import { EspnNascarAdapter } from "./espn-nascar.adapter.js";
 import { GreyhoundRacingUkAdapter } from "./greyhound-racing-uk.adapter.js";
 import { NhlCompositeAdapter } from "./nhl-composite.adapter.js";
 import { EspnNflOddsAdapter } from "./espn-nfl-odds.adapter.js";
+import { EspnNbaOddsAdapter } from "./espn-nba-odds.adapter.js";
 import { EspnSoccerScoreboardAdapter } from "./espn-soccer-scoreboard.adapter.js";
+import { GbgbRssAdapter } from "./gbgb-rss.adapter.js";
 
 /** Registry mapping each sport to the adapter that owns it. */
 export const adapters: Record<SportKey, SportAdapter> = {
@@ -30,10 +32,7 @@ export const adapters: Record<SportKey, SportAdapter> = {
     new EspnNflOddsAdapter(),
   ),
   baseball: new FallbackAdapter(
-    new FallbackAdapter(
-      new FallbackAdapter(new TheOddsApiAdapter("baseball"), new Tank01MlbAdapter()),
-      new HighlightlyMatchesAdapter("baseball"),
-    ),
+    new FallbackAdapter(new TheOddsApiAdapter("baseball"), new Tank01MlbAdapter()),
     new FallbackAdapter(new EspnMlbOddsAdapter(), new MlbStatsAdapter()),
   ),
   basketball: new FallbackAdapter(
@@ -41,15 +40,12 @@ export const adapters: Record<SportKey, SportAdapter> = {
       new TheOddsApiAdapter("basketball"),
       new SportsbookAdvantagesAdapter("basketball"),
     ),
-    new HighlightlyMatchesAdapter("basketball"),
+    new EspnNbaOddsAdapter(),
   ),
   hockey: new FallbackAdapter(
     new FallbackAdapter(
-      new FallbackAdapter(
-        new TheOddsApiAdapter("hockey"),
-        new SportsbookAdvantagesAdapter("hockey"),
-      ),
-      new HighlightlyMatchesAdapter("hockey"),
+      new TheOddsApiAdapter("hockey"),
+      new SportsbookAdvantagesAdapter("hockey"),
     ),
     new NhlCompositeAdapter(),
   ),
@@ -63,7 +59,10 @@ export const adapters: Record<SportKey, SportAdapter> = {
     new HorseRacingRapidApiAdapter(),
     new RacingApiAdapter(),
   ),
-  greyhound: new FallbackAdapter(new GreyhoundRacingUkAdapter(), new BetsApiAdapter()),
+  greyhound: new FallbackAdapter(
+    new GreyhoundRacingUkAdapter(),
+    new FallbackAdapter(new GbgbRssAdapter(), new BetsApiAdapter()),
+  ),
 };
 
 export type { SportAdapter } from "./base.js";

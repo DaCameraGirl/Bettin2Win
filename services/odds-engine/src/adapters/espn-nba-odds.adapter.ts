@@ -4,23 +4,18 @@ import { decorateRunners, type AdapterResult, type SportAdapter } from "./base.j
 type Obj = Record<string, unknown>;
 
 const LEAGUES = [
-  { code: "eng.1", label: "Premier League" },
-  { code: "usa.1", label: "MLS" },
-  { code: "esp.1", label: "La Liga" },
-  { code: "ger.1", label: "Bundesliga" },
-  { code: "ita.1", label: "Serie A" },
-  { code: "fra.1", label: "Ligue 1" },
-  { code: "uefa.champions", label: "Champions League" },
-  { code: "uefa.europa", label: "Europa League" },
+  { path: "nba", label: "NBA" },
+  { path: "wnba", label: "WNBA" },
+  { path: "mens-college-basketball", label: "NCAAM" },
 ] as const;
 
 /**
- * No-key soccer scoreboard sweep from ESPN with DraftKings 3-way moneylines
- * when ESPN exposes them for a league.
+ * No-key ESPN basketball scoreboards (NBA, WNBA, college) with DraftKings
+ * moneylines when ESPN exposes them.
  */
-export class EspnSoccerScoreboardAdapter implements SportAdapter {
-  readonly sport = "soccer";
-  readonly provider = "espn-soccer-odds";
+export class EspnNbaOddsAdapter implements SportAdapter {
+  readonly sport = "basketball";
+  readonly provider = "espn-nba-odds";
 
   hasCredentials(): boolean {
     return true;
@@ -32,50 +27,47 @@ export class EspnSoccerScoreboardAdapter implements SportAdapter {
 
     try {
       for (const league of LEAGUES) {
-        const url = `https://site.api.espn.com/apis/site/v2/sports/soccer/${league.code}/scoreboard`;
+        const url = `https://site.api.espn.com/apis/site/v2/sports/basketball/${league.path}/scoreboard`;
         const res = await fetch(url);
         if (!res.ok) continue;
         reached = true;
-        for (const event of normalizeEspnSoccerScoreboard(await res.json(), league.label)) {
+        for (const event of normalizeEspnNbaOddsScoreboard(await res.json(), league.label)) {
           if (!events.some((row) => row.id === event.id)) events.push(event);
         }
-        await sleep(150);
+        await sleep(120);
       }
 
       if (!reached) {
-        return { mode: "live", events: [], message: "ESPN soccer scoreboards unreachable" };
+        return { mode: "live", events: [], message: "ESPN basketball scoreboards unreachable" };
       }
 
       const priced = events.filter(hasOdds).length;
       if (events.length === 0) {
-        return { mode: "live", events, message: "0 soccer matches in ESPN window" };
+        return { mode: "live", events, message: "0 basketball games in ESPN window" };
       }
 
-      const oddsNote = priced > 0
-        ? `${priced}/${events.length} matches with DraftKings moneyline odds`
-        : "odds unavailable";
       return {
         mode: "live",
         events,
-        message: `${events.length} real soccer match${events.length === 1 ? "" : "es"} from ESPN (${oddsNote})`,
+        message: `${priced}/${events.length} basketball games with DraftKings moneyline odds from ESPN`,
       };
     } catch (err) {
       return {
         mode: "live",
         events: [],
-        message: err instanceof Error ? err.message : "ESPN soccer fetch failed",
+        message: err instanceof Error ? err.message : "ESPN basketball fetch failed",
       };
     }
   }
 }
 
-export function normalizeEspnSoccerScoreboard(body: unknown, leagueLabel: string): SportEvent[] {
+export function normalizeEspnNbaOddsScoreboard(body: unknown, leagueLabel: string): SportEvent[] {
   return array(field(object(body), "events"))
-    .map((raw) => normalizeEspnSoccerEvent(raw, leagueLabel))
+    .map((raw) => normalizeEspnNbaOddsEvent(raw, leagueLabel))
     .filter((event): event is SportEvent => event !== null);
 }
 
-export function normalizeEspnSoccerEvent(raw: unknown, leagueLabel: string): SportEvent | null {
+export function normalizeEspnNbaOddsEvent(raw: unknown, leagueLabel: string): SportEvent | null {
   const event = object(raw);
   const id = str(field(event, "id"));
   const startTime = str(field(event, "date"));
@@ -91,23 +83,22 @@ export function normalizeEspnSoccerEvent(raw: unknown, leagueLabel: string): Spo
   const bookmaker = bookmakerName(odds);
   const awayRunner = runner(id, "away", awayName, oddsPrice(odds, "away"), bookmaker, startTime);
   const homeRunner = runner(id, "home", homeName, oddsPrice(odds, "home"), bookmaker, startTime);
-  const drawRunner = runner(id, "draw", "Draw", oddsPrice(odds, "draw"), bookmaker, startTime);
   const awayScore = scoreValue(field(away, "score"));
   const homeScore = scoreValue(field(home, "score"));
   const status = object(field(competition, "status") ?? field(event, "status"));
   const statusType = object(field(status, "type"));
 
   const normalized: SportEvent = {
-    id: `espn-soccer-odds:${id}`,
-    sport: "soccer",
+    id: `espn-nba-odds:${id}`,
+    sport: "basketball",
     name: `${awayName} @ ${homeName}`,
     startTime,
     venue: leagueLabel,
     status: eventStatus(statusType, startTime),
     clock: clockText(status),
     score: awayScore !== undefined && homeScore !== undefined ? `${awayScore} - ${homeScore}` : undefined,
-    source: "espn-soccer-odds",
-    runners: [awayRunner, homeRunner, drawRunner],
+    source: "espn-nba-odds",
+    runners: [awayRunner, homeRunner],
     awayLogo: teamLogo(away),
     homeLogo: teamLogo(home),
   };
@@ -117,13 +108,13 @@ export function normalizeEspnSoccerEvent(raw: unknown, leagueLabel: string): Spo
 
 function runner(
   eventId: string,
-  side: "away" | "home" | "draw",
+  side: "away" | "home",
   name: string,
   price: number | undefined,
   bookmaker: string,
   lastUpdate: string,
 ): Runner {
-  const runnerId = `espn-soccer-odds:${eventId}:${side}`;
+  const runnerId = `espn-nba-odds:${eventId}:${side}`;
   const odds: OddsLine[] = price
     ? [{
         bookmaker,
@@ -136,7 +127,7 @@ function runner(
   return { id: runnerId, name, odds };
 }
 
-function oddsPrice(odds: Obj, side: "away" | "home" | "draw"): number | undefined {
+function oddsPrice(odds: Obj, side: "away" | "home"): number | undefined {
   const moneyline = object(field(odds, "moneyline"));
   const sideOdds = object(field(moneyline, side));
   const close = object(field(sideOdds, "close"));
@@ -163,30 +154,32 @@ function bookmakerName(odds: Obj): string {
   return str(field(provider, "displayName") ?? field(provider, "name")).trim() || "ESPN";
 }
 
-function teamName(team: Obj | undefined): string {
-  const teamObj = object(field(team, "team"));
-  return str(field(teamObj, "displayName")).trim() || str(field(teamObj, "abbreviation")).trim();
+function teamName(row: Obj | undefined): string {
+  const team = object(field(row, "team"));
+  return str(field(team, "displayName") ?? field(team, "name")).trim();
 }
 
-function teamLogo(team: Obj | undefined): string | undefined {
-  const teamObj = object(field(team, "team"));
-  const logos = array(field(teamObj, "logos"));
+function teamLogo(row: Obj | undefined): string | undefined {
+  const team = object(field(row, "team"));
+  const logos = array(field(team, "logos"));
   const logo = object(logos[0]);
   return str(field(logo, "href")).trim() || undefined;
 }
 
 function eventStatus(statusType: Obj, startTime: string): SportEvent["status"] {
   const state = str(field(statusType, "state")).toLowerCase();
-  const completed = Boolean(field(statusType, "completed"));
-  if (completed || state === "post") return "finished";
-  if (state === "in") return "live";
+  const name = str(field(statusType, "name")).toLowerCase();
+  const completed = field(statusType, "completed") === true;
+  if (completed || state === "post" || name.includes("final")) return "finished";
+  if (state === "in" || name.includes("progress")) return "live";
+
   const start = Date.parse(startTime);
   return Number.isFinite(start) && start < Date.now() ? "live" : "upcoming";
 }
 
 function clockText(status: Obj): string | undefined {
-  const statusType = object(field(status, "type"));
-  return str(field(statusType, "shortDetail")).trim() || undefined;
+  const type = object(field(status, "type"));
+  return str(field(type, "shortDetail") ?? field(type, "detail") ?? field(type, "description")).trim() || undefined;
 }
 
 function scoreValue(value: unknown): number | undefined {
