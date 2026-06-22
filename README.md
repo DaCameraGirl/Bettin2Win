@@ -5,8 +5,8 @@
 ![PowerShell](https://img.shields.io/badge/PowerShell-39FF14?style=for-the-badge&logo=powershell&logoColor=111111)
 ![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
 
-Real-time, multi-sport odds dashboard with plain-English betting context for
-football, baseball, basketball, hockey, soccer, NASCAR, horse racing, and
+Live odds, best-price tracking, and plain-English betting context for
+football, baseball, basketball, hockey, soccer, golf, NASCAR, horse racing, and
 greyhounds.
 
 > **Status:** live provider wiring is active. The app tries real feeds first and
@@ -31,6 +31,17 @@ packages/
 Every provider is hidden behind an adapter that returns the same normalized
 `SportEvent` shape. The frontend never sees raw provider payloads, so adding or
 swapping a feed stays inside the engine.
+
+## Screenshots
+
+Visual proof lives in [`docs/screenshots/`](docs/screenshots/). Capture these from the live site or `pnpm dev`:
+
+| File | What to show |
+|---|---|
+| `dashboard.png` | Main odds board with sport tabs and event cards |
+| `market-movement.png` | Market movement sidebar with shortening/drifting |
+| `beginner-guide.png` | Expanded beginner guide |
+| `provider-status.png` | Provider status control-room panel + demo toggle |
 
 ## Quick start
 
