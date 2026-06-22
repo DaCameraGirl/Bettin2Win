@@ -20,7 +20,9 @@ export class EspnNhlOddsAdapter implements SportAdapter {
 
   async fetchEvents(): Promise<AdapterResult> {
     try {
-      const res = await fetch(`${SCOREBOARD_URL}?dates=${espnDate()}`);
+      // Do not filter by `dates=` — ESPN's rolling scoreboard window can include
+      // games that a single-day filter omits (common near midnight ET / finals).
+      const res = await fetch(SCOREBOARD_URL);
       if (!res.ok) {
         return {
           mode: "mock",
@@ -181,17 +183,6 @@ function scoreValue(value: unknown): number | undefined {
 
 function hasOdds(event: SportEvent): boolean {
   return event.runners.some((eventRunner) => eventRunner.odds.length > 0);
-}
-
-function espnDate(): string {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone: "America/New_York",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
-  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
-  return `${part("year")}${part("month")}${part("day")}`;
 }
 
 function array(value: unknown): unknown[] {

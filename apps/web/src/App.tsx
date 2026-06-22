@@ -170,6 +170,12 @@ export function App() {
   );
 }
 
+function oddsUnavailableLabel(status: SportEvent["status"]): string {
+  if (status === "finished") return "Odds closed — game final";
+  if (status === "live") return "No live prices right now";
+  return "Odds not posted yet";
+}
+
 function emptyBoardMessage(
   sport: SportKey,
   health: ProviderHealth | undefined,
@@ -412,7 +418,7 @@ function EventCard({
                       {runner.bestBookmaker && <em>{runner.bestBookmaker}</em>}
                     </span>
                   ) : (
-                    <span className="runner-price missing">Odds unavailable</span>
+                    <span className="runner-price missing">{oddsUnavailableLabel(event.status)}</span>
                   )}
                 </div>
                 {runner.odds.length > 0 && (
