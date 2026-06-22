@@ -40,14 +40,30 @@ export class FallbackAdapter implements SportAdapter {
 
   async fetchEvents(): Promise<AdapterResult> {
     const primary = await this.primary.fetchEvents();
-    if (primary.mode === "live" && primary.events.length > 0) return primary;
+    if (primaryHasPricedLiveEvents(primary)) return primary;
 
     const backup = await this.backup.fetchEvents();
+    if (backupHasPricedLiveEvents(backup)) {
+      return {
+        mode: "live",
+        events: backup.events,
+        message: formatBackupMessage(this.primary.provider, primary, this.backup.provider, backup),
+      };
+    }
+
+    if (primary.mode === "live" && primary.events.length > 0) {
+      return {
+        mode: "live",
+        events: primary.events,
+        message: primary.message,
+      };
+    }
+
     if (backup.mode === "live") {
       return {
         mode: "live",
         events: backup.events,
-        message: `${this.primary.provider} unavailable (${primary.message ?? "no live events"}); backup ${this.backup.provider}${backup.message ? ` - ${backup.message}` : ""}`,
+        message: formatBackupMessage(this.primary.provider, primary, this.backup.provider, backup),
       };
     }
 
@@ -65,6 +81,31 @@ export class FallbackAdapter implements SportAdapter {
       message: `${primary.message ?? this.primary.provider}; backup ${this.backup.provider}: ${backup.message ?? "unavailable"}`,
     };
   }
+}
+
+function primaryHasPricedLiveEvents(result: AdapterResult): boolean {
+  return result.mode === "live" && result.events.length > 0 && hasPricedEvents(result.events);
+}
+
+function backupHasPricedLiveEvents(result: AdapterResult): boolean {
+  return result.mode === "live" && result.events.length > 0 && hasPricedEvents(result.events);
+}
+
+function hasPricedEvents(events: SportEvent[]): boolean {
+  return events.some((event) =>
+    event.runners.some((runner) => runner.odds.length > 0 || runner.bestPrice !== undefined),
+  );
+}
+
+function formatBackupMessage(
+  primaryProvider: string,
+  primary: AdapterResult,
+  backupProvider: string,
+  backup: AdapterResult,
+): string {
+  const primaryNote = primary.message ?? (primary.events.length > 0 ? "no priced events" : "no live events");
+  const backupNote = backup.message ? ` - ${backup.message}` : "";
+  return `${primaryProvider} unavailable (${primaryNote}); backup ${backupProvider}${backupNote}`;
 }
 
 /** Helper so adapters compute best price + implied probability consistently. */
