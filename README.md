@@ -5,9 +5,12 @@
 ![PowerShell](https://img.shields.io/badge/PowerShell-39FF14?style=for-the-badge&logo=powershell&logoColor=111111)
 ![pnpm](https://img.shields.io/badge/pnpm-F69220?style=for-the-badge&logo=pnpm&logoColor=white)
 
-Live odds, best-price tracking, and plain-English betting context for
-football, baseball, basketball, hockey, soccer, golf, NASCAR, horse racing, and
-greyhounds.
+**The beginner's odds guide — not a sportsbook.** Compare live lines, translate
+odds into plain English, calculate possible payouts, and learn what each bet means
+before you wager elsewhere. Covers football, baseball, basketball, hockey, soccer,
+golf, NASCAR, horse racing, and greyhounds.
+
+We do not accept wagers. Informational use only. Bet responsibly.
 
 > **Status:** live provider wiring is active. The app tries real feeds first and
 > only falls back when every configured provider for that sport is unavailable,
