@@ -13,6 +13,8 @@ import { useBaseballScores, type GameScore } from "./useScores";
 import { SportField } from "./SportField";
 import { MarketTicker } from "./MarketTicker";
 import { ProviderStatusPanel } from "./ProviderStatusPanel";
+import { BetTypeGuide } from "./BetTypeGuide";
+import { OddsTranslator } from "./OddsTranslator";
 import { buildDemoEventsBySport } from "./mockEvents";
 import {
   classifyFeedStatus,
@@ -57,7 +59,11 @@ export function App() {
           <span className="brand-mark">B2W</span>
           <div>
             <h1>Bettin2Win</h1>
-            <p>Live odds, best-price tracking, and plain-English betting context.</p>
+            <p className="brand-tagline">The beginner&apos;s odds guide — not a sportsbook.</p>
+            <p className="brand-sub">
+              Compare live lines, translate odds into plain English, and learn what each bet
+              means before you wager elsewhere.
+            </p>
           </div>
         </div>
         <div className="topbar-right">
@@ -103,6 +109,7 @@ export function App() {
       />
 
       <BeginnerGuide />
+      <BetTypeGuide />
 
       <main className="layout">
         <section className="board">
@@ -214,7 +221,11 @@ const GLOSSARY: { term: string; plain: string }[] = [
   { term: "Odds", plain: "How likely something is + what it pays. Lower number = more likely to happen." },
   { term: "Shortening ↓", plain: "The odds got SMALLER. The market now thinks it's MORE likely to win." },
   { term: "Drifting ↑", plain: "The odds got BIGGER. The market thinks it's LESS likely to win." },
-  { term: "Best price", plain: "The most generous odds for you across all the bookmakers we check." },
+  { term: "Best price", plain: "The most generous odds for you across all the bookmakers we check — same pick, better payout." },
+  { term: "Moneyline", plain: "Pick who wins the game outright. No point spread." },
+  { term: "Spread", plain: "Bet whether a team wins by enough points, or loses by fewer than the line." },
+  { term: "Total (O/U)", plain: "Bet whether both teams' combined score goes over or under a number." },
+  { term: "Implied probability", plain: "What the odds suggest about chance before the sportsbook's profit margin." },
   { term: "Decimal (D)", plain: "e.g. 2.50 — bet $1, get $2.50 back total if it wins (European style)." },
   { term: "American (A)", plain: "e.g. +150 / -200 — plus = underdog payout, minus = how much to risk to win $100." },
   { term: "Fractional (F)", plain: "e.g. 3/2 — win $3 for every $2 staked (UK / horse-racing style)." },
@@ -232,11 +243,11 @@ function BeginnerGuide() {
         <div className="guide-card">
           <h4>💡 What this app even is</h4>
           <p>
-            Bettin2Win is your <strong>scout</strong>, not a casino. It doesn't take
-            your money — it <em>shows</em> you the odds, finds the <strong>best price</strong>{" "}
-            across every sportsbook, and explains what it all means. You place the
-            actual bet later, at a real sportsbook. Think of this as the friend who
-            tells you where the good deal is.
+            Bettin2Win is an <strong>interactive odds coach</strong>, not a casino. We
+            don&apos;t take your money or tell you what to bet. We <em>translate</em> the
+            lines, compare <strong>best prices</strong> across sportsbooks, show what a
+            payout would look like, and flag risk — so you understand the bet before you
+            place it elsewhere.
           </p>
         </div>
 
@@ -342,6 +353,7 @@ function EventCard({
         <span className={`pill ${event.status}`}>{event.status}</span>
       </div>
       <SportField event={event} score={score} />
+      <OddsTranslator event={event} format={format} />
       {event.prediction && (
         <div className={`model-pick ${event.prediction.status}`}>
           <span className="mp-star">★</span>
