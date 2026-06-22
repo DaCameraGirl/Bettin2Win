@@ -46,7 +46,7 @@ export function generateDemoEvents(sport: SportKey): SportEvent[] {
   const pool = NAME_POOLS[sport];
   const now = Date.now();
 
-  return pool.events.map((eventName, eventIndex) => {
+  const events: SportEvent[] = pool.events.map((eventName, eventIndex) => {
     const runnerNames = pool.runners[eventIndex] ?? pool.runners[0] ?? ["Home", "Away"];
     const teamSport = ["football", "baseball", "basketball", "hockey", "soccer"].includes(sport);
 
@@ -82,8 +82,72 @@ export function generateDemoEvents(sport: SportKey): SportEvent[] {
       source: "demo",
       venue: sport === "horse-racing" || sport === "greyhound" ? eventName.split(" - ")[0] : undefined,
       runners,
-    } satisfies SportEvent;
+    };
   });
+
+  if (sport === "basketball" && events[0]) {
+    events.push(...basketballMarketVariants(events[0]));
+  }
+
+  return events;
+}
+
+function basketballMarketVariants(base: SportEvent): SportEvent[] {
+  const [away, home] = base.runners;
+  if (!away || !home) return [];
+
+  const spreadAwayOdds = away.odds.map((line) => ({ ...line, price: Number((line.price + 0.05).toFixed(2)) }));
+  const spreadHomeOdds = home.odds.map((line) => ({ ...line, price: Number((line.price + 0.03).toFixed(2)) }));
+
+  const spread: SportEvent = {
+    ...base,
+    id: "sportsbook-api:demo-basketball-0:ARBITRAGE:POINT_SPREAD:",
+    venue: "WNBA - Arbitrage 4.2% - Point Spread",
+    source: "demo",
+    runners: [
+      {
+        ...away,
+        id: `${away.id}-spread`,
+        name: `${away.name} -3.5`,
+        odds: spreadAwayOdds,
+        bestPrice: spreadAwayOdds[0]?.price,
+        bestBookmaker: spreadAwayOdds[0]?.bookmaker,
+      },
+      {
+        ...home,
+        id: `${home.id}-spread`,
+        name: `${home.name} +3.5`,
+        odds: spreadHomeOdds,
+        bestPrice: spreadHomeOdds[0]?.price,
+        bestBookmaker: spreadHomeOdds[0]?.bookmaker,
+      },
+    ],
+  };
+
+  const total: SportEvent = {
+    ...base,
+    id: "sportsbook-api:demo-basketball-0:ARBITRAGE:TOTAL:",
+    venue: "WNBA - Arbitrage 3.1% - Total",
+    source: "demo",
+    runners: [
+      {
+        id: `${base.id}-over`,
+        name: "Over 164.5",
+        odds: [{ bookmaker: "DraftKings", runnerId: `${base.id}-over`, price: 1.91, impliedProbability: 0, lastUpdate: base.startTime }],
+        bestPrice: 1.91,
+        bestBookmaker: "DraftKings",
+      },
+      {
+        id: `${base.id}-under`,
+        name: "Under 164.5",
+        odds: [{ bookmaker: "FanDuel", runnerId: `${base.id}-under`, price: 1.95, impliedProbability: 0, lastUpdate: base.startTime }],
+        bestPrice: 1.95,
+        bestBookmaker: "FanDuel",
+      },
+    ],
+  };
+
+  return [spread, total];
 }
 
 export function buildDemoEventsBySport(): Record<SportKey, SportEvent[]> {
