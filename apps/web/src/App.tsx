@@ -22,6 +22,13 @@ import { buildDemoEventsBySport } from "./mockEvents";
 import { groupBasketballMatchups } from "./matchupGroup";
 import { BasketballMatchupCard } from "./BasketballMatchupCard";
 import { EventMarketPanel } from "./EventMarketPanel";
+import { SportBoardFilter } from "./SportBoardFilter";
+import {
+  boardFilterEmptyMessage,
+  filterBasketballMatchups,
+  filterBoardEvents,
+  type BoardFilter,
+} from "./eventFilters";
 import {
   classifyFeedStatus,
   developerStatusDetail,
@@ -37,9 +44,15 @@ export function App() {
   const [sport, setSport] = useState<SportKey>("football");
   const [format, setFormat] = useState<OddsFormat>("decimal");
   const [demoMode, setDemoMode] = useState(false);
+  const [filtersBySport, setFiltersBySport] = useState<Partial<Record<SportKey, BoardFilter>>>({});
 
   const liveEvents = eventsBySport[sport] ?? [];
-  const events = demoMode ? (DEMO_EVENTS_BY_SPORT[sport] ?? []) : liveEvents;
+  const sourceEvents = demoMode ? (DEMO_EVENTS_BY_SPORT[sport] ?? []) : liveEvents;
+  const boardFilter = filtersBySport[sport] ?? "all";
+  const events = useMemo(
+    () => filterBoardEvents(sourceEvents, boardFilter),
+    [sourceEvents, boardFilter],
+  );
   const sportHealth = useMemo(
     () => health.find((h) => h.sport === sport),
     [health, sport],
@@ -53,22 +66,24 @@ export function App() {
     [movements, sport, demoMode],
   );
   const scores = useBaseballScores(sport === "baseball" && !demoMode);
-  const hasOdds = useMemo(() => sportHasOdds(events), [events]);
+  const hasOdds = useMemo(() => sportHasOdds(sourceEvents), [sourceEvents]);
   const { impacts: liveWeatherImpacts, loading: liveWeatherLoading } = useWeatherImpact(
     sport,
     liveEvents,
     !demoMode,
   );
   const demoWeatherImpacts = useMemo(
-    () => (demoMode ? buildDemoWeatherImpacts(events) : {}),
-    [demoMode, events],
+    () => (demoMode ? buildDemoWeatherImpacts(sourceEvents) : {}),
+    [demoMode, sourceEvents],
   );
   const weatherImpacts = demoMode ? demoWeatherImpacts : liveWeatherImpacts;
   const weatherLoading = demoMode ? false : liveWeatherLoading;
-  const basketballMatchups = useMemo(
-    () => (sport === "basketball" ? groupBasketballMatchups(events) : []),
-    [sport, events],
-  );
+  const basketballMatchups = useMemo(() => {
+    if (sport !== "basketball") return [];
+    const grouped = groupBasketballMatchups(sourceEvents);
+    return filterBasketballMatchups(grouped, boardFilter);
+  }, [sport, sourceEvents, boardFilter]);
+  const sportLabel = SPORT_TABS.find((tab) => tab.key === sport)?.label ?? "Games";
 
   return (
     <div className="app">
@@ -138,26 +153,38 @@ export function App() {
       <main className="layout">
         <section className="board">
           <div className="board-head">
-            <h2>{SPORT_TABS.find((t) => t.key === sport)?.label}</h2>
-            <div className="board-feed-status">
-              <span className={`mode-badge user ${feedStatus}`}>
-                {USER_FEED_STATUS_LABELS[feedStatus]}
-              </span>
-              {!demoMode && developerStatusDetail(sportHealth) && (
-                <details className="board-feed-dev">
-                  <summary>Technical feed details</summary>
-                  <p>{developerStatusDetail(sportHealth)}</p>
-                </details>
-              )}
-              <span className="board-feed-user-note">{userStatusDetail(feedStatus, sportHealth, liveEvents.length)}</span>
+            <div className="board-head-top">
+              <h2>{sportLabel}</h2>
+              <div className="board-feed-status">
+                <span className={`mode-badge user ${feedStatus}`}>
+                  {USER_FEED_STATUS_LABELS[feedStatus]}
+                </span>
+                {!demoMode && developerStatusDetail(sportHealth) && (
+                  <details className="board-feed-dev">
+                    <summary>Technical feed details</summary>
+                    <p>{developerStatusDetail(sportHealth)}</p>
+                  </details>
+                )}
+                <span className="board-feed-user-note">{userStatusDetail(feedStatus, sportHealth, liveEvents.length)}</span>
+              </div>
             </div>
+            <SportBoardFilter
+              sport={sport}
+              value={boardFilter}
+              onChange={(nextSport, nextFilter) =>
+                setFiltersBySport((current) => ({ ...current, [nextSport]: nextFilter }))
+              }
+            />
           </div>
 
-          {events.length === 0 ? (
+          {sourceEvents.length === 0 ? (
             <p className="empty">
               {emptyBoardMessage(sport, sportHealth, demoMode, () => setDemoMode(true))}
             </p>
           ) : sport === "basketball" ? (
+            basketballMatchups.length === 0 ? (
+              <p className="empty">{boardFilterEmptyMessage(boardFilter, sportLabel)}</p>
+            ) : (
             basketballMatchups.map((group) => (
               <BasketballMatchupCard
                 key={group.key}
@@ -170,6 +197,9 @@ export function App() {
                 hasOdds={hasOdds}
               />
             ))
+            )
+          ) : events.length === 0 ? (
+            <p className="empty">{boardFilterEmptyMessage(boardFilter, sportLabel)}</p>
           ) : (
             events.map((event) => (
               <EventCard
