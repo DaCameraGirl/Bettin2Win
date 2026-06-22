@@ -24,6 +24,7 @@ import { BasketballMatchupCard } from "./BasketballMatchupCard";
 import { EventMarketPanel } from "./EventMarketPanel";
 import { SportBoardFilter } from "./SportBoardFilter";
 import {
+  boardFilterCounts,
   boardFilterEmptyMessage,
   filterBasketballMatchups,
   filterBoardEvents,
@@ -84,6 +85,10 @@ export function App() {
     return filterBasketballMatchups(grouped, boardFilter);
   }, [sport, sourceEvents, boardFilter]);
   const sportLabel = SPORT_TABS.find((tab) => tab.key === sport)?.label ?? "Games";
+  const filterCounts = useMemo(
+    () => boardFilterCounts(sport, sourceEvents),
+    [sport, sourceEvents],
+  );
 
   return (
     <div className="app">
@@ -139,6 +144,16 @@ export function App() {
         ))}
       </nav>
 
+      <SportBoardFilter
+        sport={sport}
+        sportLabel={sportLabel}
+        value={boardFilter}
+        counts={filterCounts}
+        onChange={(nextSport, nextFilter) =>
+          setFiltersBySport((current) => ({ ...current, [nextSport]: nextFilter }))
+        }
+      />
+
       <ProviderStatusPanel
         health={health}
         liveEventsBySport={eventsBySport}
@@ -168,13 +183,6 @@ export function App() {
                 <span className="board-feed-user-note">{userStatusDetail(feedStatus, sportHealth, liveEvents.length)}</span>
               </div>
             </div>
-            <SportBoardFilter
-              sport={sport}
-              value={boardFilter}
-              onChange={(nextSport, nextFilter) =>
-                setFiltersBySport((current) => ({ ...current, [nextSport]: nextFilter }))
-              }
-            />
           </div>
 
           {sourceEvents.length === 0 ? (

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { SportEvent } from "@bettin2win/types";
 import {
+  boardFilterCounts,
   filterBoardEvents,
   filterBasketballMatchups,
   isBeginnerFriendlyEvent,
@@ -63,6 +64,19 @@ describe("eventFilters", () => {
     assert.equal(filterBoardEvents(events, "live").length, 1);
     assert.equal(filterBoardEvents(events, "with-prices").length, 1);
     assert.equal(filterBoardEvents(events, "beginner-friendly").length, 2);
+  });
+
+  it("reports per-filter counts for the active sport board", () => {
+    const events = [
+      baseEvent({ id: "live", status: "live" }),
+      baseEvent({ id: "upcoming", status: "upcoming", runners: [{ id: "a", name: "Chiefs", odds: [] }, { id: "b", name: "Eagles", odds: [] }] }),
+    ];
+
+    const counts = boardFilterCounts("football", events);
+    assert.equal(counts.all, 2);
+    assert.equal(counts.live, 1);
+    assert.equal(counts["with-prices"], 1);
+    assert.equal(counts["beginner-friendly"], 2);
   });
 
   it("filters basketball matchups by moneyline beginner-friendly and live status", () => {
