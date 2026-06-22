@@ -2,6 +2,7 @@ import type { SportEvent, SportKey, WeatherImpact } from "@bettin2win/types";
 import {
   impactLevelLabel,
   indoorWeatherImpact,
+  weatherImpactCardLabel,
   WEATHER_BADGE_HINTS,
   WEATHER_BADGE_LABELS,
   WEATHER_SPORTS,
@@ -24,7 +25,7 @@ export function WeatherImpactBadge({ event, impact, loading }: WeatherImpactBadg
   if (loading && !resolved) {
     return (
       <div className="weather-impact weather-impact--loading" aria-label="Loading weather impact">
-        <span className="weather-impact-kicker">Game Weather</span>
+        <span className="weather-impact-kicker">Weather Impact</span>
         <span className="weather-impact-summary">Checking outdoor conditions…</span>
       </div>
     );
@@ -32,12 +33,14 @@ export function WeatherImpactBadge({ event, impact, loading }: WeatherImpactBadg
 
   if (!resolved) return null;
 
+  const { kicker, level } = weatherImpactCardLabel(resolved, event.sport);
+
   return (
     <details className="weather-impact">
       <summary className="weather-impact-summary-row">
-        <span className="weather-impact-kicker">Game Weather</span>
+        <span className="weather-impact-kicker">{kicker}</span>
         <span className={`weather-impact-level weather-impact-level--${resolved.impactLevel}`}>
-          {resolved.headline}
+          {level}
         </span>
         <span className="weather-impact-text">{resolved.summary}</span>
         <span className="weather-impact-open">Why it matters</span>

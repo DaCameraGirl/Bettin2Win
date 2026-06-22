@@ -19,6 +19,7 @@ import { OddsTranslator } from "./OddsTranslator";
 import { HowItWorksStrip } from "./HowItWorksStrip";
 import { WeatherImpactBadge } from "./WeatherImpactBadge";
 import { useWeatherImpact } from "./useWeatherImpact";
+import { buildDemoWeatherImpacts } from "./weatherExplain";
 import { buildDemoEventsBySport } from "./mockEvents";
 import {
   classifyFeedStatus,
@@ -52,11 +53,17 @@ export function App() {
   );
   const scores = useBaseballScores(sport === "baseball" && !demoMode);
   const hasOdds = useMemo(() => sportHasOdds(events), [events]);
-  const { impacts: weatherImpacts, loading: weatherLoading } = useWeatherImpact(
+  const { impacts: liveWeatherImpacts, loading: liveWeatherLoading } = useWeatherImpact(
     sport,
     liveEvents,
     !demoMode,
   );
+  const demoWeatherImpacts = useMemo(
+    () => (demoMode ? buildDemoWeatherImpacts(events) : {}),
+    [demoMode, events],
+  );
+  const weatherImpacts = demoMode ? demoWeatherImpacts : liveWeatherImpacts;
+  const weatherLoading = demoMode ? false : liveWeatherLoading;
 
   return (
     <div className="app">
