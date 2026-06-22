@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import type { ProviderHealth, SportEvent } from "@bettin2win/types";
-import { classifyFeedStatus } from "./providerStatus";
+import {
+  activeFeedNote,
+  classifyFeedStatus,
+  feedSummaryFromHealth,
+} from "./providerStatus";
 
 const mockFootballEvent: SportEvent = {
   id: "mock-football-0",
@@ -28,6 +32,39 @@ const realFootballEvent: SportEvent = {
     { id: "espn-nfl:401547456:home", name: "Eagles", odds: [] },
   ],
 };
+
+const pricedFootballEvent: SportEvent = {
+  ...realFootballEvent,
+  id: "espn-nfl-odds:401872656",
+  source: "espn-nfl-odds",
+  runners: [
+    {
+      id: "espn-nfl-odds:401872656:away",
+      name: "Patriots",
+      odds: [{ bookmaker: "DraftKings", runnerId: "x", price: 2.7, impliedProbability: 0, lastUpdate: "" }],
+      bestPrice: 2.7,
+      bestBookmaker: "DraftKings",
+    },
+    {
+      id: "espn-nfl-odds:401872656:home",
+      name: "Seahawks",
+      odds: [{ bookmaker: "DraftKings", runnerId: "y", price: 1.49, impliedProbability: 0, lastUpdate: "" }],
+      bestPrice: 1.49,
+      bestBookmaker: "DraftKings",
+    },
+  ],
+};
+
+describe("activeFeedNote", () => {
+  it("returns the final backup clause", () => {
+    const message =
+      "the-odds-api unavailable (provider 401); backup sportsbook-api - no opps; backup espn-nfl-odds - 16/16 NFL games with DraftKings moneyline odds from ESPN";
+    assert.equal(
+      activeFeedNote(message),
+      "16/16 NFL games with DraftKings moneyline odds from ESPN",
+    );
+  });
+});
 
 describe("classifyFeedStatus", () => {
   it("labels provider quota errors instead of demo for mock fallback boards", () => {
@@ -56,7 +93,7 @@ describe("classifyFeedStatus", () => {
     assert.equal(classifyFeedStatus(health, [realFootballEvent]), "real-game-feed");
   });
 
-  it("keeps intentional demo mode yellow", () => {
+  it("keeps intentional demo mode yellow only when forced", () => {
     assert.equal(classifyFeedStatus(undefined, [mockFootballEvent], true), "demo");
   });
 
@@ -72,5 +109,107 @@ describe("classifyFeedStatus", () => {
     };
 
     assert.equal(classifyFeedStatus(health, [realFootballEvent]), "real-game-feed");
+  });
+
+  it("shows live odds from health when backup succeeded before websocket snapshot", () => {
+    const health: ProviderHealth = {
+      sport: "football",
+      provider: "the-odds-api+sportsbook-api+espn-nfl-odds",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "the-odds-api+sportsbook-api unavailable (the-odds-api unavailable (provider 401); backup sportsbook-api - sportsbook-api returned no opportunities for this sport); backup espn-nfl-odds - 16/16 NFL games with DraftKings moneyline odds from ESPN",
+    };
+
+    assert.equal(classifyFeedStatus(health, []), "live-odds");
+  });
+
+  it("shows live odds for basketball when sportsbook backup succeeded", () => {
+    const health: ProviderHealth = {
+      sport: "basketball",
+      provider: "the-odds-api+sportsbook-api",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "the-odds-api unavailable (provider 401); backup sportsbook-api - 12 real basketball sportsbook opportunities",
+    };
+
+    assert.equal(classifyFeedStatus(health, []), "live-odds");
+  });
+
+  it("shows live odds for baseball when ESPN backup succeeded", () => {
+    const health: ProviderHealth = {
+      sport: "baseball",
+      provider: "the-odds-api+tank01-mlb+highlightly-matches+espn-mlb-odds+mlb-stats",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "the-odds-api+tank01-mlb+highlightly-matches unavailable (provider 401; backup tank01-mlb - provider 429); backup espn-mlb-odds+mlb-stats - 13/13 MLB games with DraftKings moneyline odds from ESPN",
+    };
+
+    assert.equal(classifyFeedStatus(health, []), "live-odds");
+  });
+
+  it("shows real game feed for horse racing racecards backup", () => {
+    const health: ProviderHealth = {
+      sport: "horse-racing",
+      provider: "horse-racing-rapidapi+racing-api",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "horse-racing-rapidapi unavailable (list 429); backup racing-api - racecards live (free tier: no prices)",
+    };
+
+    assert.equal(classifyFeedStatus(health, []), "real-game-feed");
+  });
+
+  it("still shows no key when every backup failed", () => {
+    const health: ProviderHealth = {
+      sport: "greyhound",
+      provider: "greyhound-racing-uk+betsapi",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "greyhound-racing-uk unavailable (subscribe to Greyhound Racing UK on RapidAPI); backup betsapi - no BETSAPI_KEY",
+    };
+
+    assert.equal(classifyFeedStatus(health, []), "no-key");
+  });
+
+  it("prefers priced websocket events over health noise", () => {
+    const health: ProviderHealth = {
+      sport: "football",
+      provider: "the-odds-api+sportsbook-api+espn-nfl-odds",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message: "the-odds-api unavailable (provider 401)",
+    };
+
+    assert.equal(classifyFeedStatus(health, [pricedFootballEvent]), "live-odds");
+  });
+});
+
+describe("feedSummaryFromHealth", () => {
+  it("surfaces the active backup note instead of the error chain", () => {
+    const health: ProviderHealth = {
+      sport: "baseball",
+      provider: "espn-mlb-odds",
+      mode: "live",
+      ok: true,
+      lastChecked: new Date().toISOString(),
+      message:
+        "primary failed; backup espn-mlb-odds+mlb-stats - 13/13 MLB games with DraftKings moneyline odds from ESPN",
+    };
+
+    assert.equal(
+      feedSummaryFromHealth(health, 0),
+      "13/13 MLB games with DraftKings moneyline odds from ESPN",
+    );
   });
 });

@@ -46,7 +46,6 @@ export function App() {
   );
   const scores = useBaseballScores(sport === "baseball" && !demoMode);
   const hasOdds = useMemo(() => sportHasOdds(events), [events]);
-  const displayEventsBySport = demoMode ? DEMO_EVENTS_BY_SPORT : eventsBySport;
 
   return (
     <div className="app">
@@ -102,7 +101,7 @@ export function App() {
 
       <ProviderStatusPanel
         health={health}
-        eventsBySport={displayEventsBySport}
+        liveEventsBySport={eventsBySport}
         activeSport={sport}
         demoMode={demoMode}
         onSelectSport={setSport}
