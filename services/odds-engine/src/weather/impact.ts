@@ -89,7 +89,7 @@ export function classifyWeatherImpact(event: SportEvent, reading: HourlyWeather)
   const trackCondition = trackConditionText(event.sport, precip, rainy);
   const impactLevel = impactLevelFromSignals({ windMph, precip, tempF, rainy, sport: event.sport });
   const summary = buildSummary({ tempF, windMph, precip, rainy, trackCondition, sport: event.sport });
-  const headline = headlineForSport(event.sport, impactLevel);
+  const headline = headlineForSport(event.sport, impactLevel, trackCondition);
   const whyItMatters = whyItMattersForSport(event.sport, {
     windMph,
     precip,
@@ -118,11 +118,10 @@ function indoorImpact(event: SportEvent): WeatherImpact {
     eventId: event.id,
     impactLevel: "low",
     badges: ["indoor-venue"],
-    summary: "Indoor arena — weather unlikely to matter",
+    summary: "Weather is unlikely to affect play.",
     headline: "Indoor venue",
     whyItMatters:
-      "This game is played indoors, so rain, wind, and heat usually do not change how the game is played. " +
-      "Focus on the odds and matchup instead of outdoor conditions.",
+      "This game is played in an indoor arena, so rain, wind, and heat usually do not change how the game is played.",
   };
 }
 
@@ -166,12 +165,21 @@ function trackConditionText(sport: SportKey, precip: number, rainy: boolean): st
   return "Dry";
 }
 
-function headlineForSport(sport: SportKey, level: WeatherImpactLevel): string {
+function headlineForSport(
+  sport: SportKey,
+  level: WeatherImpactLevel,
+  trackCondition?: string,
+): string {
   const label = level === "high" ? "High" : level === "medium" ? "Medium" : "Low";
-  if (sport === "horse-racing" || sport === "greyhound") return `Track impact: ${label}`;
+  if ((sport === "horse-racing" || sport === "greyhound") && trackCondition) {
+    const muddy = /muddy|soft/i.test(trackCondition);
+    const damp = /damp/i.test(trackCondition);
+    const condition = muddy ? "Muddy" : damp ? "Damp" : "Dry";
+    return `Track Condition: ${condition}`;
+  }
   if (sport === "golf") return `Course conditions: ${label}`;
   if (sport === "nascar") return `Race weather risk: ${label}`;
-  return `Weather impact: ${label}`;
+  return `Weather Impact: ${label}`;
 }
 
 function whyItMattersForSport(
@@ -221,10 +229,14 @@ function whyItMattersForSport(
       break;
     case "horse-racing":
     case "greyhound":
-      if (ctx.trackCondition) {
+      if (ctx.trackCondition && /muddy|soft/i.test(ctx.trackCondition)) {
+        parts.push("Wet tracks can change traction and favor runners that handle softer surfaces.");
+      } else if (ctx.trackCondition) {
         parts.push(`A ${ctx.trackCondition.toLowerCase()} track can favor certain runners and change late speed.`);
       }
-      if (ctx.precip >= 35 || ctx.rainy) parts.push("Wet weather often shifts which traps or post positions perform best.");
+      if (ctx.precip >= 35 || ctx.rainy) {
+        parts.push("Wet weather often shifts which traps or post positions perform best.");
+      }
       break;
     default:
       break;
