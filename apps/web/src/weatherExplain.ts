@@ -1,4 +1,4 @@
-import type { SportEvent, SportKey, WeatherBadgeKind, WeatherImpact, WeatherImpactLevel } from "@bettin2win/types";
+﻿import type { SportEvent, SportKey, WeatherBadgeKind, WeatherImpact, WeatherImpactLevel } from "@bettin2win/types";
 
 export const WEATHER_SPORTS: SportKey[] = [
   "football",
@@ -64,7 +64,7 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-football-0": {
     impactLevel: "medium",
     badges: ["wind-alert", "rain-risk"],
-    summary: "Wind 18 mph · Rain likely",
+    summary: "Wind 18 mph ┬╖ Rain likely",
     headline: "Weather Impact: Medium",
     whyItMatters:
       "Wind can make long passes, kicks, and fly balls less predictable. Rain may slow the field and increase handling mistakes.",
@@ -74,7 +74,7 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-football-1": {
     impactLevel: "low",
     badges: [],
-    summary: "48°F · Light breeze",
+    summary: "48┬░F ┬╖ Light breeze",
     headline: "Weather Impact: Low",
     whyItMatters:
       "Outdoor conditions look fairly normal. Weather is unlikely to be the main story for this game.",
@@ -84,7 +84,7 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-football-2": {
     impactLevel: "high",
     badges: ["heat-alert", "wind-alert"],
-    summary: "96°F · Wind 22 mph",
+    summary: "96┬░F ┬╖ Wind 22 mph",
     headline: "Weather Impact: High",
     whyItMatters:
       "Extreme heat can increase fatigue, especially late in the game. Strong wind can make kicks and deep passes harder to control.",
@@ -94,7 +94,7 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-baseball-0": {
     impactLevel: "medium",
     badges: ["rain-risk", "wind-alert"],
-    summary: "62°F · Wind 14 mph · Rain possible",
+    summary: "62┬░F ┬╖ Wind 14 mph ┬╖ Rain possible",
     headline: "Weather Impact: Medium",
     whyItMatters:
       "Wind can push fly balls farther or knock them down. Rain delays are common and wet conditions can lower scoring.",
@@ -105,7 +105,7 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-baseball-1": {
     impactLevel: "low",
     badges: [],
-    summary: "72°F · Clear skies",
+    summary: "72┬░F ┬╖ Clear skies",
     headline: "Weather Impact: Low",
     whyItMatters:
       "Outdoor conditions look fairly normal. Weather is unlikely to be the main story for this game.",
@@ -114,7 +114,7 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-soccer-0": {
     impactLevel: "medium",
     badges: ["wind-alert"],
-    summary: "Wind 16 mph · Overcast",
+    summary: "Wind 16 mph ┬╖ Overcast",
     headline: "Weather Impact: Medium",
     whyItMatters:
       "Wind can change long balls, corners, and shot accuracy on an open pitch.",
@@ -123,16 +123,16 @@ const DEMO_WEATHER_BY_EVENT_ID: Record<string, Omit<WeatherImpact, "eventId">> =
   "demo-golf-0": {
     impactLevel: "high",
     badges: ["wind-alert"],
-    summary: "Wind 24 mph · Partly cloudy",
+    summary: "Wind 24 mph ┬╖ Partly cloudy",
     headline: "Weather Impact: High",
     whyItMatters:
-      "Wind is huge in golf — it changes club selection and makes scoring harder on long holes.",
+      "Wind is huge in golf ΓÇö it changes club selection and makes scoring harder on long holes.",
     windMph: 24,
   },
   "demo-nascar-0": {
     impactLevel: "medium",
     badges: ["rain-risk"],
-    summary: "78°F · Rain possible · Delay possible",
+    summary: "78┬░F ┬╖ Rain possible ┬╖ Delay possible",
     headline: "Weather Impact: Medium",
     whyItMatters:
       "Rain can pause or shorten a race, changing strategy and which cars look strongest in wet conditions.",
