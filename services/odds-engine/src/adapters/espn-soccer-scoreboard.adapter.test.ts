@@ -31,10 +31,43 @@ test("normalizes ESPN soccer scoreboard matchup", () => {
   );
 
   assert.ok(event);
-  assert.equal(event.id, "espn-soccer:704842");
+  assert.equal(event.id, "espn-soccer-odds:704842");
   assert.equal(event.name, "Arsenal @ Chelsea");
   assert.equal(event.venue, "Premier League");
-  assert.equal(event.source, "espn-soccer");
+  assert.equal(event.source, "espn-soccer-odds");
   assert.equal(event.runners.length, 3);
   assert.equal(event.runners[2]?.name, "Draw");
+});
+
+test("normalizes ESPN soccer match with 3-way DraftKings moneyline", () => {
+  const event = normalizeEspnSoccerEvent(
+    {
+      id: "401879301",
+      date: "2026-06-22T19:00Z",
+      competitions: [
+        {
+          competitors: [
+            { homeAway: "away", team: { displayName: "Coventry City" } },
+            { homeAway: "home", team: { displayName: "Arsenal" } },
+          ],
+          odds: [
+            {
+              provider: { displayName: "DraftKings" },
+              moneyline: {
+                home: { close: { odds: "-650" } },
+                away: { close: { odds: "+1400" } },
+                draw: { close: { odds: "+650" } },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    "Premier League",
+  );
+
+  assert.ok(event);
+  assert.equal(event.runners[0]?.bestPrice, 15);
+  assert.equal(event.runners[1]?.bestPrice, 1.154);
+  assert.equal(event.runners[2]?.bestPrice, 7.5);
 });

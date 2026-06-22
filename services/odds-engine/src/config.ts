@@ -14,25 +14,25 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   baseball: {
     key: "baseball",
     label: "Baseball",
-    provider: "the-odds-api+tank01-mlb+highlightly-matches+mlb-stats",
+    provider: "the-odds-api+tank01-mlb+espn-mlb-odds+mlb-stats",
     pollIntervalMs: 15_000,
   },
   basketball: {
     key: "basketball",
     label: "Basketball",
-    provider: "the-odds-api+sportsbook-api+highlightly-matches",
+    provider: "the-odds-api+sportsbook-api+espn-nba-odds",
     pollIntervalMs: 15_000,
   },
   hockey: {
     key: "hockey",
     label: "Hockey",
-    provider: "the-odds-api+sportsbook-api+highlightly-matches+espn-nhl-odds+nhl-scoreboard",
+    provider: "the-odds-api+sportsbook-api+espn-nhl-odds+nhl-scoreboard",
     pollIntervalMs: 15_000,
   },
   soccer: {
     key: "soccer",
     label: "Soccer",
-    provider: "betminer+football-prediction-api",
+    provider: "betminer+football-prediction-api+espn-soccer-odds",
     // BetMiner returns the whole daily board in one request, so poll gently
     // while still refreshing live score/minute changes.
     pollIntervalMs: 180_000,
@@ -60,7 +60,7 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   greyhound: {
     key: "greyhound",
     label: "Greyhound",
-    provider: "greyhound-racing-uk+betsapi",
+    provider: "greyhound-racing-uk+gbgb-rss+betsapi",
     pollIntervalMs: 120_000,
   },
 };
