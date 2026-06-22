@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "lint": "echo \"(no linter configured)\" && exit 0",
-    "test": "node --import tsx --test src/oddsExplain.test.ts src/providerStatus.test.ts src/weatherExplain.test.ts src/matchupGroup.test.ts"
+    "test": "node --import tsx --test src/oddsExplain.test.ts src/providerStatus.test.ts src/weatherExplain.test.ts src/matchupGroup.test.ts src/eventFilters.test.ts"
   },
   "dependencies": {
     "@bettin2win/types": "workspace:*",
