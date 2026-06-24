@@ -93,11 +93,13 @@ $ws = New-Object -ComObject WScript.Shell
 $desktop = [Environment]::GetFolderPath("Desktop")
 $lnkPath = Join-Path $desktop "Bettin2Win.lnk"
 $lnk = $ws.CreateShortcut($lnkPath)
+$openLive = "C:\Users\enter\OneDrive\Projects\links\scripts\open-live.ps1"
+$liveUrl = "https://dacameragirl.github.io/Bettin2Win/"
 $lnk.TargetPath = (Get-Command powershell).Source
-$lnk.Arguments = "-ExecutionPolicy Bypass -NoProfile -File `"$($PSScriptRoot)\start.ps1`""
+$lnk.Arguments = "-ExecutionPolicy Bypass -NoProfile -File `"$openLive`" -Url `"$liveUrl`""
 $lnk.WorkingDirectory = $root
 $lnk.IconLocation = "$icoPath,0"
-$lnk.Description = "Launch Bettin2Win - live multi-sport odds"
+$lnk.Description = "Open Bettin2Win live - same link as Angela's Projects hub"
 $lnk.WindowStyle = 1
 $lnk.Save()
 Write-Host "Desktop shortcut created: $lnkPath" -ForegroundColor Green
