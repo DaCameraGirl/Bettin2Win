@@ -1,7 +1,39 @@
 <p align="center">
-  <img src="docs/assets/readme-hero.svg" alt="Bettin2Win — beginner odds guide, not a sportsbook" width="100%"/>
+  <img src="docs/readme-banner.svg" alt="Bettin2Win — Real-time odds dashboard for the sports you follow — live lines, alerts, and research helpers." width="720" />
 </p>
 
+<p align="center">
+  <strong>Real-time odds dashboard for the sports you follow — live lines, alerts, and research helpers.</strong>
+</p>
+
+<p align="center">
+  <a href="https://dacameragirl.github.io/Bettin2Win/"><img src="https://img.shields.io/badge/Live-GitHub%20Pages-33d69f?style=for-the-badge&logo=github&logoColor=white" alt="Live demo" /></a>
+  <a href="https://github.com/DaCameraGirl/Bettin2Win"><img src="https://img.shields.io/badge/Code-GitHub-58a6ff?style=for-the-badge&logo=github&logoColor=white" alt="Source code" /></a>
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/deploy-GitHub Pages-000000?style=flat-square&logo=github&logoColor=white" alt="deploy-GitHub Pages" />
+  <img src="https://img.shields.io/badge/stack-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="stack-TypeScript" />
+</p>
+
+### Languages
+
+<p align="center">
+  <img src="https://img.shields.io/badge/TypeScript-84%25-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/CSS-10%25-1572B6?style=flat-square&logo=css3&logoColor=white" alt="CSS" />
+  <img src="https://img.shields.io/badge/Python-3%25-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
+</p>
+
+### Stack
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-dashboard-61DAFB?style=flat-square&logo=react&logoColor=111" alt="React-dashboard" />
+  <img src="https://img.shields.io/badge/GitHub Pages-live-33d69f?style=flat-square&logo=github&logoColor=white" alt="GitHub Pages-live" />
+</p>
+
+<p align="center">
+  Built by <strong>Angela Hudson</strong> · <a href="https://github.com/DaCameraGirl">DaCameraGirl</a>
+</p>
 # Bettin2Win
 
 <p align="center">
@@ -40,7 +72,9 @@ We do not accept wagers. Informational use only. Bet responsibly.
 > back when every configured provider for that sport is unavailable, out of quota, or missing
 > credentials. See [Provider status](#provider-status).
 
-## Product highlights
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Product%20highlights&fontSize=22&fontColor=e6edf3" width="720" alt="Product highlights" /></p>
+
 
 | Feature | What it does |
 |---|---|
@@ -54,7 +88,9 @@ We do not accept wagers. Informational use only. Bet responsibly.
 | **Provider status** | Plain-English feed health — green when backups succeed |
 | **Demo mode** | Offline sample board for exploring the UI |
 
-## What's here
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=What's%20here&fontSize=22&fontColor=e6edf3" width="720" alt="What's here" /></p>
+
 
 A pnpm + Turborepo monorepo:
 
@@ -73,7 +109,9 @@ Every provider is hidden behind an adapter that returns the same normalized `Spo
 shape. The frontend never sees raw provider payloads, so adding or swapping a feed stays
 inside the engine.
 
-## Screenshots
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Screenshots&fontSize=22&fontColor=e6edf3" width="720" alt="Screenshots" /></p>
+
 
 Live app: [dacameragirl.github.io/Bettin2Win](https://dacameragirl.github.io/Bettin2Win/)
 
@@ -103,7 +141,9 @@ Plain-English onboarding for first-time visitors, including responsible gambling
 
 Regenerate anytime: `pnpm screenshots` (requires Chromium via Playwright).
 
-## Quick start
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Quick%20start&fontSize=22&fontColor=e6edf3" width="720" alt="Quick start" /></p>
+
 
 ```bash
 corepack enable
@@ -119,7 +159,9 @@ pnpm dev
 The desktop launcher created by `scripts/install-desktop-icon.ps1` starts the engine, starts
 the web app, and opens the dashboard.
 
-## Provider status
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Provider%20status&fontSize=22&fontColor=e6edf3" width="720" alt="Provider status" /></p>
+
 
 | Sport | Provider chain | Auth | Current behavior |
 |---|---|---|---|
@@ -133,7 +175,9 @@ the web app, and opens the dashboard.
 | Horse racing | Horse Racing (RapidAPI) → The Racing API | `RAPIDAPI_KEY`, `RACING_API_USERNAME`, `RACING_API_PASSWORD` | Racecards + results; budgeted for free RapidAPI tier |
 | Greyhound | Greyhound Racing UK → **GBGB RSS** → BetsAPI | `RAPIDAPI_KEY`, `BETSAPI_KEY` | Free GBGB RSS fallback for UK cards |
 
-## Keys
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Keys&fontSize=22&fontColor=e6edf3" width="720" alt="Keys" /></p>
+
 
 Put keys in `.env` only. The file is git-ignored and should not be committed.
 
@@ -145,7 +189,9 @@ Put keys in `.env` only. The file is git-ignored and should not be committed.
 
 If a key has ever been pasted into chat or screenshots, rotate it.
 
-## Scripts
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Scripts&fontSize=22&fontColor=e6edf3" width="720" alt="Scripts" /></p>
+
 
 | Command | What it does |
 |---|---|
@@ -155,14 +201,18 @@ If a key has ever been pasted into chat or screenshots, rotate it.
 | `pnpm test` | Run unit tests |
 | `pnpm screenshots` | Capture README screenshots with Playwright |
 
-## Contributors
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Contributors&fontSize=22&fontColor=e6edf3" width="720" alt="Contributors" /></p>
+
 
 - Angela — product direction, provider setup, testing
 - Claude — prior implementation work and GitHub workflow
 - Dex (Codex) — provider fallback fixes, dashboard UI, and repo maintenance
 - Grok — Weather Impact, matchup grouping, board filters, README & i18n
 
-## Legal
+<p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Legal&fontSize=22&fontColor=e6edf3" width="720" alt="Legal" /></p>
+
 
 This is an analytics/media app, not a bookmaker. Provider terms vary by plan and use case;
 check each provider's rules before redistributing data or using it in a commercial betting
