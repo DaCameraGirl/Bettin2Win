@@ -73,7 +73,7 @@ We do not accept wagers. Informational use only. Bet responsibly.
 > credentials. See [Provider status](#provider-status).
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Product%20highlights&fontSize=22&fontColor=e6edf3" width="720" alt="Product highlights" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Product%20highlights&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Product highlights" /></p>
 
 
 | Feature | What it does |
@@ -89,7 +89,7 @@ We do not accept wagers. Informational use only. Bet responsibly.
 | **Demo mode** | Offline sample board for exploring the UI |
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=What's%20here&fontSize=22&fontColor=e6edf3" width="720" alt="What's here" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=What's%20here&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="What's here" /></p>
 
 
 A pnpm + Turborepo monorepo:
@@ -110,7 +110,7 @@ shape. The frontend never sees raw provider payloads, so adding or swapping a fe
 inside the engine.
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Screenshots&fontSize=22&fontColor=e6edf3" width="720" alt="Screenshots" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Screenshots&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Screenshots" /></p>
 
 
 Live app: [dacameragirl.github.io/Bettin2Win](https://dacameragirl.github.io/Bettin2Win/)
@@ -142,7 +142,7 @@ Plain-English onboarding for first-time visitors, including responsible gambling
 Regenerate anytime: `pnpm screenshots` (requires Chromium via Playwright).
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Quick%20start&fontSize=22&fontColor=e6edf3" width="720" alt="Quick start" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Quick%20start&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Quick start" /></p>
 
 
 ```bash
@@ -160,7 +160,7 @@ The desktop launcher created by `scripts/install-desktop-icon.ps1` starts the en
 the web app, and opens the dashboard.
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Provider%20status&fontSize=22&fontColor=e6edf3" width="720" alt="Provider status" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Provider%20status&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Provider status" /></p>
 
 
 | Sport | Provider chain | Auth | Current behavior |
@@ -176,7 +176,7 @@ the web app, and opens the dashboard.
 | Greyhound | Greyhound Racing UK → **GBGB RSS** → BetsAPI | `RAPIDAPI_KEY`, `BETSAPI_KEY` | Free GBGB RSS fallback for UK cards |
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Keys&fontSize=22&fontColor=e6edf3" width="720" alt="Keys" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Keys&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Keys" /></p>
 
 
 Put keys in `.env` only. The file is git-ignored and should not be committed.
@@ -190,7 +190,7 @@ Put keys in `.env` only. The file is git-ignored and should not be committed.
 If a key has ever been pasted into chat or screenshots, rotate it.
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Scripts&fontSize=22&fontColor=e6edf3" width="720" alt="Scripts" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Scripts&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Scripts" /></p>
 
 
 | Command | What it does |
@@ -202,7 +202,7 @@ If a key has ever been pasted into chat or screenshots, rotate it.
 | `pnpm screenshots` | Capture README screenshots with Playwright |
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Contributors&fontSize=22&fontColor=e6edf3" width="720" alt="Contributors" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Contributors&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Contributors" /></p>
 
 
 - Angela — product direction, provider setup, testing
@@ -211,7 +211,7 @@ If a key has ever been pasted into chat or screenshots, rotate it.
 - Grok — Weather Impact, matchup grouping, board filters, README & i18n
 
 <p align="center"><img src="docs/readme-divider.svg" width="720" alt="" /></p>
-<p align="center"><img src="https://capsule-render.vercel.app/api?type=rect&color=070b14&height=50&section=header&text=Legal&fontSize=22&fontColor=e6edf3" width="720" alt="Legal" /></p>
+<p align="center"><img src="https://capsule-render.vercel.app/api?type=waving&color=0:070b14,100:12102a&height=50&section=header&text=Legal&fontSize=22&fontColor=e6edf3&animation=twinkling" width="720" alt="Legal" /></p>
 
 
 This is an analytics/media app, not a bookmaker. Provider terms vary by plan and use case;
