@@ -32,7 +32,7 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   soccer: {
     key: "soccer",
     label: "Soccer",
-    provider: "betminer+football-prediction-api+espn-soccer-odds",
+    provider: "betminer+espn-soccer-odds",
     // BetMiner returns the whole daily board in one request, so poll gently
     // while still refreshing live score/minute changes.
     pollIntervalMs: 180_000,
@@ -60,7 +60,7 @@ export const SPORTS: Record<SportKey, SportConfig> = {
   greyhound: {
     key: "greyhound",
     label: "Greyhound",
-    provider: "greyhound-racing-uk+gbgb-rss+betsapi",
+    provider: "gbgb-rss+greyhound-racing-uk+betsapi",
     pollIntervalMs: 120_000,
   },
 };

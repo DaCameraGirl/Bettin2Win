@@ -4,6 +4,9 @@ import { decorateRunners, type AdapterResult, type SportAdapter } from "./base.j
 import { generateMockEvents } from "./mock.js";
 
 const HOST = "betminer.p.rapidapi.com";
+const CACHE_TTL_MS = 30 * 60_000;
+
+let cached: { expiresAt: number; events: SportEvent[]; message: string } | undefined;
 
 type BetMinerOutcome = "home_win" | "draw" | "away_win";
 type Obj = Record<string, unknown>;
@@ -43,11 +46,7 @@ export class BetMinerAdapter implements SportAdapter {
         headers: { "x-rapidapi-host": HOST, "x-rapidapi-key": env.rapidApiKey },
       });
       if (!res.ok) {
-        return {
-          mode: "mock",
-          events: generateMockEvents("soccer"),
-          message: `provider ${res.status}`,
-        };
+        return cachedFallback(`provider ${res.status}`);
       }
 
       const json = (await res.json()) as unknown;
@@ -55,15 +54,24 @@ export class BetMinerAdapter implements SportAdapter {
         .map((match) => normalizeBetMinerMatch(match))
         .filter((event): event is SportEvent => event !== null);
 
-      return { mode: "live", events, message: `${events.length} BetMiner matches` };
+      const message = `${events.length} BetMiner matches`;
+      cached = { expiresAt: Date.now() + CACHE_TTL_MS, events, message };
+      return { mode: "live", events, message };
     } catch (err) {
-      return {
-        mode: "mock",
-        events: generateMockEvents("soccer"),
-        message: err instanceof Error ? err.message : "fetch failed",
-      };
+      return cachedFallback(err instanceof Error ? err.message : "fetch failed");
     }
   }
+}
+
+function cachedFallback(reason: string): AdapterResult {
+  if (cached && cached.expiresAt > Date.now()) {
+    return {
+      mode: "live",
+      events: cached.events,
+      message: `${cached.message} (cached; ${reason})`,
+    };
+  }
+  return { mode: "live", events: [], message: `betminer unavailable (${reason})` };
 }
 
 export function normalizeBetMinerMatch(

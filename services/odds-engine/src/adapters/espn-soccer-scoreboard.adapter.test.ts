@@ -31,7 +31,7 @@ test("normalizes ESPN soccer scoreboard matchup", () => {
   );
 
   assert.ok(event);
-  assert.equal(event.id, "espn-soccer-odds:704842");
+  assert.equal(event.id, "espn-soccer-odds:soccer:704842");
   assert.equal(event.name, "Arsenal @ Chelsea");
   assert.equal(event.venue, "Premier League");
   assert.equal(event.source, "espn-soccer-odds");
