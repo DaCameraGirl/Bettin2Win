@@ -242,6 +242,16 @@ body::after {
   font-size: 13px;
 }
 
+.live-banner {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.08);
+  color: #bbf7d0;
+  font-size: 13px;
+}
+
 .empty-demo-link {
   border: none;
   background: none;
@@ -474,6 +484,10 @@ body::after {
   color: var(--accent);
   border-color: var(--accent-dim);
 }
+.status-dot.sample {
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.45);
+}
 .status-dot.down {
   color: var(--warn);
 }
@@ -658,11 +672,37 @@ body::after {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin-bottom: 12px;
 }
 .event-head h4 {
   margin: 0;
   font-size: 15px;
+}
+.event-head-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.data-source-badge {
+  font-size: 10px;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+.data-source-badge.live {
+  color: #bbf7d0;
+  border-color: rgba(74, 222, 128, 0.35);
+  background: rgba(74, 222, 128, 0.1);
+}
+.data-source-badge.sample {
+  color: #fde68a;
+  border-color: rgba(251, 191, 36, 0.35);
+  background: rgba(251, 191, 36, 0.1);
 }
 
 .matchup-card .matchup-market-tabs {

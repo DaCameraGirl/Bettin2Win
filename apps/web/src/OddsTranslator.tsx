@@ -15,7 +15,7 @@ export function OddsTranslator({ event, format }: OddsTranslatorProps) {
       <div className="odds-translator odds-translator--muted">
         <p>
           <strong>No prices on this card yet.</strong> This is a real game feed without odds.
-          Switch to a sport with live prices, or use <strong>View demo data</strong> to practice
+          Switch to a sport with live prices, or use <strong>Practice with sample data</strong> to explore
           reading lines.
         </p>
       </div>

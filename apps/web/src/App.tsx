@@ -1,4 +1,4 @@
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import type {
   OddsFormat,
   ProviderHealth,
@@ -33,10 +33,12 @@ import {
 import {
   classifyFeedStatus,
   developerStatusDetail,
+  isEngineMockBoard,
   sportHasOdds,
   USER_FEED_STATUS_LABELS,
   userStatusDetail,
 } from "./providerStatus";
+import { DataSourceBadge } from "./DataSourceBadge";
 
 const DEMO_EVENTS_BY_SPORT = buildDemoEventsBySport();
 
@@ -89,6 +91,16 @@ export function App() {
     () => boardFilterCounts(sport, sourceEvents),
     [sport, sourceEvents],
   );
+  const connectionLabel = demoMode ? "sample data" : connected ? "live feeds" : "reconnecting";
+  const connectionClass = demoMode ? "sample" : connected ? "live" : "down";
+
+  useEffect(() => {
+    if (!demoMode) return;
+    const events = eventsBySport[sport] ?? [];
+    if (events.length > 0 && !isEngineMockBoard(events)) {
+      setDemoMode(false);
+    }
+  }, [demoMode, eventsBySport, sport]);
 
   return (
     <div className="app">
@@ -114,20 +126,26 @@ export function App() {
             className={`demo-toggle ${demoMode ? "active" : ""}`}
             onClick={() => setDemoMode((value) => !value)}
           >
-            {demoMode ? "Exit demo" : "View demo data"}
+            {demoMode ? "Back to live data" : "Practice with sample data"}
           </button>
           <FormatToggle value={format} onChange={setFormat} />
-          <span className={`status-dot ${connected ? "live" : "down"}`}>
-            {connected ? "live" : "reconnecting"}
+          <span className={`status-dot ${connectionClass}`} title={connectionStatusHint(demoMode, connected)}>
+            {connectionLabel}
           </span>
         </div>
       </header>
 
-      {demoMode && (
+      {demoMode ? (
         <p className="demo-banner">
-          Viewing <strong>demo data</strong> — sample games and prices for exploring the UI, not live feeds.
+          Viewing <strong>practice data</strong> — sample games like Chiefs @ Eagles with made-up prices.
+          Turn this off to see real live odds from sportsbooks.
         </p>
-      )}
+      ) : connected && liveEvents.length > 0 ? (
+        <p className="live-banner">
+          Showing <strong>real live data</strong> from our odds engine — games, prices, and scores come from
+          licensed feeds, not samples.
+        </p>
+      ) : null}
 
       <HowItWorksStrip />
 
@@ -255,6 +273,12 @@ export function App() {
   );
 }
 
+function connectionStatusHint(demoMode: boolean, connected: boolean): string {
+  if (demoMode) return "Practice board with sample games and prices";
+  if (connected) return "Connected to the live odds engine";
+  return "Reconnecting to the live odds engine (first load after idle can take ~30s)";
+}
+
 function emptyBoardMessage(
   sport: SportKey,
   health: ProviderHealth | undefined,
@@ -262,34 +286,40 @@ function emptyBoardMessage(
   onDemo: () => void,
 ): ReactNode {
   if (demoMode) {
-    return "Demo board is loading…";
+    return "Practice board is loading…";
   }
-  if (!health || health.mode === "mock") {
+  if (!health) {
     return (
       <>
-        Waiting for the first snapshot from the engine.{" "}
+        Connecting to the live odds engine. The server may take up to 30 seconds to wake after idle.{" "}
         <button type="button" className="empty-demo-link" onClick={onDemo}>
-          View demo data
+          Practice with sample data
         </button>{" "}
-        to explore the UI while providers connect.
+        if you want to explore the UI meanwhile.
       </>
     );
+  }
+  if (health.mode === "live" && health.ok) {
+    if (sport === "football") {
+      return "No NFL games on the board right now. When games are scheduled, real lines appear here automatically.";
+    }
+    return "Connected to live feeds, but nothing is scheduled for this sport right now.";
   }
   if (sport === "football") {
     return (
       <>
-        No NFL games on the board right now. Preseason and regular season boards fill automatically when ESPN lists games.{" "}
+        Waiting for live NFL data. Preseason and regular season boards fill automatically when games are listed.{" "}
         <button type="button" className="empty-demo-link" onClick={onDemo}>
-          View demo data
+          Practice with sample data
         </button>
       </>
     );
   }
   return (
     <>
-      Connected to a live feed, but nothing is scheduled for this sport right now.{" "}
+      Waiting for live data from the engine.{" "}
       <button type="button" className="empty-demo-link" onClick={onDemo}>
-        View demo data
+        Practice with sample data
       </button>
     </>
   );
@@ -453,7 +483,10 @@ function EventCard({
     <article className="event">
       <div className="event-head">
         <h4>{event.name}</h4>
-        <span className={`pill ${event.status}`}>{event.status}</span>
+        <div className="event-head-meta">
+          <DataSourceBadge event={event} />
+          <span className={`pill ${event.status}`}>{event.status}</span>
+        </div>
       </div>
       <SportField event={event} score={score} />
       <WeatherImpactBadge event={event} impact={weatherImpact} loading={weatherLoading} />
