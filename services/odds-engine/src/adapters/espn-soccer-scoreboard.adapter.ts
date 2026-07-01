@@ -1,17 +1,27 @@
 import type { OddsLine, Runner, SportEvent } from "@bettin2win/types";
 import { decorateRunners, type AdapterResult, type SportAdapter } from "./base.js";
+import {
+  enrichEspnEventsFromSummary,
+  eventIdFromEspnEvent,
+  type EspnSummaryTarget,
+} from "./espn-summary-odds.js";
 
 type Obj = Record<string, unknown>;
 
 const LEAGUES = [
   { code: "eng.1", label: "Premier League" },
+  { code: "eng.2", label: "Championship" },
   { code: "usa.1", label: "MLS" },
+  { code: "usa.nwsl", label: "NWSL" },
   { code: "esp.1", label: "La Liga" },
   { code: "ger.1", label: "Bundesliga" },
   { code: "ita.1", label: "Serie A" },
   { code: "fra.1", label: "Ligue 1" },
+  { code: "ned.1", label: "Eredivisie" },
+  { code: "mex.1", label: "Liga MX" },
   { code: "uefa.champions", label: "Champions League" },
   { code: "uefa.europa", label: "Europa League" },
+  { code: "fifa.world", label: "International" },
 ] as const;
 
 /**
@@ -28,6 +38,7 @@ export class EspnSoccerScoreboardAdapter implements SportAdapter {
 
   async fetchEvents(): Promise<AdapterResult> {
     const events: SportEvent[] = [];
+    const summaryTargets: EspnSummaryTarget[] = [];
     let reached = false;
 
     try {
@@ -36,8 +47,15 @@ export class EspnSoccerScoreboardAdapter implements SportAdapter {
         const res = await fetch(url);
         if (!res.ok) continue;
         reached = true;
-        for (const event of normalizeEspnSoccerScoreboard(await res.json(), league.label)) {
-          if (!events.some((row) => row.id === event.id)) events.push(event);
+        for (const event of normalizeEspnSoccerScoreboard(await res.json(), league.label, league.code)) {
+          if (!events.some((row) => row.id === event.id)) {
+            events.push(event);
+            summaryTargets.push({
+              sportPath: "soccer",
+              leagueCode: league.code,
+              eventId: eventIdFromEspnEvent(event),
+            });
+          }
         }
         await sleep(150);
       }
@@ -46,18 +64,19 @@ export class EspnSoccerScoreboardAdapter implements SportAdapter {
         return { mode: "live", events: [], message: "ESPN soccer scoreboards unreachable" };
       }
 
-      const priced = events.filter(hasOdds).length;
-      if (events.length === 0) {
-        return { mode: "live", events, message: "0 soccer matches in ESPN window" };
+      const enriched = await enrichEspnEventsFromSummary(events, summaryTargets, 10);
+      const priced = enriched.filter(hasOdds).length;
+      if (enriched.length === 0) {
+        return { mode: "live", events: enriched, message: "0 soccer matches in ESPN window" };
       }
 
       const oddsNote = priced > 0
-        ? `${priced}/${events.length} matches with DraftKings moneyline odds`
+        ? `${priced}/${enriched.length} matches with DraftKings moneyline odds`
         : "odds unavailable";
       return {
         mode: "live",
-        events,
-        message: `${events.length} real soccer match${events.length === 1 ? "" : "es"} from ESPN (${oddsNote})`,
+        events: enriched,
+        message: `${enriched.length} real soccer match${enriched.length === 1 ? "" : "es"} from ESPN (${oddsNote})`,
       };
     } catch (err) {
       return {
@@ -69,13 +88,21 @@ export class EspnSoccerScoreboardAdapter implements SportAdapter {
   }
 }
 
-export function normalizeEspnSoccerScoreboard(body: unknown, leagueLabel: string): SportEvent[] {
+export function normalizeEspnSoccerScoreboard(
+  body: unknown,
+  leagueLabel: string,
+  leagueCode = "soccer",
+): SportEvent[] {
   return array(field(object(body), "events"))
-    .map((raw) => normalizeEspnSoccerEvent(raw, leagueLabel))
+    .map((raw) => normalizeEspnSoccerEvent(raw, leagueLabel, leagueCode))
     .filter((event): event is SportEvent => event !== null);
 }
 
-export function normalizeEspnSoccerEvent(raw: unknown, leagueLabel: string): SportEvent | null {
+export function normalizeEspnSoccerEvent(
+  raw: unknown,
+  leagueLabel: string,
+  leagueCode = "soccer",
+): SportEvent | null {
   const event = object(raw);
   const id = str(field(event, "id"));
   const startTime = str(field(event, "date"));
@@ -98,7 +125,7 @@ export function normalizeEspnSoccerEvent(raw: unknown, leagueLabel: string): Spo
   const statusType = object(field(status, "type"));
 
   const normalized: SportEvent = {
-    id: `espn-soccer-odds:${id}`,
+    id: `espn-soccer-odds:${leagueCode}:${id}`,
     sport: "soccer",
     name: `${awayName} @ ${homeName}`,
     startTime,

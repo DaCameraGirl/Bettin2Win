@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { API_BASE } from "./api";
-import { indexScoresByMatchName } from "./scoreMatch";
+import { indexScoresByDateAndMatchName } from "./scoreMatch";
 
 export interface GameScore {
   away: string;
   home: string;
   matchName: string;
+  /** YYYY-MM-DD for the game day, when the provider exposes it. */
+  gameDate?: string;
   current: string;
   state: "scheduled" | "live" | "finished";
   detail: string;
@@ -32,7 +34,7 @@ export function useBaseballScores(enabled: boolean): Map<string, GameScore> {
         if (!res.ok) return;
         const list = (await res.json()) as GameScore[];
         if (!active) return;
-        setScores(indexScoresByMatchName(list));
+        setScores(indexScoresByDateAndMatchName(list));
       } catch {
         /* leave the last good map in place */
       }

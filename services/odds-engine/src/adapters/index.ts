@@ -5,9 +5,7 @@ import { TheRundownAdapter } from "./therundown.adapter.js";
 import { RacingApiAdapter } from "./racing-api.adapter.js";
 import { HorseRacingRapidApiAdapter } from "./horse-racing-rapidapi.adapter.js";
 import { BetsApiAdapter } from "./betsapi.adapter.js";
-import { BetMinerAdapter } from "./betminer.adapter.js";
-import { FootballPredictionAdapter } from "./football-prediction.adapter.js";
-import { HighlightlyMatchesAdapter } from "./highlightly-matches.adapter.js";
+
 import { SportsbookAdvantagesAdapter } from "./sportsbook-advantages.adapter.js";
 import { Tank01MlbAdapter } from "./tank01-mlb.adapter.js";
 import { MlbStatsAdapter } from "./mlb-stats.adapter.js";
@@ -19,7 +17,7 @@ import { GreyhoundRacingUkAdapter } from "./greyhound-racing-uk.adapter.js";
 import { NhlCompositeAdapter } from "./nhl-composite.adapter.js";
 import { EspnNflOddsAdapter } from "./espn-nfl-odds.adapter.js";
 import { EspnNbaOddsAdapter } from "./espn-nba-odds.adapter.js";
-import { EspnSoccerScoreboardAdapter } from "./espn-soccer-scoreboard.adapter.js";
+import { SoccerCompositeAdapter } from "./soccer-composite.adapter.js";
 import { GbgbRssAdapter } from "./gbgb-rss.adapter.js";
 
 /** Registry mapping each sport to the adapter that owns it. */
@@ -49,10 +47,7 @@ export const adapters: Record<SportKey, SportAdapter> = {
     ),
     new NhlCompositeAdapter(),
   ),
-  soccer: new FallbackAdapter(
-    new FallbackAdapter(new BetMinerAdapter(), new FootballPredictionAdapter()),
-    new EspnSoccerScoreboardAdapter(),
-  ),
+  soccer: new SoccerCompositeAdapter(),
   golf: new EspnGolfAdapter(),
   nascar: new FallbackAdapter(new EspnNascarAdapter(), new TheRundownAdapter()),
   "horse-racing": new FallbackAdapter(
@@ -60,8 +55,8 @@ export const adapters: Record<SportKey, SportAdapter> = {
     new RacingApiAdapter(),
   ),
   greyhound: new FallbackAdapter(
-    new GreyhoundRacingUkAdapter(),
-    new FallbackAdapter(new GbgbRssAdapter(), new BetsApiAdapter()),
+    new GbgbRssAdapter(),
+    new FallbackAdapter(new GreyhoundRacingUkAdapter(), new BetsApiAdapter()),
   ),
 };
 
