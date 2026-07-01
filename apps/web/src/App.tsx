@@ -40,6 +40,7 @@ import {
   userStatusDetail,
 } from "./providerStatus";
 import { DataSourceBadge } from "./DataSourceBadge";
+import { ShareSiteQr } from "./ShareSiteQr";
 
 const DEMO_EVENTS_BY_SPORT = buildDemoEventsBySport();
 
@@ -122,6 +123,7 @@ export function App() {
           </div>
         </div>
         <div className="topbar-right">
+          <ShareSiteQr />
           <button
             type="button"
             className={`demo-toggle ${demoMode ? "active" : ""}`}
