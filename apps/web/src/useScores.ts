@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { API_BASE } from "./api";
+import { indexScoresByMatchName } from "./scoreMatch";
 
 export interface GameScore {
   away: string;
@@ -31,7 +32,7 @@ export function useBaseballScores(enabled: boolean): Map<string, GameScore> {
         if (!res.ok) return;
         const list = (await res.json()) as GameScore[];
         if (!active) return;
-        setScores(new Map(list.map((s) => [s.matchName, s])));
+        setScores(indexScoresByMatchName(list));
       } catch {
         /* leave the last good map in place */
       }

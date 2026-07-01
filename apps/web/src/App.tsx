@@ -9,6 +9,7 @@ import type {
 import { SPORT_TABS } from "./sports";
 import { useOddsSocket } from "./useOddsSocket";
 import { useBaseballScores, type GameScore } from "./useScores";
+import { resolveGameScore } from "./scoreMatch";
 import { SportField } from "./SportField";
 import { MarketTicker } from "./MarketTicker";
 import { ProviderStatusPanel } from "./ProviderStatusPanel";
@@ -216,7 +217,7 @@ export function App() {
                 key={group.key}
                 group={group}
                 format={format}
-                score={scores.get(group.name)}
+                score={resolveGameScore(group.primary, scores)}
                 weatherImpact={weatherImpacts[group.primary.id]}
                 weatherLoading={weatherLoading}
                 movements={sportMovements}
@@ -232,7 +233,7 @@ export function App() {
                 key={event.id}
                 event={event}
                 format={format}
-                score={scores.get(event.name)}
+                score={resolveGameScore(event, scores)}
                 weatherImpact={weatherImpacts[event.id]}
                 weatherLoading={weatherLoading}
               />
