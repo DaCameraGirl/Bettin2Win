@@ -10,6 +10,7 @@ import {
   type BasketballMatchupGroup,
   movementsForMatchup,
 } from "./matchupGroup";
+import { DataSourceBadge } from "./DataSourceBadge";
 
 function movementHint(direction: "shortening" | "drifting"): string {
   return direction === "shortening"
@@ -69,7 +70,10 @@ export function BasketballMatchupCard({
     <article className="event matchup-card">
       <div className="event-head">
         <h4>{group.name}</h4>
-        <span className={`pill ${group.status}`}>{group.status}</span>
+        <div className="event-head-meta">
+          <DataSourceBadge event={group.primary} />
+          <span className={`pill ${group.status}`}>{group.status}</span>
+        </div>
       </div>
 
       <SportField event={group.primary} score={score} />
